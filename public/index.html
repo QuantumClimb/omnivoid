@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Omnivoid Effects with Controls</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../src/styles/theme.css">
+  <link rel="stylesheet" href="../src/styles/components.css">
+  <link rel="stylesheet" href="../src/styles/controls.css">
+  <link rel="stylesheet" href="../src/styles/animations.css">
+</head>
+<body>
+  <div id="controls">
+    <h3>Omnivoid Controls</h3>
+    <div id="control-panels">
+      <!-- Control panels will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <div class="grid"></div>
+
+  <div class="solar-system">
+    <div class="sun"></div>
+    <div class="orbit"><div class="planet mercury"></div></div>
+    <div class="orbit"><div class="planet venus"></div></div>
+    <div class="orbit"><div class="planet earth"></div></div>
+    <div class="orbit"><div class="planet mars"></div></div>
+    <div class="orbit"><div class="planet jupiter"></div></div>
+    <div class="orbit"><div class="planet saturn"></div></div>
+    <div class="orbit"><div class="planet uranus"></div></div>
+    <div class="orbit"><div class="planet neptune"></div></div>
+    <div class="orbit"><div class="planet pluto"></div></div>
+  </div>
+
+  <canvas id="agents"></canvas>
+  <div class="headline-text">OMNIVOID</div>
+
+  <script type="module">
+    import { App } from '../src/App.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      new App();
+    });
+  </script>
+</body>
+</html> 
