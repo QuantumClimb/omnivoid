@@ -49,7 +49,7 @@ export class App {
       
       // Preload audio
       this.splashScreen.log('📥 Loading audio assets...', 45);
-      const audioLoaded = await this.audioManager.loadAudio('/public/audio/Music/song1.mp3');
+      const audioLoaded = await this.audioManager.loadAudio('public/audio/Music/song1.mp3');
       if (!audioLoaded) {
         this.splashScreen.log('⚠️ Audio loading failed, continuing without audio...', 50);
       } else {

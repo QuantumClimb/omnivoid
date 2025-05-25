@@ -30,7 +30,7 @@ python -m http.server 8000
 
 3. Open in browser:
 ```
-http://localhost:8000/public/index.html
+http://localhost:8000/index.html
 ```
 
 ## Controls
