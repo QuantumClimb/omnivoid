@@ -7,17 +7,42 @@ import { Agent } from '../utils/Agent.js';
 export class AgentSystem extends Component {
   /**
    * Create a new AgentSystem instance
+   * @param {AudioManager} audioManager Optional audio manager for visualization
    */
-  constructor() {
+  constructor(audioManager = null) {
     super();
     this.canvas = document.getElementById('agents');
     this.ctx = this.canvas.getContext('2d');
     this.agents = [];
     this.agentCount = 60;
     this.connectDist = 100;
+    this.audioManager = audioManager;
+    
+    // Audio visualization properties
+    this.audioScale = 1.0;
+    this.baseSize = 2;
+    this.maxSize = 8;
+    this.frequencyData = null;
+    
     this.setupCanvas();
     this.initAgents();
+    this.setupAudioVisualization();
     this.animate();
+  }
+
+  /**
+   * Set up audio visualization if audio manager is available
+   */
+  setupAudioVisualization() {
+    if (this.audioManager) {
+      // Add this agent system as a visualizer callback
+      this.audioManager.addVisualizer((frequencyData) => {
+        this.frequencyData = frequencyData;
+        // Calculate overall audio scale based on average frequency
+        const average = frequencyData.reduce((sum, val) => sum + val, 0) / frequencyData.length;
+        this.audioScale = 1 + (average / 255) * 3; // Scale from 1x to 4x based on audio
+      });
+    }
   }
 
   /**
@@ -38,7 +63,7 @@ export class AgentSystem extends Component {
   initAgents() {
     this.agents = Array.from(
       { length: this.agentCount }, 
-      () => new Agent(this.width, this.height)
+      (_, index) => new Agent(this.width, this.height, index)
     );
   }
 
@@ -57,6 +82,24 @@ export class AgentSystem extends Component {
    */
   setConnectDistance(dist) {
     this.connectDist = dist;
+  }
+
+  /**
+   * Get the scale factor for an agent based on audio frequency
+   * @param {number} agentIndex Index of the agent
+   * @returns {number} Scale factor
+   */
+  getAgentAudioScale(agentIndex) {
+    if (!this.frequencyData || this.frequencyData.length === 0) {
+      return 1.0;
+    }
+    
+    // Map agent index to frequency bin
+    const frequencyIndex = Math.floor((agentIndex / this.agentCount) * this.frequencyData.length);
+    const frequencyValue = this.frequencyData[frequencyIndex] / 255; // Normalize to 0-1
+    
+    // Scale between baseSize and maxSize
+    return 1 + frequencyValue * 2; // Scale from 1x to 3x
   }
 
   /**
@@ -88,11 +131,16 @@ export class AgentSystem extends Component {
       }
     }
 
-    // Update and draw agents
+    // Update and draw agents with audio scaling
     this.ctx.globalAlpha = 1;
-    this.agents.forEach(a => {
-      a.update(this.width, this.height);
-      a.draw(this.ctx);
+    this.agents.forEach((agent, index) => {
+      agent.update(this.width, this.height);
+      
+      // Get audio-based scale for this agent
+      const audioScale = this.getAgentAudioScale(index);
+      const size = this.baseSize * audioScale;
+      
+      agent.draw(this.ctx, size);
     });
 
     requestAnimationFrame(this.animate);

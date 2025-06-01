@@ -65,7 +65,7 @@ export class App {
       this.asciiTunnel = new ASCIITunnel();
       this.grid = new Grid();
       this.solarSystem = new SolarSystem();
-      this.agentSystem = new AgentSystem();
+      this.agentSystem = new AgentSystem(this.audioManager);
       this.headline = new Headline(this.audioManager);
       
       // Set up controls

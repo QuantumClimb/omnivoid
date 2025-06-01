@@ -6,8 +6,10 @@ export class Agent {
    * Create a new Agent
    * @param {number} width Canvas width
    * @param {number} height Canvas height
+   * @param {number} index Agent index for frequency mapping
    */
-  constructor(width, height) {
+  constructor(width, height, index = 0) {
+    this.index = index;
     this.reset(width, height);
   }
 
@@ -38,10 +40,11 @@ export class Agent {
   /**
    * Draw agent on canvas
    * @param {CanvasRenderingContext2D} ctx Canvas context
+   * @param {number} size Size of the agent (default: 2)
    */
-  draw(ctx) {
+  draw(ctx, size = 2) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
     ctx.fill();
   }
 } 
