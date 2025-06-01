@@ -36,11 +36,12 @@ export class AgentSystem extends Component {
   setupAudioVisualization() {
     if (this.audioManager) {
       // Add this agent system as a visualizer callback
-      this.audioManager.addVisualizer((frequencyData) => {
-        this.frequencyData = frequencyData;
-        // Calculate overall audio scale based on average frequency
-        const average = frequencyData.reduce((sum, val) => sum + val, 0) / frequencyData.length;
-        this.audioScale = 1 + (average / 255) * 3; // Scale from 1x to 4x based on audio
+      this.audioManager.addVisualizer((normalizedData) => {
+        // Use the raw frequency data for per-agent scaling
+        this.frequencyData = normalizedData.raw;
+        // Calculate overall audio scale based on combined frequency ranges
+        const audioIntensity = (normalizedData.bass + normalizedData.mid + normalizedData.treble) / 3;
+        this.audioScale = 1 + audioIntensity * 3; // Scale from 1x to 4x based on audio
       });
     }
   }
@@ -96,10 +97,13 @@ export class AgentSystem extends Component {
     
     // Map agent index to frequency bin
     const frequencyIndex = Math.floor((agentIndex / this.agentCount) * this.frequencyData.length);
-    const frequencyValue = this.frequencyData[frequencyIndex] / 255; // Normalize to 0-1
+    const frequencyValue = this.frequencyData[frequencyIndex];
     
-    // Scale between baseSize and maxSize
-    return 1 + frequencyValue * 2; // Scale from 1x to 3x
+    // Convert from dB to linear scale and normalize (frequency data is in dB, typically -140 to 0)
+    const normalizedValue = Math.max(0, Math.min(1, (frequencyValue + 140) / 140));
+    
+    // Scale between 1x and 3x based on frequency intensity
+    return 1 + normalizedValue * 2;
   }
 
   /**
