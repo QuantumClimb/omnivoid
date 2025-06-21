@@ -121,6 +121,45 @@
   backface-visibility: hidden;
 }
 
+/* Logo Component */
+.logo-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.logo-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  filter: brightness(1.1) contrast(1.1);
+  transition: transform 0.1s ease-out;
+}
+
+@media (max-width: 768px) {
+  .logo-svg {
+    max-width: 200px;
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-svg {
+    max-width: 150px;
+    max-height: 150px;
+  }
+}
+
 .audio-player {
   position: fixed;
   bottom: 0;
@@ -222,6 +261,8 @@
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: 100vh;
   background: var(--bg-color);
@@ -235,6 +276,8 @@
   transition: opacity 1s ease-out;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .splash-screen h1 {
@@ -244,6 +287,8 @@
   padding: 0;
   text-align: center;
   color: var(--fg-color);
+  letter-spacing: 4px;
+  text-transform: uppercase;
 }
 
 .splash-logs {

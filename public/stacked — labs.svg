@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 680 680">
+  <!-- Generator: Adobe Illustrator 29.5.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 141)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke-linecap: square;
+        stroke-width: 8px;
+      }
+
+      .st0, .st1, .st2 {
+        fill: none;
+        stroke: #fff;
+      }
+
+      .st1 {
+        stroke-miterlimit: 4;
+      }
+
+      .st1, .st2 {
+        stroke-width: 32px;
+      }
+    </style>
+  </defs>
+  <path class="st2" d="M440,364h114c34.1,0,61.8,27.8,61.8,62s-27.6,62-61.8,62h-26c-13.3,0-24-10.7-24-24v-68"/>
+  <path class="st2" d="M456,504v-108"/>
+  <rect class="st2" x="280" y="362" width="128" height="128" rx="62" ry="62"/>
+  <path class="st1" d="M250,348c0,71.5-104,87.1-104,156v-116c0-13.3-10.7-24-24-24"/>
+  <path class="st2" d="M250,332v-118c0-13.3,10.7-24,24-24s24,10.7,24,24v64c0,13.3,10.7,24,24,24s24-10.7,24-24v-64c0-13.3,10.7-24,24-24s24,10.7,24,24v80c0,13.3,10.7,24,24,24s24-10.7,24-24v-80c0-13.3,10.7-24,24-24s24,10.7,24,24v80c0,13.3,10.7,24,24,24s24-10.7,24-24v-70"/>
+  <path class="st2" d="M538,208v-32"/>
+  <rect class="st2" x="76" y="190" width="128" height="128" rx="62" ry="62"/>
+  <path class="st0" d="M316,524v48h48"/>
+  <path class="st0" d="M380,572v-24M380,548h48M380,548v-20l4-4h40l4,4v20M428,548v24"/>
+  <path class="st0" d="M476,548h-32M476,548v-20l-4-4h-28v24M476,548h12l4,4v16l-4,4h-44v-24"/>
+  <path class="st0" d="M544,528l-4-4h-24l-4,4v16l4,4h36l4,4v16l-4,4h-40l-4-4"/>
+</svg>

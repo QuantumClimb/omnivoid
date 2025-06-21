@@ -10,6 +10,14 @@ export class Grid extends Component {
   constructor() {
     super();
     this.element = document.querySelector('.grid');
+    
+    // Create the grid element if it doesn't exist
+    if (!this.element) {
+      this.element = document.createElement('div');
+      this.element.className = 'grid';
+      document.body.appendChild(this.element);
+    }
+    
     this.size = 20;
     this.setupGrid();
   }

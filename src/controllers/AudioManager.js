@@ -160,7 +160,11 @@ export class AudioManager {
     // Create a new source from the cached buffer
     this.source = this.audioContext.createBufferSource();
     this.source.buffer = this.audioBuffer;
+    
+    // Connect audio source through the analysis chain
+    // source → gainNode → analyser → destination
     this.source.connect(this.gainNode);
+    // Note: gainNode and analyser are already connected in initializeAudioContext()
     
     // Set up ended callback
     this.source.onended = () => {
@@ -174,7 +178,7 @@ export class AudioManager {
     this.isPlaying = true;
     this.pendingPlayback = false;
     this.startVisualization();
-    console.log('✅ Audio playback started');
+    console.log('✅ Audio playback started with frequency analysis');
   }
 
   /**
@@ -198,6 +202,7 @@ export class AudioManager {
     if (!this.isProcessing) {
       this.isProcessing = true;
       this.lastFrameTime = performance.now();
+      console.log('🎵 AudioManager: Starting visualization loop...');
       
       const animate = () => {
         if (!this.isProcessing) return;
@@ -207,6 +212,17 @@ export class AudioManager {
         
         if (deltaTime >= this.minFrameInterval) {
           this.analyser.getFloatFrequencyData(this.dataArray);
+          
+          // Debug: Check if we're getting frequency data
+          const dataSum = this.dataArray.reduce((sum, val) => sum + Math.abs(val), 0);
+          if (Math.random() < 0.005) { // Log occasionally to avoid spam
+            console.log('🎵 AudioManager frequency data:', {
+              dataArrayLength: this.dataArray.length,
+              dataSum: dataSum.toFixed(2),
+              firstFewValues: Array.from(this.dataArray.slice(0, 5)).map(v => v.toFixed(1)),
+              callbackCount: this.visualizerCallbacks.size
+            });
+          }
           
           // Calculate frequency ranges more efficiently
           const bass = this.getAverageFrequencyRange(0, 100);
@@ -258,7 +274,22 @@ export class AudioManager {
       sum += this.dataArray[i];
     }
     
-    return sum / (endIndex - startIndex);
+    const average = sum / (endIndex - startIndex);
+    
+    // Debug: Log frequency range calculations occasionally
+    if (startFreq === 0 && Math.random() < 0.01) { // Only log bass range occasionally
+      console.log('🎵 AudioManager frequency range debug:', {
+        range: `${startFreq}-${endFreq}Hz`,
+        indices: `${startIndex}-${endIndex}`,
+        sampleRate: this.audioContext.sampleRate,
+        bufferLength: this.bufferLength,
+        sum: sum.toFixed(2),
+        average: average.toFixed(2),
+        dataArraySample: Array.from(this.dataArray.slice(startIndex, startIndex + 3)).map(v => v.toFixed(1))
+      });
+    }
+    
+    return average;
   }
 
   /**
@@ -299,7 +330,11 @@ export class AudioManager {
    * @param {Function} callback Callback function
    */
   addVisualizer(callback) {
+    console.log('🎵 AudioManager: Adding visualizer callback. Current count:', this.visualizerCallbacks.size);
     this.visualizerCallbacks.add(callback);
+    console.log('🎵 AudioManager: Visualizer callback added. New count:', this.visualizerCallbacks.size);
+    console.log('🎵 AudioManager: Is processing:', this.isProcessing);
+    console.log('🎵 AudioManager: Is playing:', this.isPlaying);
   }
 
   /**

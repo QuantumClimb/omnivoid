@@ -29,10 +29,11 @@ export class Agent {
    * Update agent position
    * @param {number} width Canvas width
    * @param {number} height Canvas height
+   * @param {number} speedMultiplier Speed multiplier for audio reactivity (default: 1)
    */
-  update(width, height) {
-    this.x += this.vx;
-    this.y += this.vy;
+  update(width, height, speedMultiplier = 1) {
+    this.x += this.vx * speedMultiplier;
+    this.y += this.vy * speedMultiplier;
     if (this.x < 0 || this.x > width) this.vx *= -1;
     if (this.y < 0 || this.y > height) this.vy *= -1;
   }

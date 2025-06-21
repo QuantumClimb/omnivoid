@@ -1,0 +1,42 @@
+{
+  "name": "omnivoid",
+  "version": "0.1.0",
+  "description": "A mobile-first, interactive visual experience with audio reactivity. Immersive audio-visual web application with particle systems and 3D graphics.",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "serve": "python -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QuantumClimb/omnivoid.git"
+  },
+  "author": {
+    "name": "QuantumClimb",
+    "email": "qc@quantum-climb.com",
+    "url": "https://github.com/QuantumClimb"
+  },
+  "license": "MIT",
+  "keywords": [
+    "audio-visualization",
+    "particle-system",
+    "3d-graphics",
+    "web-audio-api",
+    "interactive",
+    "mobile-first",
+    "omnivoid"
+  ],
+  "homepage": "https://github.com/QuantumClimb/omnivoid#readme",
+  "bugs": {
+    "url": "https://github.com/QuantumClimb/omnivoid/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+} 

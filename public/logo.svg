@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 571.75 402" width="571.75" height="402">
+  <defs>
+    <style>
+      .logo-stroke-thin {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 8px;
+        stroke-linecap: square;
+      }
+      .logo-stroke-medium {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 32px;
+        stroke-miterlimit: 3.99;
+      }
+      .logo-stroke-thick {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 32px;
+      }
+    </style>
+  </defs>
+  <g>
+    <path class="logo-stroke-thick" d="M380,190h114c34.1,0,61.75,27.76,61.75,62s-27.65,62-61.75,62h-26c-13.26,0-24-10.74-24-24v-68"/>
+    <path class="logo-stroke-thick" d="M396,330v-108"/>
+    <rect class="logo-stroke-thick" x="220" y="188" width="128" height="128" rx="62" ry="62"/>
+    <path class="logo-stroke-medium" d="M190,174c0,71.49-104,87.06-104,156v-116c0-13.26-10.74-24-24-24"/>
+    <path class="logo-stroke-thick" d="M190,158V40c0-13.26,10.74-24,24-24s24,10.74,24,24v64c0,13.26,10.74,24,24,24s24-10.74,24-24V40c0-13.26,10.74-24,24-24s24,10.74,24,24v80c0,13.26,10.74,24,24,24s24-10.74,24-24V40c0-13.26,10.74-24,24-24s24,10.74,24,24v80c0,13.26,10.74,24,24,24s24-10.74,24-24V50"/>
+    <path class="logo-stroke-thick" d="M478,34V2"/>
+    <rect class="logo-stroke-thick" x="16" y="16" width="128" height="128" rx="62" ry="62"/>
+    <path class="logo-stroke-thin" d="M256,350v48h48"/>
+    <path class="logo-stroke-thin" d="M320,398v-24M320,374h48M320,374v-20l4-4h40l4,4v20M368,374v24"/>
+    <path class="logo-stroke-thin" d="M416,374h-32M416,374v-20l-4-4h-28v24M416,374h12l4,4v16l-4,4h-44v-24"/>
+    <path class="logo-stroke-thin" d="M484,354l-4-4h-24l-4,4v16l4,4h36l4,4v16l-4,4h-40l-4-4"/>
+  </g>
+</svg>

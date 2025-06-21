@@ -13,6 +13,12 @@ export class Headline extends Component {
     this.element = document.querySelector('.headline-text');
     this.audioManager = audioManager;
     
+    // Check if element exists
+    if (!this.element) {
+      console.warn('⚠️ Headline: No .headline-text element found in DOM');
+      return; // Don't set up audio visualization if no element
+    }
+    
     // Base style values
     this.baseScale = 1;
     this.baseOpacity = 1;
@@ -41,6 +47,11 @@ export class Headline extends Component {
    * @param {Object} data Audio frequency data
    */
   onAudioData({ bass, mid, treble }) {
+    // Safety check: ensure element exists
+    if (!this.element) {
+      return;
+    }
+    
     // Calculate weighted average of frequencies
     const intensity = 
       bass * this.settings.bassWeight + 
@@ -94,6 +105,7 @@ export class Headline extends Component {
    * @param {string} text New text to display
    */
   setText(text) {
+    if (!this.element) return;
     this.element.textContent = text;
   }
 
@@ -102,6 +114,7 @@ export class Headline extends Component {
    * @param {boolean} visible Whether the headline is now visible
    */
   onVisibilityChange(visible) {
+    if (!this.element) return;
     this.element.style.display = visible ? 'block' : 'none';
   }
 

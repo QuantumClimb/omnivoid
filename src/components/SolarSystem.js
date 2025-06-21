@@ -10,8 +10,42 @@ export class SolarSystem extends Component {
   constructor() {
     super();
     this.element = document.querySelector('.solar-system');
+    
+    // Create the solar system element if it doesn't exist
+    if (!this.element) {
+      this.createElement();
+    }
+    
     this.planets = Array.from(this.element.querySelectorAll('.planet'));
     this.setupOrbits();
+  }
+
+  /**
+   * Create the solar system element and structure
+   */
+  createElement() {
+    this.element = document.createElement('div');
+    this.element.className = 'solar-system';
+    
+    // Create sun
+    const sun = document.createElement('div');
+    sun.className = 'sun';
+    this.element.appendChild(sun);
+    
+    // Create planets with orbits
+    const planetNames = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+    planetNames.forEach(name => {
+      const orbit = document.createElement('div');
+      orbit.className = 'orbit';
+      
+      const planet = document.createElement('div');
+      planet.className = `planet ${name}`;
+      
+      orbit.appendChild(planet);
+      this.element.appendChild(orbit);
+    });
+    
+    document.body.appendChild(this.element);
   }
 
   /**

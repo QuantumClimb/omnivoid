@@ -15,9 +15,40 @@ export class SplashScreen extends Component {
     this.element.className = 'splash-screen';
     
     // Create title
-    const title = document.createElement('h1');
-    title.textContent = 'bruno 0.1';
-    this.element.appendChild(title);
+    // Create logo element instead of text
+    const logoElement = document.createElement('img');
+    logoElement.src = 'public/logo.svg';
+    logoElement.alt = 'OMNIVOID';
+    logoElement.style.cssText = `
+      max-width: 180px;
+      width: 36vw;
+      height: auto;
+      margin-bottom: 40px;
+      filter: brightness(1.2);
+    `;
+    
+    // Fallback in case logo fails to load
+    logoElement.onerror = () => {
+      console.log('🔍 Logo failed, trying alternative path...');
+      logoElement.src = 'logo.svg';
+      
+      logoElement.onerror = () => {
+        console.log('🔍 Logo still failed, creating text fallback...');
+        const textFallback = document.createElement('h1');
+        textFallback.textContent = 'OMNIVOID 0.1';
+        textFallback.style.cssText = `
+          font-size: 48px;
+          font-weight: bold;
+          margin: 0 0 40px 0;
+          color: var(--fg-color);
+          letter-spacing: 4px;
+          text-transform: uppercase;
+        `;
+        this.element.replaceChild(textFallback, logoElement);
+      };
+    };
+    
+    this.element.appendChild(logoElement);
     
     // Create log container
     this.logContainer = document.createElement('div');
