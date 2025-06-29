@@ -1,0 +1,3 @@
+Ethereal Dub
+
+Ethereal dub reimagines classic dub techniques—delay, reverb, spatial diffusion—to create immersive, dissolving soundfields. Our analysis traced the lineage from Jamaican dub plates to contemporary ambient practices. Through reverb decay analysis and psychoacoustic testing, we observed that prolonged decay times induce a blurring of temporal perception, prompting listeners to lose track of discrete events. This quality is central to the genre’s allure: the sensation of being suspended in a space beyond chronology. The study advocates for ethereal dub as a methodology for exploring sonic impermanence and memory erosion in modern composition.

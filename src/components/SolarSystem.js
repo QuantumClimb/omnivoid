@@ -27,10 +27,10 @@ export class SolarSystem extends Component {
     this.element = document.createElement('div');
     this.element.className = 'solar-system';
     
-    // Create sun
+    /* // Create sun
     const sun = document.createElement('div');
     sun.className = 'sun';
-    this.element.appendChild(sun);
+    this.element.appendChild(sun); */
     
     // Create planets with orbits
     const planetNames = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
@@ -52,28 +52,30 @@ export class SolarSystem extends Component {
    * Set up the orbital system
    */
   setupOrbits() {
-    // Planet colors in grayscale
+    // Planet colors in OMNIVOID blue theme
     const planetColors = [
-      '#989898', // Mercury
-      '#A8A8A8', // Venus
-      '#B8B8B8', // Earth
-      '#C0C0C0', // Mars
-      '#C8C8C8', // Jupiter
-      '#D0D0D0', // Saturn
-      '#D4D4D4', // Uranus
-      '#CCCCCC', // Neptune
-      '#C4C4C4'  // Pluto
+      '#4d79a4', // Mercury - darker blue
+      '#5c8bb8', // Venus - medium blue
+      '#6b9dcc', // Earth - lighter blue
+      '#7aaee0', // Mars - bright blue
+      '#89c0f4', // Jupiter - very bright blue
+      '#99ccff', // Saturn - main OMNIVOID blue
+      '#a8d6ff', // Uranus - lighter than main
+      '#b7e0ff', // Neptune - very light blue
+      '#c6eaff'  // Pluto - lightest blue
     ];
 
     // Apply colors to planets
     this.planets.forEach((planet, index) => {
       planet.style.backgroundColor = planetColors[index];
+      planet.style.boxShadow = `0 0 10px ${planetColors[index]}40`; // Add glow effect
     });
 
-    // Set sun color
+    // Set sun color with OMNIVOID styling
     const sun = this.element.querySelector('.sun');
     if (sun) {
-      sun.style.backgroundColor = '#E0E0E0';
+      sun.style.backgroundColor = '#99ccff';
+      sun.style.boxShadow = '0 0 30px rgba(153, 204, 255, 0.6)';
     }
   }
 
@@ -91,5 +93,28 @@ export class SolarSystem extends Component {
    */
   onVisibilityChange(visible) {
     this.element.style.display = visible ? 'block' : 'none';
+    this.isVisible = visible;
+  }
+
+  /**
+   * Set visibility of the solar system
+   * @param {boolean} visible Whether to show or hide the system
+   */
+  setVisibility(visible) {
+    this.onVisibilityChange(visible);
+  }
+
+  /**
+   * Show the solar system
+   */
+  show() {
+    this.setVisibility(true);
+  }
+
+  /**
+   * Hide the solar system
+   */
+  hide() {
+    this.setVisibility(false);
   }
 } 

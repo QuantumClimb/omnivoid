@@ -3,34 +3,50 @@
  */
 export class AudioManager {
   constructor() {
-    // Initialize audio context with optimized settings but don't create until user interaction
+    console.log('🎵 AudioManager: Initializing...');
+    
+    // Audio context and analysis setup
     this.audioContext = null;
     this.analyser = null;
+    this.dataArray = null;
+    this.source = null;
     this.gainNode = null;
+    this.audioBuffer = null;
+    
+    // Playback state
+    this.isPlaying = false;
+    this.currentTime = 0;
+    this.startTime = 0;
+    this.duration = 0;
+    this.pendingPlayback = false;
+    
+    // Visualization state
+    this.isProcessing = false;
+    this.frameId = null;
+    this.lastFrameTime = 0;
+    this.minFrameInterval = 1000 / 60; // 60 FPS
+    this.visualizerCallbacks = new Set();
+    
+    // Audio analysis parameters
+    this.fftSize = 1024;
+    this.bufferLength = this.fftSize / 2;
+    
+    // Initialize audio context with optimized settings but don't create until user interaction
     this.audioWorklet = null;
     
     // Audio state
     this.isInitialized = false;
-    this.source = null;
-    this.bufferLength = 0;
-    this.dataArray = null;
-    this.duration = 0;
-    this.currentTime = 0;
-    this.isPlaying = false;
     this.audioBuffer = null; // Cached audio buffer
-    this.pendingPlayback = false;
     
     // Performance optimization flags
-    this.isProcessing = false;
     this.frameId = null;
     this.lastFrameTime = 0;
     this.minFrameInterval = 1000 / 60; // Cap at 60fps
     
-    // Visualization callbacks
-    this.visualizerCallbacks = new Set();
-
     // Add click listener for initial context resume
     document.addEventListener('click', () => this.handleFirstInteraction(), { once: true });
+    
+    console.log('🎵 AudioManager: Constructor completed');
   }
 
   /**
@@ -110,18 +126,14 @@ export class AudioManager {
         this.source.disconnect();
       }
 
-      // Check if we already have this audio buffered
-      if (!this.audioBuffer) {
-        console.log(`📥 Fetching audio file from: ${url}`);
-        const response = await fetch(url);
-        console.log('🔄 Converting to array buffer...');
-        const arrayBuffer = await response.arrayBuffer();
-        console.log('🎼 Decoding audio data...');
-        this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-        console.log('✅ Audio buffered successfully');
-      } else {
-        console.log('📦 Using cached audio buffer');
-      }
+      // Always clear the buffer when loading a new file
+      console.log(`📥 Fetching audio file from: ${url}`);
+      const response = await fetch(url);
+      console.log('🔄 Converting to array buffer...');
+      const arrayBuffer = await response.arrayBuffer();
+      console.log('🎼 Decoding audio data...');
+      this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      console.log('✅ Audio buffered successfully');
 
       this.duration = this.audioBuffer.duration;
       this.currentTime = 0;
@@ -171,9 +183,12 @@ export class AudioManager {
       console.log('🏁 Audio playback ended');
       this.isPlaying = false;
       this.currentTime = 0;
+      this.startTime = 0;
       this.stopVisualization();
     };
     
+    // Record start time for progress tracking
+    this.startTime = this.audioContext.currentTime;
     this.source.start(0, this.currentTime);
     this.isPlaying = true;
     this.pendingPlayback = false;
@@ -187,12 +202,17 @@ export class AudioManager {
   pause() {
     if (!this.isPlaying) return;
     
+    // Calculate current playback position
+    if (this.startTime) {
+      this.currentTime += this.audioContext.currentTime - this.startTime;
+    }
+    
     this.source.stop();
     this.isPlaying = false;
+    this.startTime = 0;
     this.stopVisualization();
     
-    // Store current time for resuming
-    this.currentTime += this.audioContext.currentTime;
+    console.log(`⏸️ Audio paused at ${this.currentTime.toFixed(2)}s`);
   }
 
   /**

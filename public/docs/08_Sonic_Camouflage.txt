@@ -1,0 +1,3 @@
+Sonic Camouflage
+
+Inspired by military acoustic masking, this project investigates the creation of sonic camouflage—compositions that blend seamlessly into an environment’s ambient noise, rendering them effectively inaudible. Using convolution reverb and spectrum matching, we designed audio pieces that vanish against natural backdrops: city rain, wind in trees, industrial hum. Volunteers struggled to detect playback, reporting occasional “presence” rather than clear sound. We propose applications for therapeutic sound design, where masking can induce subtle mood shifts without conscious perception, and for performance contexts where sound exists invisibly, questioning the boundaries of auditory experience.

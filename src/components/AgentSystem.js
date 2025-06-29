@@ -35,10 +35,113 @@ export class AgentSystem extends Component {
     this.audioIntensity = 0; // Overall audio intensity
     this.bassIntensity = 0; // Bass-specific intensity
     
+    // Color lookup table for audio-reactive colors
+    this.colorLUT = this.createColorLookupTable();
+    this.defaultColor = getComputedStyle(document.documentElement).getPropertyValue('--fg-color').trim();
+    
     this.setupCanvas();
     this.initAgents();
     this.setupAudioVisualization();
     this.animate();
+  }
+
+  /**
+   * Create a color lookup table that maps frequency ranges to colors
+   * @returns {Array} Array of color objects with RGB values and frequency ranges
+   */
+  createColorLookupTable() {
+    return [
+      // Deep bass - Deep purple/violet
+      { r: 138, g: 43, b: 226, freqMin: 0, freqMax: 0.1, name: 'Deep Bass' },
+      // Bass - Blue
+      { r: 0, g: 100, b: 255, freqMin: 0.1, freqMax: 0.2, name: 'Bass' },
+      // Low-mid - Cyan
+      { r: 0, g: 255, b: 255, freqMin: 0.2, freqMax: 0.35, name: 'Low-Mid' },
+      // Mid - Green
+      { r: 0, g: 255, b: 100, freqMin: 0.35, freqMax: 0.5, name: 'Mid' },
+      // High-mid - Yellow
+      { r: 255, g: 255, b: 0, freqMin: 0.5, freqMax: 0.65, name: 'High-Mid' },
+      // High - Orange
+      { r: 255, g: 165, b: 0, freqMin: 0.65, freqMax: 0.8, name: 'High' },
+      // Treble - Red
+      { r: 255, g: 50, b: 50, freqMin: 0.8, freqMax: 0.9, name: 'Treble' },
+      // Ultra-high - Pink/Magenta
+      { r: 255, g: 20, b: 147, freqMin: 0.9, freqMax: 1.0, name: 'Ultra-High' }
+    ];
+  }
+
+  /**
+   * Get color for an agent based on its frequency data
+   * @param {number} agentIndex Index of the agent
+   * @param {number} intensity Audio intensity multiplier (0-1)
+   * @returns {string} CSS color string
+   */
+  getAgentColor(agentIndex, intensity = 1) {
+    if (!this.frequencyData || this.frequencyData.length === 0) {
+      return this.defaultColor;
+    }
+    
+    // Map agent index to frequency position (0-1)
+    const freqPosition = agentIndex / this.agentCount;
+    
+    // Get the frequency bin for this agent
+    const frequencyIndex = Math.floor(freqPosition * this.frequencyData.length);
+    const frequencyValue = this.frequencyData[frequencyIndex];
+    
+    // Convert from dB to linear scale (frequency data is typically -140 to 0 dB)
+    const normalizedFreq = Math.max(0, Math.min(1, (frequencyValue + 140) / 140));
+    
+    // Find the appropriate color from the lookup table
+    let selectedColor = this.colorLUT[0]; // Default to first color
+    for (const color of this.colorLUT) {
+      if (freqPosition >= color.freqMin && freqPosition < color.freqMax) {
+        selectedColor = color;
+        break;
+      }
+    }
+    
+    // Apply intensity-based brightness and saturation
+    const brightness = 0.3 + (normalizedFreq * intensity * 0.7); // 30% to 100% brightness
+    const saturation = 0.5 + (normalizedFreq * 0.5); // 50% to 100% saturation
+    
+    // Calculate final RGB values with brightness applied
+    const r = Math.floor(selectedColor.r * brightness);
+    const g = Math.floor(selectedColor.g * brightness);
+    const b = Math.floor(selectedColor.b * brightness);
+    
+    // Add some alpha based on audio intensity for subtle transparency effects
+    const alpha = 0.7 + (this.audioIntensity * 0.3);
+    
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  /**
+   * Get connection color based on the two connected agents
+   * @param {number} agentIndex1 First agent index
+   * @param {number} agentIndex2 Second agent index
+   * @returns {string} CSS color string
+   */
+  getConnectionColor(agentIndex1, agentIndex2) {
+    if (!this.frequencyData || this.frequencyData.length === 0) {
+      return this.defaultColor;
+    }
+    
+    // Blend colors of the two connected agents
+    const color1 = this.getAgentColor(agentIndex1, this.audioIntensity);
+    const color2 = this.getAgentColor(agentIndex2, this.audioIntensity);
+    
+    // For simplicity, use the color of the agent with higher frequency response
+    const freq1Position = agentIndex1 / this.agentCount;
+    const freq2Position = agentIndex2 / this.agentCount;
+    
+    const freq1Index = Math.floor(freq1Position * this.frequencyData.length);
+    const freq2Index = Math.floor(freq2Position * this.frequencyData.length);
+    
+    const freq1Value = this.frequencyData[freq1Index];
+    const freq2Value = this.frequencyData[freq2Index];
+    
+    // Use the color of the agent with higher frequency response
+    return freq1Value > freq2Value ? color1 : color2;
   }
 
   /**
@@ -161,8 +264,6 @@ export class AgentSystem extends Component {
     }
 
     this.ctx.clearRect(0, 0, this.width, this.height);
-    this.ctx.strokeStyle = this.ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--fg-color');
 
     // Debug: Draw audio info overlay in top-left corner
     if (this.audioManager && this.audioManager.isPlaying) {
@@ -171,9 +272,10 @@ export class AgentSystem extends Component {
       this.ctx.fillText(`Audio: ${this.audioIntensity.toFixed(2)} | Bass: ${this.bassIntensity.toFixed(2)}`, 10, 20);
       this.ctx.fillText(`Connections: ${this.connectDist.toFixed(0)} | Scale: ${this.audioScale.toFixed(1)}`, 10, 40);
       this.ctx.fillText(`Playing: ${this.audioManager.isPlaying ? 'YES' : 'NO'}`, 10, 60);
+      this.ctx.fillText(`Colors: ${this.frequencyData ? 'ACTIVE' : 'INACTIVE'}`, 10, 80);
     }
 
-    // Draw connections with audio-reactive properties
+    // Draw connections with audio-reactive colors
     for (let i = 0; i < this.agents.length; i++) {
       for (let j = i + 1; j < this.agents.length; j++) {
         const a = this.agents[i], b = this.agents[j];
@@ -190,8 +292,12 @@ export class AgentSystem extends Component {
           // Bass boost - make connections thicker and more visible during bass hits
           const lineWidth = 1 + this.bassIntensity * 2;
           
+          // Get dynamic color for the connection
+          const connectionColor = this.getConnectionColor(i, j);
+          
           this.ctx.globalAlpha = Math.min(1, opacity);
           this.ctx.lineWidth = lineWidth;
+          this.ctx.strokeStyle = connectionColor;
           this.ctx.beginPath();
           this.ctx.moveTo(a.x, a.y);
           this.ctx.lineTo(b.x, b.y);
@@ -200,7 +306,7 @@ export class AgentSystem extends Component {
       }
     }
 
-    // Update and draw agents with enhanced audio scaling
+    // Update and draw agents with enhanced audio scaling and dynamic colors
     this.ctx.globalAlpha = 1;
     this.ctx.lineWidth = 1; // Reset line width for agent drawing
     
@@ -213,19 +319,25 @@ export class AgentSystem extends Component {
       const audioScale = this.getAgentAudioScale(index);
       const size = Math.max(0.5, this.baseSize * audioScale);
       
+      // Get dynamic color for this agent
+      const agentColor = this.getAgentColor(index, this.audioIntensity);
+      
       // Add subtle glow effect during intense audio
       if (this.audioIntensity > 0.5) {
         this.ctx.shadowBlur = 10 * this.audioIntensity;
-        this.ctx.shadowColor = getComputedStyle(document.documentElement)
-          .getPropertyValue('--fg-color');
+        this.ctx.shadowColor = agentColor;
       } else {
         this.ctx.shadowBlur = 0;
       }
       
+      // Set the agent color
+      this.ctx.fillStyle = agentColor;
+      this.ctx.strokeStyle = agentColor;
+      
       agent.draw(this.ctx, size);
     });
     
-    // Reset shadow for next frame
+    // Reset shadow and color for next frame
     this.ctx.shadowBlur = 0;
 
     requestAnimationFrame(this.animate);

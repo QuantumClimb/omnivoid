@@ -41,7 +41,7 @@ export class ASCIITunnel extends Component {
 }
 
 /**
- * Create an ASCII tunnel layer with animated characters
+ * Create an ASCII tunnel layer with animated SVG characters
  * @param {string} id Canvas element ID
  * @returns {Object} Tunnel control methods
  */
@@ -60,39 +60,99 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
   document.body.appendChild(canvas);
 
   const ctx = canvas.getContext("2d");
-  const characters = ['O', 'M', 'N', 'I', 'V','D'];
-  const numChars = 80;
+  const svgPaths = ['O.svg','WORM.svg', 'I.svg', 'V.svg', 'D.svg' , 'L.svg', 'A.svg', 'B.svg', 'S.svg'];
+  const numChars = 50;
+  
+  // Store loaded SVG images
+  const svgImages = new Map();
+  let imagesLoaded = 0;
+  
+  // Load all SVG files
+  const loadSVGs = () => {
+    return Promise.all(svgPaths.map(path => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          svgImages.set(path, img);
+          resolve();
+        };
+        img.onerror = reject;
+        img.src = `public/ascii/${path}`;
+      });
+    }));
+  };
+
   const tunnel = Array.from({ length: numChars }, () => ({
-    char: characters[Math.floor(Math.random() * characters.length)],
+    svg: svgPaths[Math.floor(Math.random() * svgPaths.length)],
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
     z: Math.random() * canvas.width,
+    rotation: Math.random() * 360,
+    rotationSpeed: (Math.random() - 0.5) * 2
   }));
 
   let animationFrame;
+  let isReady = false;
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#0f0";
-    ctx.font = "bold 20px monospace";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    
+    if (!isReady) {
+      // Show loading indicator
+      ctx.fillStyle = "#0f0";
+      ctx.font = "20px 'Orbitron', monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("Loading OMNIVOID...", canvas.width / 2, canvas.height / 2);
+      animationFrame = requestAnimationFrame(draw);
+      return;
+    }
 
     tunnel.forEach((symbol) => {
-      symbol.z -= 10;
+      symbol.z -= 8;
+      symbol.rotation += symbol.rotationSpeed;
+      
       if (symbol.z <= 0) {
         symbol.z = canvas.width;
         symbol.x = Math.random() * canvas.width;
         symbol.y = Math.random() * canvas.height;
-        symbol.char = characters[Math.floor(Math.random() * characters.length)];
+        symbol.svg = svgPaths[Math.floor(Math.random() * svgPaths.length)];
+        symbol.rotation = Math.random() * 360;
+        symbol.rotationSpeed = (Math.random() - 0.5) * 2;
       }
 
-      const sx = (symbol.x - canvas.width / 2) * (canvas.width / symbol.z) + canvas.width / 2;
-      const sy = (symbol.y - canvas.height / 2) * (canvas.height / symbol.z) + canvas.height / 2;
-      const size = 24 * (canvas.width / symbol.z);
+      const distance = canvas.width / symbol.z;
+      const sx = (symbol.x - canvas.width / 2) * distance + canvas.width / 2;
+      const sy = (symbol.y - canvas.height / 2) * distance + canvas.height / 2;
+      const size = 40 * distance;
 
-      ctx.font = `bold ${size}px monospace`;
-      ctx.fillText(symbol.char, sx, sy);
+      // Get the SVG image
+      const svgImage = svgImages.get(symbol.svg);
+      if (svgImage && size > 1) {
+        ctx.save();
+        
+        // Set green tint for the Matrix effect
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.filter = 'hue-rotate(90deg) brightness(1.2) contrast(1.5)';
+        
+        // Calculate opacity based on distance (fade out distant objects)
+        const opacity = Math.min(1, distance * 2);
+        ctx.globalAlpha = opacity;
+        
+        // Move to position and rotate
+        ctx.translate(sx, sy);
+        ctx.rotate((symbol.rotation * Math.PI) / 180);
+        
+        // Draw the SVG with size based on distance
+        ctx.drawImage(
+          svgImage,
+          -size / 2,
+          -size / 2,
+          size,
+          size
+        );
+        
+        ctx.restore();
+      }
     });
 
     animationFrame = requestAnimationFrame(draw);
@@ -102,6 +162,16 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
   window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+  });
+
+  // Start loading SVGs and begin animation
+  loadSVGs().then(() => {
+    console.log('🎨 OMNIVOID SVGs loaded for ASCII tunnel');
+    isReady = true;
+  }).catch(error => {
+    console.error('❌ Failed to load SVGs:', error);
+    // Fallback to text characters if SVG loading fails
+    isReady = true;
   });
 
   draw();

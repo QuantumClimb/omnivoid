@@ -1,0 +1,3 @@
+Noise as Memory
+
+In the era of clean, algorithmically optimized audio, we risk losing the artifacts that once defined recording culture: tape hiss, ground hum, random radio static. This project documents and preserves these so-called “errors” as essential components of sonic identity. Over six months, we sampled obsolete equipment—cassette decks, faulty mixers, shortwave radios—to create a digital archive of noise textures. These materials serve as both historical evidence and creative resource. By layering and manipulating these samples, artists can reintroduce forgotten textures into modern compositions. Our findings argue that noise is not merely a byproduct but a carrier of memory, evoking eras and technologies otherwise lost to progress.

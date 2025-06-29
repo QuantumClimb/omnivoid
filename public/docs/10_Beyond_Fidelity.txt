@@ -1,0 +1,3 @@
+Beyond Fidelity
+
+High-resolution recording has become the default standard, but this research examines the emotive power of lo-fi techniques—crushed bitrates, cassette saturation, environmental bleed. Comparing listener responses to identical performances recorded in pristine digital and degraded analog formats, we found the lo-fi versions consistently evoked stronger nostalgic and visceral reactions. Our findings challenge the fetish for technical perfection, suggesting that perceived imperfection can create a more intimate connection between sound and listener. Ongoing work will quantify these responses and explore hybrid methods blending clarity and artifact.

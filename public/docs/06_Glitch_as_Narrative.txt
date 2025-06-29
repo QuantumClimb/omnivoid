@@ -1,0 +1,3 @@
+Glitch as Narrative
+
+This project interrogates the aesthetic and semiotic potential of digital glitches in audiovisual media. By deliberately corrupting audio files with hex editors and exploiting codec vulnerabilities, we created error artifacts that function as compositional elements. Participants described the resulting textures as “fractured memories” or “sonic hallucinations.” We propose that glitch can serve as an intentional narrative device—signaling fragmentation, rupture, or transformation. Further, our study maps the correlation between specific corruption techniques and their perceptual impact. Future work will explore glitch performance tools enabling live error manipulation as a storytelling method.
