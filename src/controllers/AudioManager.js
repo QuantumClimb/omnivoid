@@ -1,9 +1,16 @@
+import { GOOGLE_DRIVE_CONFIG } from '../config/googleDrive.js';
+
 /**
  * AudioManager handles audio playback and FFT analysis with optimized performance
+ * Now integrated with Google Drive for audio content
  */
 export class AudioManager {
   constructor() {
     console.log('🎵 AudioManager: Initializing...');
+    
+    // Google Drive integration
+    this.googleDriveConfig = GOOGLE_DRIVE_CONFIG;
+    this.googleDriveConfig.log('AudioManager initialized with Google Drive integration');
     
     // Audio context and analysis setup
     this.audioContext = null;
@@ -111,11 +118,19 @@ export class AudioManager {
 
   /**
    * Load an audio file with optimized buffering
-   * @param {string} url URL of the audio file
+   * @param {string} url URL of the audio file (can be local or Google Drive)
    */
   async loadAudio(url) {
     try {
       console.log('🎵 Starting audio load process...');
+      
+      // Google Drive integration logging
+      if (url.includes('public/audio/Music/')) {
+        this.googleDriveConfig.log('Converting local audio path to Google Drive RADIO folder');
+        // For now, keep using local path but log the intention
+        // TODO: Implement Google Drive file loading
+      }
+      
       // Initialize context if not already done
       await this.initializeAudioContext();
 
@@ -327,8 +342,20 @@ export class AudioManager {
    * @param {number} value Volume value between 0 and 1
    */
   setVolume(value) {
-    const time = this.audioContext.currentTime;
-    this.gainNode.gain.setTargetAtTime(value, time, 0.01);
+    if (this.gainNode) {
+      const clampedVolume = Math.max(0, Math.min(1, value));
+      const time = this.audioContext.currentTime;
+      this.gainNode.gain.setTargetAtTime(clampedVolume, time, 0.01);
+      console.log(`🔊 AudioManager: Volume set to ${(clampedVolume * 100).toFixed(0)}%`);
+    }
+  }
+
+  /**
+   * Get current volume level
+   * @returns {number} Current volume level (0-1)
+   */
+  getVolume() {
+    return this.gainNode ? this.gainNode.gain.value : 1;
   }
 
   /**

@@ -11,6 +11,127 @@
   z-index: 10;
 }
 
+/* Hamburger toggle button */
+.hamburger-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: #111111;
+  border: 1px solid #99ccff;
+  border-radius: 50%;
+  color: #99ccff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  font-family: 'Orbitron', sans-serif;
+  box-shadow: 
+    0 0 15px rgba(153, 204, 255, 0.2),
+    2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hamburger-toggle:hover {
+  background-color: #99ccff;
+  color: #000000;
+  box-shadow: 0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Dropdown menu container */
+.dropdown-menu {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 70px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Dropdown menu items */
+.dropdown-menu-item {
+  width: 50px;
+  height: 50px;
+  background: #111111;
+  border: 1px solid #99ccff;
+  border-radius: 50%;
+  color: #99ccff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  backdrop-filter: blur(10px);
+  font-family: 'Orbitron', sans-serif;
+  box-shadow: 
+    0 0 15px rgba(153, 204, 255, 0.2),
+    2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-menu-item:hover {
+  background-color: #99ccff;
+  color: #000000;
+  box-shadow: 0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Active menu item state */
+.dropdown-menu-item.active {
+  background-color: #99ccff;
+  color: #000000;
+  box-shadow: 0 0 25px rgba(153, 204, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transform: scale(1.1);
+}
+
+/* Custom tooltip styling */
+.custom-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: #99ccff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+  border: 1px solid #99ccff;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.custom-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid #99ccff;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
 .floating-label {
   position: absolute;
   font-family: 'Orbitron', sans-serif;
@@ -254,6 +375,109 @@
   }
 }
 
+/* Desktop enhancements for mobile menu */
+@media (min-width: 768px) {
+  /* Make mobile controls larger and more accessible on desktop */
+  .minimal-controls {
+    bottom: 30px !important;
+    padding: 12px 20px !important;
+    gap: 12px !important;
+    border-radius: 25px !important;
+    box-shadow: 
+      0 0 30px rgba(153, 204, 255, 0.3),
+      6px 6px 12px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  .minimal-control-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    border-width: 2px !important;
+  }
+  
+
+  
+  /* Make volume controls larger on desktop */
+  .volume-control-container {
+    bottom: 30px !important;
+    padding: 16px 12px !important;
+    border-radius: 25px !important;
+    box-shadow: 
+      0 0 30px rgba(153, 204, 255, 0.3),
+      6px 6px 12px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  .volume-btn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 18px !important;
+    border-width: 2px !important;
+  }
+  
+  .volume-display {
+    font-size: 12px !important;
+    min-width: 35px !important;
+  }
+  
+  /* Make agent controls larger on desktop */
+  .agent-controls-container {
+    bottom: 30px !important;
+    padding: 16px 12px !important;
+    border-radius: 25px !important;
+    box-shadow: 
+      0 0 30px rgba(153, 204, 255, 0.3),
+      6px 6px 12px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  .agent-btn {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 14px !important;
+    border-width: 2px !important;
+  }
+  
+  .agent-count-display,
+  .connection-display {
+    font-size: 11px !important;
+    min-width: 28px !important;
+  }
+  
+  /* Enhanced floating menu for desktop */
+  .hamburger-toggle {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 24px !important;
+    top: 30px !important;
+    right: 30px !important;
+    box-shadow: 
+      0 0 25px rgba(153, 204, 255, 0.3),
+      4px 4px 8px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  .dropdown-menu {
+    top: 100px !important;
+    right: 30px !important;
+    padding: 15px !important;
+  }
+  
+  .dropdown-menu-item {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 24px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 
+      0 0 20px rgba(153, 204, 255, 0.3),
+      4px 4px 8px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  /* Enhanced tooltips for desktop */
+  .custom-tooltip {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+    border-width: 2px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .floating-label {
     font-size: 9px;
@@ -276,4 +500,111 @@
     0% { transform: rotate(0deg) translateX(140px) rotate(0deg); }
     100% { transform: rotate(360deg) translateX(140px) rotate(-360deg); }
   }
+}
+
+/* Live Transmissions Styling */
+.transmission-item {
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.transmission-item:hover {
+  border-color: #99ccff;
+  background: rgba(153, 204, 255, 0.1);
+  transform: translateX(2px);
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* YouTube Modal Styling - Force isolation from parent elements */
+.youtube-modal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  z-index: 10000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  backdrop-filter: blur(10px) !important;
+  transform: none !important;
+  transition: opacity 0.3s ease !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  /* Force isolation from parent transforms */
+  transform-origin: 0 0 !important;
+  /* Ensure no inheritance from parent */
+  left: 0 !important;
+  top: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
+  /* Maximum isolation from parent context */
+  will-change: transform !important;
+  contain: layout style paint !important;
+  /* Force viewport positioning */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.youtube-player-container {
+  position: relative !important;
+  width: 90% !important;
+  max-width: 800px !important;
+  background: #000 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 0 50px rgba(153, 204, 255, 0.3) !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+
+.youtube-close-btn {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid #99ccff !important;
+  color: #99ccff !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  z-index: 10001 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.youtube-close-btn:hover {
+  background: rgba(153, 204, 255, 0.2) !important;
+  border-color: #99ccff !important;
+  transform: scale(1.1) !important;
+}
+
+/* Ensure modal is always on top and properly positioned */
+.youtube-modal iframe {
+  width: 100% !important;
+  height: 450px !important;
+  border: none !important;
+  display: block !important;
 } 

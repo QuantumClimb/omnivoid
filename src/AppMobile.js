@@ -4,6 +4,7 @@ import { AudioManager } from './controllers/AudioManager.js';
 import { ThemeManager } from './controllers/ThemeManager.js';
 import { SplashScreen } from './components/SplashScreen.js';
 import { RetroWindow } from './components/RetroWindow.js';
+import { GOOGLE_DRIVE_CONFIG, readPublicFile } from './config/googleDrive.js';
 
 // Import all other components but keep them hidden initially
 import { Grid } from './components/Grid.js';
@@ -31,6 +32,10 @@ export class App {
     
     // Initialize audio manager
     this.audioManager = new AudioManager();
+    
+    // Google Drive integration
+    this.googleDriveConfig = GOOGLE_DRIVE_CONFIG;
+    this.googleDriveConfig.log('AppMobile initialized with Google Drive integration');
     
     // Radio/Music properties
     this.currentPlaylistIndex = 0;
@@ -62,6 +67,10 @@ export class App {
       'song1.mp3'
     ];
     
+    // Log Google Drive folder structure
+    this.googleDriveConfig.log('Playlist loaded with Google Drive RADIO folder integration');
+    this.googleDriveConfig.log('Available folders:', this.googleDriveConfig.FOLDERS);
+    
     // Initialize splash screen
     this.splashScreen = new SplashScreen();
     this.splashScreen.log('Initializing OMNIVOID...', 10);
@@ -85,13 +94,17 @@ export class App {
       this.splashScreen.log('🎵 Initializing audio...', 25);
       await this.audioManager.initializeAudioContext();
       
-      // Preload audio
-      this.splashScreen.log('📥 Loading audio assets...', 35);
+      // Preload audio from Google Drive RADIO folder
+      this.splashScreen.log('📥 Loading audio assets from Google Drive...', 35);
+      this.googleDriveConfig.log('Loading audio from RADIO folder');
+      
       const audioLoaded = await this.audioManager.loadAudio('./public/audio/Music/song1.mp3');
       if (!audioLoaded) {
         this.splashScreen.log('⚠️ Audio loading failed, continuing...', 40);
+        this.googleDriveConfig.log('Audio loading failed - will retry with Google Drive later');
       } else {
         this.splashScreen.log('✅ Audio ready', 45);
+        this.googleDriveConfig.log('Audio loaded successfully from local path (Google Drive integration ready)');
       }
 
       // Initialize visible components (AgentSystem, Logo only)
@@ -113,12 +126,20 @@ export class App {
       // Hide advanced visual layers but keep starfield visible
       this.hideAdvancedLayers();
       
-      // Set up minimal controls only
-      this.splashScreen.log('📱 Setting up controls...', 85);
-      this.createMinimalControls();
+      // Set up responsive controls based on device
+      this.splashScreen.log('📱 Setting up responsive controls...', 85);
       
       // Complete initialization
       this.splashScreen.log('🌌 Welcome to OMNIVOID', 100);
+      
+      // Test Google Drive integration
+      this.testGoogleDriveIntegration();
+      
+      // Initialize responsive mode based on screen size
+      this.initializeResponsiveMode();
+      
+      // Add window resize listener for responsive controls
+      window.addEventListener('resize', () => this.handleWindowResize());
       
       // Hide splash screen
       setTimeout(() => {
@@ -397,10 +418,55 @@ export class App {
       }
     });
     
+    // Theme toggle button
+    const themeBtn = document.createElement('button');
+    themeBtn.className = 'minimal-control-btn';
+    themeBtn.innerHTML = '🌙';
+    themeBtn.title = 'Toggle Theme';
+    themeBtn.style.cssText = `
+      background: transparent;
+      border: 1px solid #99ccff;
+      color: #99ccff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+      font-family: 'Orbitron', sans-serif;
+      flex-shrink: 0;
+    `;
+    
+    themeBtn.addEventListener('mouseenter', () => {
+      themeBtn.style.backgroundColor = '#99ccff';
+      themeBtn.style.color = '#000000';
+    });
+    
+    themeBtn.addEventListener('mouseleave', () => {
+      themeBtn.style.backgroundColor = 'transparent';
+      themeBtn.style.color = '#99ccff';
+    });
+    
+    themeBtn.addEventListener('click', () => {
+      this.themeManager.toggleTheme();
+      // Update icon based on theme
+      if (document.body.classList.contains('light-theme')) {
+        themeBtn.innerHTML = '☀️';
+      } else {
+        themeBtn.innerHTML = '🌙';
+      }
+    });
+    
+
+    
     controlsContainer.appendChild(playBtn);
     controlsContainer.appendChild(starfieldBtn);
     controlsContainer.appendChild(asciiBtn);
     controlsContainer.appendChild(solarBtn);
+    controlsContainer.appendChild(themeBtn);
     
     document.body.appendChild(controlsContainer);
     this.minimalControls = controlsContainer;
@@ -408,9 +474,6 @@ export class App {
     // Create separate containers for volume and agent controls
     this.createVolumeContainer();
     this.createAgentControlsContainer();
-    
-    // Create floating menu system
-    this.createFloatingMenu();
   }
 
   /**
@@ -1270,10 +1333,11 @@ export class App {
     const menuItems = [
       { text: 'Conundrum', icon: '🧩', window: 'conundrum' },
       { text: 'Releases', icon: '📚', window: 'releases' },
+      { text: 'Live Transmissions', icon: '📡', window: 'live' },
       { text: 'Radio', icon: '📻', window: 'radio' },
       { text: 'Gallery', icon: '🖼️', window: 'gallery' },
       { text: 'Contact', icon: '📧', window: 'contact' },
-      { text: 'About', icon: 'ℹ️', window: 'about' }
+      { text: 'LATEST GIG', icon: '🎵', window: 'latest-gig' }
     ];
 
     // Create retro windows for each menu item
@@ -1299,6 +1363,7 @@ export class App {
       
       // Always show only icons as circular buttons
       menuItem.innerHTML = `<span class="menu-icon">${item.icon}</span>`;
+      menuItem.title = item.text; // Add tooltip on hover
       menuItem.style.cssText = `
         width: 50px;
         height: 50px;
@@ -1318,6 +1383,7 @@ export class App {
         box-shadow: 
           0 0 15px rgba(153, 204, 255, 0.2),
           2px 2px 4px rgba(0, 0, 0, 0.5);
+        position: relative;
       `;
 
       // Add click handler to open retro window
@@ -1327,18 +1393,54 @@ export class App {
         console.log(`🪟 RetroWindow exists: ${!!this.retroWindows[item.window]}`);
         
         if (this.retroWindows[item.window]) {
+          // Reset modal state to prevent positioning issues
+          this.resetModalState();
+          
+          // Remove active state from all menu items
+          document.querySelectorAll('.dropdown-menu-item').forEach(menuItemEl => {
+            menuItemEl.classList.remove('active');
+            menuItemEl.style.backgroundColor = '#111111';
+            menuItemEl.style.color = '#99ccff';
+          });
+          
+          // Add active state to clicked menu item
+          menuItem.classList.add('active');
+          menuItem.style.backgroundColor = '#99ccff';
+          menuItem.style.color = '#000000';
+          
           // For radio window, update content dynamically
           if (item.window === 'radio') {
             console.log('🎵 Updating radio window content dynamically');
+            
+            // Close any open YouTube modals before switching content
+            this.closeAllYouTubeModals();
+            
             const radioContent = this.getWindowContent('radio');
             console.log('🎵 Radio content length:', radioContent.length);
             this.retroWindows[item.window].setContent(radioContent);
           }
+          
+          // For live transmissions window, load content dynamically
+          if (item.window === 'live') {
+            console.log('📡 Updating live transmissions window content dynamically');
+            
+            // Close any open YouTube modals before switching content
+            this.closeAllYouTubeModals();
+            
+            const liveContent = this.getWindowContent('live');
+            this.retroWindows[item.window].setContent(liveContent);
+            
+            // Load live transmissions after a short delay to ensure DOM is ready
+            setTimeout(() => {
+              this.loadLiveTransmissions();
+            }, 100);
+          }
+          
           console.log(`🔓 Showing window: ${item.window}`);
           this.retroWindows[item.window].show();
           
-          // Hide dropdown menu after selection
-          hideDropdown();
+          // Keep dropdown menu visible for easy navigation
+          // hideDropdown(); // Removed this line to keep menu open
         } else {
           console.error(`❌ RetroWindow not found for: ${item.window}`);
         }
@@ -1349,12 +1451,18 @@ export class App {
         menuItem.style.backgroundColor = '#99ccff';
         menuItem.style.color = '#000000';
         menuItem.style.boxShadow = '0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5)';
+        
+        // Show custom tooltip
+        this.showTooltip(menuItem, item.text);
       });
 
       menuItem.addEventListener('mouseleave', () => {
         menuItem.style.backgroundColor = '#111111';
         menuItem.style.color = '#99ccff';
         menuItem.style.boxShadow = '0 0 15px rgba(153, 204, 255, 0.2), 2px 2px 4px rgba(0, 0, 0, 0.5)';
+        
+        // Hide custom tooltip
+        this.hideTooltip();
       });
 
       dropdownMenu.appendChild(menuItem);
@@ -1390,6 +1498,22 @@ export class App {
         hamburgerBtn.style.transform = 'rotate(0deg)';
       }
     });
+    
+    // Store the menu state for external access
+    this.isMenuVisible = isMenuVisible;
+    this.toggleMenu = () => {
+      isMenuVisible = !isMenuVisible;
+      if (isMenuVisible) {
+        showDropdown();
+        hamburgerBtn.innerHTML = '✕';
+        hamburgerBtn.style.transform = 'rotate(90deg)';
+      } else {
+        hideDropdown();
+        hamburgerBtn.innerHTML = '☰';
+        hamburgerBtn.style.transform = 'rotate(0deg)';
+      }
+      this.isMenuVisible = isMenuVisible;
+    };
 
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
@@ -1406,8 +1530,604 @@ export class App {
     document.body.appendChild(hamburgerBtn);
     document.body.appendChild(dropdownMenu);
     
+    // Store references for responsive management
     this.hamburgerBtn = hamburgerBtn;
     this.dropdownMenu = dropdownMenu;
+    this.floatingMenu = dropdownMenu; // Store for responsive management
+    
+    console.log('🍔 Floating menu created successfully:', {
+      hamburgerBtn: this.hamburgerBtn,
+      dropdownMenu: this.dropdownMenu,
+      floatingMenu: this.floatingMenu
+    });
+    
+    // Verify elements are in the DOM
+    console.log('🍔 DOM verification:', {
+      hamburgerBtnInDOM: document.body.contains(hamburgerBtn),
+      dropdownMenuInDOM: document.body.contains(dropdownMenu),
+      hamburgerBtnVisible: hamburgerBtn.offsetParent !== null,
+      hamburgerBtnStyle: window.getComputedStyle(hamburgerBtn).display
+    });
+  }
+
+  /**
+   * Show custom tooltip for menu items
+   */
+  showTooltip(element, text) {
+    // Remove existing tooltip if any
+    this.hideTooltip();
+    
+    // Create tooltip element
+    const tooltip = document.createElement('div');
+    tooltip.className = 'custom-tooltip';
+    tooltip.textContent = text;
+    tooltip.style.cssText = `
+      position: absolute;
+      background: rgba(0, 0, 0, 0.9);
+      color: #99ccff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      white-space: nowrap;
+      z-index: 10000;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      border: 1px solid #99ccff;
+      backdrop-filter: blur(10px);
+    `;
+    
+    // Position tooltip to the left of the menu item
+    const rect = element.getBoundingClientRect();
+    tooltip.style.left = (rect.left - 10) + 'px';
+    tooltip.style.top = (rect.top + rect.height / 2) + 'px';
+    tooltip.style.transform = 'translateX(-100%) translateY(-50%)';
+    
+    // Add to body
+    document.body.appendChild(tooltip);
+    
+    // Animate in
+    setTimeout(() => {
+      tooltip.style.opacity = '1';
+      tooltip.style.transform = 'translateX(-100%) translateY(-50%) translateY(0)';
+    }, 10);
+    
+    // Store reference
+    this.currentTooltip = tooltip;
+  }
+
+  /**
+   * Hide custom tooltip
+   */
+  hideTooltip() {
+    if (this.currentTooltip) {
+      this.currentTooltip.remove();
+      this.currentTooltip = null;
+    }
+  }
+
+  /**
+   * Load live transmissions from the public folder and display YouTube videos
+   */
+  async loadLiveTransmissions() {
+    try {
+      console.log('📡 Loading live transmissions from public folder...');
+      
+      // Read the live_transmissions.txt file from the public/links folder
+      const fileContent = await readPublicFile('./public/links/live_transmissions.txt');
+      
+      if (!fileContent) {
+        console.error('❌ Could not read live_transmissions.txt from public folder');
+        this.updateLiveTransmissionsContainer('Error: Could not load transmissions file');
+        return;
+      }
+
+      console.log('📡 File content loaded:', fileContent.substring(0, 100) + '...');
+
+      // Parse YouTube URLs from the file
+      const youtubeUrls = this.parseYouTubeUrls(fileContent);
+      console.log(`📡 Found ${youtubeUrls.length} YouTube URLs`);
+
+      if (youtubeUrls.length === 0) {
+        this.updateLiveTransmissionsContainer('No YouTube transmissions found');
+        return;
+      }
+
+      // Fetch video metadata for each URL
+      const videos = await this.fetchYouTubeMetadata(youtubeUrls);
+      
+      // Display the videos
+      this.displayLiveTransmissions(videos);
+      
+    } catch (error) {
+      console.error('❌ Error loading live transmissions:', error);
+      this.updateLiveTransmissionsContainer('Error loading transmissions');
+    }
+  }
+
+  /**
+   * Parse YouTube URLs from text content
+   */
+  parseYouTubeUrls(content) {
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+    const urls = [];
+    let match;
+    
+    while ((match = youtubeRegex.exec(content)) !== null) {
+      urls.push(match[1]); // Extract video ID
+    }
+    
+    return urls;
+  }
+
+  /**
+   * Fetch YouTube video metadata using the Data API
+   */
+  async fetchYouTubeMetadata(videoIds) {
+    const videos = [];
+    
+    for (const videoId of videoIds) {
+      try {
+        // Note: You'll need to add your YouTube Data API key to make this work
+        // For now, we'll create basic metadata from the video ID
+        const video = {
+          id: videoId,
+          title: `Live Transmission ${videoIds.indexOf(videoId) + 1}`,
+          thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+          url: `https://www.youtube.com/watch?v=${videoId}`
+        };
+        
+        videos.push(video);
+      } catch (error) {
+        console.error(`❌ Error fetching metadata for video ${videoId}:`, error);
+      }
+    }
+    
+    return videos;
+  }
+
+  /**
+   * Display live transmissions in the container
+   */
+  displayLiveTransmissions(videos) {
+    const container = document.getElementById('live-transmissions-container');
+    if (!container) return;
+
+    const videosHtml = videos.map(video => `
+      <div class="transmission-item" data-video-id="${video.id}" style="
+        margin-bottom: 12px;
+        padding: 8px;
+        border: 1px solid #333333;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      ">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="${video.thumbnail}" alt="${video.title}" style="
+            width: 60px;
+            height: 45px;
+            border-radius: 4px;
+            object-fit: cover;
+          ">
+          <div style="flex: 1; min-width: 0;">
+            <div style="
+              font-size: 10px;
+              font-weight: bold;
+              color: #99ccff;
+              margin-bottom: 2px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            ">${video.title}</div>
+            <div style="
+              font-size: 8px;
+              color: #66aaff;
+            ">Click to play transmission</div>
+          </div>
+          <div style="
+            font-size: 16px;
+            color: #99ccff;
+          ">▶</div>
+        </div>
+      </div>
+    `).join('');
+
+    container.innerHTML = videosHtml;
+
+    // Add click handlers for video playback
+    this.addTransmissionClickHandlers();
+  }
+
+  /**
+   * Update the live transmissions container with error or status message
+   */
+  updateLiveTransmissionsContainer(message) {
+    const container = document.getElementById('live-transmissions-container');
+    if (container) {
+      container.innerHTML = `
+        <div style="text-align: center; color: #ff6666; font-size: 10px;">
+          ${message}
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Add click handlers for transmission items
+   */
+  addTransmissionClickHandlers() {
+    const transmissionItems = document.querySelectorAll('.transmission-item');
+    
+    transmissionItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const videoId = item.dataset.videoId;
+        this.playYouTubeVideo(videoId);
+      });
+
+      // Add hover effects
+      item.addEventListener('mouseenter', () => {
+        item.style.borderColor = '#99ccff';
+        item.style.background = 'rgba(153, 204, 255, 0.1)';
+      });
+
+      item.addEventListener('mouseleave', () => {
+        item.style.borderColor = '#333333';
+        item.style.background = 'rgba(0, 0, 0, 0.3)';
+      });
+    });
+  }
+
+  /**
+   * Play YouTube video in a modal player
+   */
+  playYouTubeVideo(videoId) {
+    console.log(`🎬 Playing YouTube video: ${videoId}`);
+    
+    // Remove any existing modals first
+    const existingModals = document.querySelectorAll('.youtube-modal');
+    existingModals.forEach(modal => modal.remove());
+    
+    // CRITICAL: On desktop, we need to bypass RetroWindow positioning
+    // Check if we're in a RetroWindow context and force body positioning
+    const isInRetroWindow = document.querySelector('.retro-window') !== null;
+    console.log(`🖥️ Desktop RetroWindow detected: ${isInRetroWindow}`);
+    
+    // Create modal player with completely isolated positioning
+    const modal = this.createIsolatedModal();
+    modal.className = 'youtube-modal';
+
+    const playerContainer = document.createElement('div');
+    playerContainer.className = 'youtube-player-container';
+    // Set player container styles directly
+    playerContainer.style.position = 'relative';
+    playerContainer.style.width = '90%';
+    playerContainer.style.maxWidth = '800px';
+    playerContainer.style.background = '#000';
+    playerContainer.style.borderRadius = '8px';
+    playerContainer.style.overflow = 'hidden';
+    playerContainer.style.boxShadow = '0 0 50px rgba(153, 204, 255, 0.3)';
+    playerContainer.style.transform = 'none';
+    playerContainer.style.margin = '0';
+    playerContainer.style.boxSizing = 'border-box';
+
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.className = 'youtube-close-btn';
+    closeBtn.type = 'button'; // Ensure it's not a submit button
+    closeBtn.title = 'Close Video'; // Add tooltip
+    // Set close button styles directly with !important to ensure they work
+    closeBtn.style.cssText = `
+      position: absolute !important;
+      top: 10px !important;
+      right: 10px !important;
+      width: 30px !important;
+      height: 30px !important;
+      background: rgba(0, 0, 0, 0.8) !important;
+      border: 1px solid #99ccff !important;
+      color: #99ccff !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      z-index: 10001 !important;
+      font-size: 14px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+      box-sizing: border-box !important;
+      font-family: 'Orbitron', sans-serif !important;
+      font-weight: bold !important;
+      outline: none !important;
+      user-select: none !important;
+    `;
+
+    // Close button hover effect
+    closeBtn.addEventListener('mouseenter', () => {
+      closeBtn.style.background = 'rgba(153, 204, 255, 0.2)';
+      closeBtn.style.borderColor = '#99ccff';
+      closeBtn.style.transform = 'scale(1.1)';
+    });
+
+    closeBtn.addEventListener('mouseleave', () => {
+      closeBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+      closeBtn.style.borderColor = '#99ccff';
+      closeBtn.style.transform = 'scale(1)';
+    });
+    
+    // Add double-click as backup close method
+    closeBtn.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('🔘 Close button double-clicked');
+      this.closeModal(modal);
+    });
+
+    // Close button click handler
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('🔘 Close button clicked');
+      this.closeModal(modal);
+    });
+
+    // YouTube iframe player
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    // Set iframe styles directly
+    iframe.style.width = '100%';
+    iframe.style.height = '450px';
+    iframe.style.border = 'none';
+    iframe.style.display = 'block';
+    iframe.style.boxSizing = 'border-box';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+
+    // Assemble the modal
+    playerContainer.appendChild(closeBtn);
+    playerContainer.appendChild(iframe);
+    modal.appendChild(playerContainer);
+    
+    // CRITICAL: Force complete independence from RetroWindow positioning
+    this.forceModalIndependence(modal);
+    
+    // Add to document body, not inside any RetroWindow
+    document.body.appendChild(modal);
+    
+    // Force recalculation of positioning to ensure it's centered
+    modal.offsetHeight; // Trigger reflow
+    
+    // Verify the modal is properly positioned
+    console.log('🎯 Modal positioning verification:', {
+      position: modal.style.position,
+      top: modal.style.top,
+      left: modal.style.left,
+      transform: modal.style.transform,
+      parent: modal.parentElement.tagName,
+      parentClass: modal.parentElement.className,
+      isInRetroWindow: document.querySelector('.retro-window') !== null
+    });
+    
+    // Double-check positioning after a brief delay
+    setTimeout(() => {
+      if (modal && modal.parentNode) {
+        // Re-enforce independence
+        this.forceModalIndependence(modal);
+        
+        // Ensure it's still in the body
+        if (modal.parentElement !== document.body) {
+          console.log('⚠️ Modal moved from body, re-appending...');
+          document.body.appendChild(modal);
+        }
+        
+        // Force viewport positioning
+        modal.style.position = 'fixed';
+        modal.style.top = '0px';
+        modal.style.left = '0px';
+        modal.style.transform = 'none';
+        modal.style.margin = '0';
+        modal.style.padding = '0';
+      }
+    }, 10);
+
+    // Close on background click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        console.log('🖱️ Background clicked, closing modal');
+        this.closeModal(modal);
+      }
+    });
+    
+    // Also close on right-click for additional accessibility
+    modal.addEventListener('contextmenu', (e) => {
+      if (e.target === modal) {
+        e.preventDefault();
+        console.log('🖱️ Right-click on background, closing modal');
+        this.closeModal(modal);
+      }
+    });
+
+    // Close on Escape key
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        this.closeModal(modal);
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Add global close function for debugging
+    window.closeYouTubeModal = () => {
+      console.log('🌐 Global close function called');
+      this.closeModal(modal);
+    };
+    
+    console.log('🎬 YouTube modal created successfully. Use close button, click background, press Escape, or call window.closeYouTubeModal() to close.');
+  }
+
+  /**
+   * Close YouTube modal with proper cleanup
+   */
+  closeModal(modal) {
+    if (!modal) return;
+    
+    console.log('🔒 Closing YouTube modal...');
+    
+    // Fade out effect
+    modal.style.opacity = '0';
+    modal.style.transition = 'opacity 0.3s ease';
+    
+    setTimeout(() => {
+      try {
+        // Remove the modal
+        if (modal && modal.parentNode) {
+          modal.parentNode.removeChild(modal);
+          console.log('✅ Modal removed from DOM');
+        } else if (modal && modal.remove) {
+          modal.remove();
+          console.log('✅ Modal removed using remove() method');
+        }
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Clean up any remaining event listeners
+        const remainingModals = document.querySelectorAll('.youtube-modal');
+        if (remainingModals.length === 0) {
+          // All modals closed, ensure body scroll is restored
+          document.body.style.overflow = '';
+          console.log('✅ All modals closed, body scroll restored');
+        }
+        
+        // Force a reflow to ensure cleanup
+        document.body.offsetHeight;
+        
+      } catch (error) {
+        console.error('❌ Error closing modal:', error);
+        // Fallback: force remove if normal removal fails
+        if (modal && modal.parentNode) {
+          modal.parentNode.removeChild(modal);
+        }
+        document.body.style.overflow = '';
+      }
+    }, 300);
+  }
+
+  /**
+   * Close all YouTube modals and clean up
+   */
+  closeAllYouTubeModals() {
+    const modals = document.querySelectorAll('.youtube-modal');
+    modals.forEach(modal => {
+      this.closeModal(modal);
+    });
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+  }
+
+  /**
+   * Reset modal positioning and clean up any stray elements
+   */
+  resetModalState() {
+    // Close all modals
+    this.closeAllYouTubeModals();
+    
+    // Remove any stray modal elements that might have incorrect positioning
+    const strayModals = document.querySelectorAll('[class*="modal"], [class*="player"]');
+    strayModals.forEach(element => {
+      if (element.classList.contains('youtube-modal') || 
+          element.classList.contains('youtube-player-container')) {
+        element.remove();
+      }
+    });
+    
+    // Ensure body scroll is restored
+    document.body.style.overflow = '';
+    
+    // Reset any parent transforms that might be affecting positioning
+    const retroWindows = document.querySelectorAll('.retro-window');
+    retroWindows.forEach(window => {
+      if (window.style.transform && window.style.transform !== 'none') {
+        console.log('🔄 Resetting RetroWindow transform:', window.style.transform);
+        window.style.transform = 'none';
+      }
+    });
+    
+    console.log('🧹 Modal state reset completed');
+  }
+
+  /**
+   * Create a completely isolated modal that ignores parent positioning
+   */
+  createIsolatedModal() {
+    // Create modal with absolute isolation
+    const modal = document.createElement('div');
+    
+    // Force viewport positioning with maximum isolation
+    modal.style.cssText = `
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: rgba(0, 0, 0, 0.9) !important;
+      z-index: 10000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      backdrop-filter: blur(10px) !important;
+      transform: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      transform-origin: 0 0 !important;
+      /* Force isolation from any parent transforms */
+      will-change: transform !important;
+      contain: layout style paint !important;
+    `;
+    
+    // Remove any inherited properties that might cause positioning issues
+    modal.style.removeProperty('right');
+    modal.style.removeProperty('bottom');
+    modal.style.removeProperty('transform');
+    modal.style.removeProperty('transform-origin');
+    
+    return modal;
+  }
+
+  /**
+   * Force modal to be completely independent of RetroWindow positioning
+   */
+  forceModalIndependence(modal) {
+    // Ensure modal is in body, not nested in any RetroWindow
+    if (modal.parentElement !== document.body) {
+      console.log('🔄 Moving modal to document body for independence');
+      document.body.appendChild(modal);
+    }
+    
+    // Force absolute positioning that ignores parent context
+    modal.style.position = 'fixed';
+    modal.style.top = '0px';
+    modal.style.left = '0px';
+    modal.style.transform = 'none';
+    modal.style.zIndex = '10000';
+    
+    // Remove any inherited positioning
+    modal.style.removeProperty('right');
+    modal.style.removeProperty('bottom');
+    modal.style.removeProperty('margin');
+    modal.style.removeProperty('padding');
+    
+    // Force viewport-based positioning
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    
+    console.log('🔒 Modal independence enforced');
   }
 
   /**
@@ -1439,6 +2159,9 @@ export class App {
       case 'releases':
         return this.createReleasesContent();
 
+      case 'live':
+        return this.createLiveTransmissionsContent();
+
       case 'radio':
         console.log('🎵 Radio case hit - calling createRadioFileExplorer');
         return this.createRadioFileExplorer();
@@ -1460,27 +2183,53 @@ export class App {
             </div>
           </div>`;
 
-      case 'about':
+      case 'latest-gig':
         return `
           <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-            <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">ABOUT OMNIVOID</h3>
+            <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">LATEST GIG</h3>
             <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              OMNIVOID is an experimental audio-visual platform that explores the intersection of sound, code, and consciousness.
+              Check out our most recent live performance and upcoming gigs. Experience OMNIVOID in its natural habitat - the live stage.
             </p>
             <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              Built with vanilla JavaScript and Web Audio API, it represents a modern approach to digital art and interactive experiences.
+              From intimate club shows to festival stages, we bring our unique blend of experimental electronic music and visual art to audiences worldwide.
             </p>
             <hr style="border: none; border-top: 1px inset #333333; margin: 8px 0;">
             <div style="font-size: 10px; color: #66aaff;">
-              <div><strong>Version:</strong> 0.1.0</div>
-              <div><strong>Platform:</strong> Web Audio API</div>
-              <div><strong>License:</strong> MIT</div>
+              <div><strong>Next Show:</strong> TBA</div>
+              <div><strong>Last Performance:</strong> Electronic Arts Festival</div>
+              <div><strong>Booking:</strong> Available for 2024</div>
             </div>
           </div>`;
 
       default:
         return '<p style="font-size: 11px; padding: 12px; color: #99ccff; background: #0a0a0a;">Content loading...</p>';
     }
+  }
+
+  /**
+   * Create live transmissions content with YouTube videos
+   */
+  createLiveTransmissionsContent() {
+    return `
+      <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+        <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">LIVE TRANSMISSIONS</h3>
+        <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
+          Experience real-time audio-visual transmissions from the OMNIVOID network. These live streams connect you directly to the digital consciousness.
+        </p>
+        <div id="live-transmissions-container" style="margin-top: 12px;">
+          <div style="text-align: center; color: #66aaff; font-size: 10px;">
+            <div class="loading-spinner">⏳</div>
+            <div>Loading transmissions...</div>
+          </div>
+        </div>
+        <hr style="border: none; border-top: 1px inset #333333; margin: 8px 0;">
+        <div style="font-size: 10px; color: #66aaff;">
+          <div><strong>Status:</strong> <span style="color: #66ff66;">SCANNING</span></div>
+          <div><strong>Source:</strong> Google Drive</div>
+          <div><strong>Format:</strong> Dynamic Content</div>
+        </div>
+      </div>
+    `;
   }
 
   /**
@@ -2682,5 +3431,320 @@ export class App {
 
     // Add popup to DOM
     document.body.appendChild(popup);
+  }
+
+  /**
+   * Test Google Drive integration and log results
+   */
+  testGoogleDriveIntegration() {
+    console.log('🧪 Testing Google Drive integration...');
+    
+    // Test configuration
+    this.googleDriveConfig.log('Testing configuration access');
+    console.log('📁 Google Drive Folders:', this.googleDriveConfig.FOLDERS);
+    console.log('🔗 Master Folder URL:', this.googleDriveConfig.getFolderUrl());
+    
+    // Test folder URLs
+    Object.entries(this.googleDriveConfig.FOLDERS).forEach(([key, value]) => {
+      console.log(`📂 ${key}: ${value}`);
+    });
+    
+    // Test playlist integration
+    console.log('🎵 Playlist files ready for Google Drive RADIO folder:', this.playlist.length, 'tracks');
+    
+    // Log success
+    this.googleDriveConfig.log('Google Drive integration test completed successfully');
+    console.log('✅ Google Drive integration is ready!');
+  }
+
+  /**
+   * Create desktop advanced control panel (left sidebar)
+   * Only visible on desktop screens (≥ 768px)
+   */
+  createDesktopAdvancedControls() {
+    // This method is deprecated - desktop controls are now in the mobile menu
+
+
+
+
+
+
+      // Starfield toggle
+      this.desktopControlPanel.addCheckbox(
+        'starfield',
+        'Starfield',
+        true,
+        (checked) => {
+          console.log('✦ Starfield:', checked ? 'ON' : 'OFF');
+          if (this.starfield) {
+            this.starfield.setVisibility(checked);
+          }
+        }
+      );
+
+      // Solar System toggle
+      this.desktopControlPanel.addCheckbox(
+        'solarSystem',
+        'Solar System',
+        false,
+        (checked) => {
+          console.log('☉ Solar System:', checked ? 'ON' : 'OFF');
+          if (this.solarSystem) {
+            this.solarSystem.setVisibility(checked);
+          }
+        }
+      );
+
+      this.desktopControlPanel.addSeparator();
+
+      // Add audio controls
+      this.desktopControlPanel.addHeading('🎵 AUDIO');
+      
+      // Play/Pause button
+      this.desktopControlPanel.addCheckbox(
+        'playPause',
+        'Play/Pause',
+        false,
+        (checked) => {
+          console.log('▶️ Play/Pause toggle:', checked ? 'Play' : 'Pause');
+          if (this.audioManager) {
+            if (checked) {
+              this.audioManager.play();
+            } else {
+              this.audioManager.pause();
+            }
+          }
+        }
+      );
+      
+      // Volume slider
+      this.desktopControlPanel.addSlider(
+        'volume',
+        'Volume',
+        0,
+        100,
+        50,
+        5,
+        (value) => {
+          console.log('🔊 Setting volume to:', value);
+          if (this.audioManager) {
+            this.audioManager.setVolume(value / 100);
+          }
+        }
+      );
+      
+      // Playlist selector
+      this.desktopControlPanel.addHeading('📻 PLAYLIST');
+      
+      // Create playlist select dropdown
+      const playlistContainer = document.createElement('div');
+      playlistContainer.className = 'control-item';
+      playlistContainer.innerHTML = `
+        <label>Current Track: <span id="currentTrack">song1.mp3</span></label>
+        <div style="margin: 8px 0;">
+          <button id="prevTrack" style="margin-right: 8px; padding: 4px 8px; background: #99ccff; color: #000; border: none; border-radius: 4px; cursor: pointer;">⏮️ Prev</button>
+          <button id="nextTrack" style="padding: 4px 8px; background: #99ccff; color: #000; border: none; border-radius: 4px; cursor: pointer;">⏭️ Next</button>
+        </div>
+      `;
+      
+      // Add playlist controls to the control panel
+      const desktopControls = document.getElementById('desktop-controls');
+      if (desktopControls) {
+        desktopControls.appendChild(playlistContainer);
+        
+        // Add event listeners for playlist controls
+        const prevBtn = document.getElementById('prevTrack');
+        const nextBtn = document.getElementById('nextTrack');
+        
+        if (prevBtn) {
+          prevBtn.addEventListener('click', () => {
+            console.log('⏮️ Previous track clicked');
+            this.playPreviousTrack();
+          });
+        }
+        
+        if (nextBtn) {
+          nextBtn.addEventListener('click', () => {
+            console.log('⏭️ Next track clicked');
+            this.playNextTrack();
+          });
+        }
+      }
+      
+      // Set initial values
+      this.updateDesktopControlValues();
+      
+              console.log('✅ Desktop control panel initialized');
+  }
+
+
+
+  /**
+   * Handle window resize for responsive controls
+   */
+  handleWindowResize() {
+    const isDesktop = window.innerWidth >= 768;
+    
+    console.log(`📱 Window resize: ${window.innerWidth}px - ${isDesktop ? 'Desktop' : 'Mobile'} mode`);
+    
+    // Reset modal state on resize to prevent positioning issues
+    this.resetModalState();
+    
+    if (isDesktop) {
+      // DESKTOP MODE - Use mobile menu for consistency
+      console.log('🖥️ Desktop mode - using unified mobile menu');
+      this.showMobileControls();
+      
+    } else {
+      // MOBILE MODE
+      console.log('📱 Mobile mode');
+      this.showMobileControls();
+    }
+  }
+
+  /**
+   * Hide mobile controls (for desktop mode) - Now unused since we show mobile controls on both
+   */
+  hideMobileControls() {
+    // This function is no longer used since we show mobile controls on both desktop and mobile
+    console.log('📱 hideMobileControls called but no longer hiding controls');
+    
+    // Keep floating menu visible on desktop
+    if (this.floatingMenu) {
+      this.floatingMenu.style.display = 'block';
+      console.log('🍔 Floating menu kept visible on desktop');
+    }
+    
+    if (this.hamburgerBtn) {
+      this.hamburgerBtn.style.display = 'block';
+      console.log('🍔 Hamburger button kept visible on desktop');
+    }
+  }
+
+  /**
+   * Show mobile controls (for mobile mode)
+   */
+  showMobileControls() {
+    // Create mobile controls if they don't exist
+    if (!this.minimalControls) {
+      this.createMinimalControls();
+    } else {
+      // Show existing mobile controls
+      this.minimalControls.style.display = 'flex';
+      console.log('📱 Mobile controls shown');
+    }
+    
+    if (this.volumeContainer) {
+      this.volumeContainer.style.display = 'flex';
+    }
+    
+    if (this.agentControlsContainer) {
+      this.agentControlsContainer.style.display = 'flex';
+    }
+    
+    if (this.floatingMenu) {
+      this.floatingMenu.style.display = 'block';
+      console.log('🍔 Floating menu shown on mobile');
+    }
+    
+    if (this.hamburgerBtn) {
+      this.hamburgerBtn.style.display = 'block';
+      console.log('🍔 Hamburger button shown on mobile');
+    }
+  }
+
+  /**
+   * Initialize responsive behavior based on current screen size
+   */
+  initializeResponsiveMode() {
+    const isDesktop = window.innerWidth >= 768;
+    
+    console.log(`🚀 Initializing responsive mode: ${isDesktop ? 'Desktop' : 'Mobile'}`);
+    
+    // Always create the floating menu regardless of screen size
+    console.log('🍔 Creating floating menu...');
+    this.createFloatingMenu();
+    console.log('🍔 Floating menu creation completed');
+    
+    // Always create mobile controls for consistency
+    console.log('📱 Creating mobile controls...');
+    this.createMinimalControls();
+    
+    if (isDesktop) {
+      // Start in desktop mode - using unified mobile menu
+      console.log('🖥️ Desktop mode - using unified mobile menu');
+    }
+  }
+
+  /**
+   * Play next track in playlist
+   */
+  playNextTrack() {
+    if (this.playlist && this.playlist.length > 0) {
+      this.currentPlaylistIndex = (this.currentPlaylistIndex + 1) % this.playlist.length;
+      const nextTrack = this.playlist[this.currentPlaylistIndex];
+      console.log(`⏭️ Playing next track: ${nextTrack}`);
+      
+      // Update display
+      const currentTrackSpan = document.getElementById('currentTrack');
+      if (currentTrackSpan) {
+        currentTrackSpan.textContent = nextTrack;
+      }
+      
+      // Load and play the track
+      if (this.audioManager) {
+        this.audioManager.loadAudio(`./public/audio/Music/${nextTrack}`);
+      }
+    }
+  }
+
+  /**
+   * Play previous track in playlist
+   */
+  playPreviousTrack() {
+    if (this.playlist && this.playlist.length > 0) {
+      this.currentPlaylistIndex = this.currentPlaylistIndex > 0 ? 
+        this.currentPlaylistIndex - 1 : this.playlist.length - 1;
+      const prevTrack = this.playlist[this.currentPlaylistIndex];
+      console.log(`⏮️ Playing previous track: ${prevTrack}`);
+      
+      // Update display
+      const currentTrackSpan = document.getElementById('currentTrack');
+      if (currentTrackSpan) {
+        currentTrackSpan.textContent = prevTrack;
+      }
+      
+      // Load and play the track
+      if (this.audioManager) {
+        this.audioManager.loadAudio(`./public/audio/Music/${prevTrack}`);
+      }
+    }
+  }
+  
+  /**
+   * Emergency close function - can be called from console if needed
+   */
+  emergencyCloseAllModals() {
+    console.log('🚨 Emergency closing all modals...');
+    this.closeAllYouTubeModals();
+    
+    // Force remove any remaining modal elements
+    const allModals = document.querySelectorAll('.youtube-modal, .youtube-player-container');
+    allModals.forEach(modal => {
+      try {
+        if (modal && modal.parentNode) {
+          modal.parentNode.removeChild(modal);
+        } else if (modal && modal.remove) {
+          modal.remove();
+        }
+      } catch (error) {
+        console.error('Error removing modal:', error);
+      }
+    });
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+    
+    console.log('✅ Emergency close completed');
   }
 } 

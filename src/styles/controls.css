@@ -98,6 +98,84 @@ select.animation-select {
   border-radius: 3px;
   font-family: 'Orbitron', sans-serif;
   font-size: 10px;
+}
+
+/* Desktop Advanced Control Panel */
+.desktop-control-panel {
+  /* Base styles are set inline for better control */
+}
+
+.desktop-control-panel h2 {
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-size: 18px;
+  color: #99ccff;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.desktop-control-panel h3 {
+  margin: 15px 0 10px 0;
+  font-size: 14px;
+  color: #99ccff;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(153, 204, 255, 0.3);
+  padding-bottom: 5px;
+}
+
+.desktop-control-panel .control-item {
+  margin-bottom: 15px;
+}
+
+.desktop-control-panel label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-family: 'Orbitron', sans-serif;
+  color: #99ccff;
+}
+
+.desktop-control-panel input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+  margin: 8px 0;
+}
+
+.desktop-control-panel input[type=range]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: rgba(153, 204, 255, 0.3);
+  border-radius: 2px;
+}
+
+.desktop-control-panel input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #99ccff;
+  cursor: pointer;
+  margin-top: -6px;
+  box-shadow: 0 0 10px rgba(153, 204, 255, 0.5);
+}
+
+.desktop-control-panel input[type=checkbox] {
+  width: 18px;
+  height: 18px;
+  accent-color: #99ccff;
+  margin-right: 10px;
+}
+
+.desktop-control-panel hr {
+  margin: 20px 0 !important;
+  border-color: rgba(153, 204, 255, 0.3);
+  border-width: 1px;
+}
   width: 90px;
   margin-left: 6px;
 }

@@ -350,4 +350,42 @@ export class AgentSystem extends Component {
   onVisibilityChange(visible) {
     this.canvas.style.display = visible ? 'block' : 'none';
   }
+
+  /**
+   * Set the number of agents
+   * @param {number} count New agent count
+   */
+  setAgentCount(count) {
+    console.log(`🎯 AgentSystem: Setting agent count to ${count}`);
+    this.agentCount = Math.max(20, Math.min(120, count));
+    
+    // Recreate agents with new count
+    this.agents = [];
+    this.initAgents();
+  }
+
+  /**
+   * Set the connection distance
+   * @param {number} distance New connection distance
+   */
+  setConnectionDistance(distance) {
+    console.log(`🔗 AgentSystem: Setting connection distance to ${distance}`);
+    this.connectDist = Math.max(50, Math.min(200, distance));
+  }
+
+  /**
+   * Get current agent count
+   * @returns {number} Current agent count
+   */
+  getAgentCount() {
+    return this.agentCount;
+  }
+
+  /**
+   * Get current connection distance
+   * @returns {number} Current connection distance
+   */
+  getConnectionDistance() {
+    return this.connectDist;
+  }
 } 
