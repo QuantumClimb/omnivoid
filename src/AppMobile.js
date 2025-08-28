@@ -37,38 +37,8 @@ export class App {
     this.googleDriveConfig = GOOGLE_DRIVE_CONFIG;
     this.googleDriveConfig.log('AppMobile initialized with Google Drive integration');
     
-    // Radio/Music properties
-    this.currentPlaylistIndex = 0;
-    this.isPlaylistMode = false;
-    this.isShuffleMode = false;
-    this.progressInterval = null;
-    this.playlist = [
-      'Tradition.mp3',
-      'Shadow Pulse.mp3',
-      'Shifting Echoes.mp3',
-      'Ritual of the Void.mp3',
-      'Ritual Echoes.mp3',
-      'Infinite Emptiness.mp3',
-      'Fractured Echoes.mp3',
-      'Ethereal Echoes.mp3',
-      'Euphoria Within.mp3',
-      'Etherea.mp3',
-      'Echoes of Tradition.mp3',
-      'Electric Shadows.mp3',
-      'Endless Night.mp3',
-      'Echoes of the Unknown.mp3',
-      'Echoes of Reality.mp3',
-      'Echoes of the Afterparty.mp3',
-      'Cosmic Shadows.mp3',
-      'Echoes in the Abyss.mp3',
-      'Cosmic Reverie.mp3',
-      'Binary Shadows.mp3',
-      'Choes Ethereal.mp3',
-      'song1.mp3'
-    ];
-    
-    // Log Google Drive folder structure
-    this.googleDriveConfig.log('Playlist loaded with Google Drive RADIO folder integration');
+    // Mixcloud integration properties
+    this.googleDriveConfig.log('Mixcloud integration ready');
     this.googleDriveConfig.log('Available folders:', this.googleDriveConfig.FOLDERS);
     
     // Initialize splash screen
@@ -94,18 +64,12 @@ export class App {
       this.splashScreen.log('🎵 Initializing audio...', 25);
       await this.audioManager.initializeAudioContext();
       
-      // Preload audio from Google Drive RADIO folder
-      this.splashScreen.log('📥 Loading audio assets from Google Drive...', 35);
-      this.googleDriveConfig.log('Loading audio from RADIO folder');
+      // Audio system ready for Mixcloud integration
+      this.splashScreen.log('📥 Audio system ready...', 35);
+      this.googleDriveConfig.log('Audio system ready for Mixcloud integration');
       
-      const audioLoaded = await this.audioManager.loadAudio('./public/audio/Music/song1.mp3');
-      if (!audioLoaded) {
-        this.splashScreen.log('⚠️ Audio loading failed, continuing...', 40);
-        this.googleDriveConfig.log('Audio loading failed - will retry with Google Drive later');
-      } else {
-        this.splashScreen.log('✅ Audio ready', 45);
-        this.googleDriveConfig.log('Audio loaded successfully from local path (Google Drive integration ready)');
-      }
+      this.splashScreen.log('✅ Audio ready', 45);
+      this.googleDriveConfig.log('Audio system initialized for external audio sources');
 
       // Initialize visible components (AgentSystem, Logo only)
       this.splashScreen.log('✨ Loading visual elements...', 55);
@@ -205,44 +169,7 @@ export class App {
       max-width: 95vw;
     `;
     
-    // Play/Pause button
-    const playBtn = document.createElement('button');
-    playBtn.className = 'minimal-control-btn play-btn';
-    playBtn.innerHTML = '▶';
-    playBtn.title = 'Play/Pause';
-    playBtn.style.cssText = `
-      background: transparent;
-      border: 1px solid #99ccff;
-      color: #99ccff;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
-      flex-shrink: 0;
-    `;
-    
-    // Add hover effects for play button
-    playBtn.addEventListener('mouseenter', () => {
-      playBtn.style.backgroundColor = '#99ccff';
-      playBtn.style.color = '#000000';
-    });
-    
-    playBtn.addEventListener('mouseleave', () => {
-      if (!playBtn.classList.contains('active')) {
-        playBtn.style.backgroundColor = 'transparent';
-        playBtn.style.color = '#99ccff';
-      }
-    });
-    
-    playBtn.addEventListener('click', () => {
-      this.togglePlayPause();
-    });
+
     
     // Starfield toggle button
     const starfieldBtn = document.createElement('button');
@@ -462,7 +389,7 @@ export class App {
     
 
     
-    controlsContainer.appendChild(playBtn);
+
     controlsContainer.appendChild(starfieldBtn);
     controlsContainer.appendChild(asciiBtn);
     controlsContainer.appendChild(solarBtn);
@@ -1332,7 +1259,7 @@ export class App {
     // Menu items with custom icons
     const menuItems = [
       { text: 'Conundrum', icon: './public/menuicons/conundrum.png', window: 'conundrum', isImage: true },
-      { text: 'Releases', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
+              { text: 'Research', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
       { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
       { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
       { text: 'Gallery', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
@@ -2180,6 +2107,10 @@ export class App {
 
       case 'radio':
         console.log('🎵 Radio case hit - calling createRadioFileExplorer');
+        // Initialize Mixcloud widget after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          this.initializeMixcloudWidget();
+        }, 100);
         return this.createRadioFileExplorer();
 
       case 'gallery':
@@ -2252,321 +2183,428 @@ export class App {
    * Create radio file explorer content
    */
   createRadioFileExplorer() {
-    console.log('🎵 Creating radio file explorer...');
-    
-    // Music playlist management
-    this.currentPlaylistIndex = 0;
-    this.isPlaylistMode = false;
-    this.playlist = [
-      'Tradition.mp3',
-      'Shadow Pulse.mp3',
-      'Shifting Echoes.mp3',
-      'Ritual of the Void.mp3',
-      'Ritual Echoes.mp3',
-      'Infinite Emptiness.mp3',
-      'Fractured Echoes.mp3',
-      'Ethereal Echoes.mp3',
-      'Euphoria Within.mp3',
-      'Etherea.mp3',
-      'Echoes of Tradition.mp3',
-      'Electric Shadows.mp3',
-      'Endless Night.mp3',
-      'Echoes of the Unknown.mp3',
-      'Echoes of Reality.mp3',
-      'Echoes of the Afterparty.mp3',
-      'Cosmic Shadows.mp3',
-      'Echoes in the Abyss.mp3',
-      'Cosmic Reverie.mp3',
-      'Binary Shadows.mp3',
-      'Choes Ethereal.mp3',
-      'song1.mp3'
-    ];
+    console.log('🎵 Creating radio file explorer with Mixcloud integration...');
 
-    console.log(`🎵 Found ${this.playlist.length} music files`);
 
-    const fileListHTML = this.playlist.map((file, index) => {
-      const fileName = file.replace('.mp3', '');
-      const isCurrentSong = this.isPlaylistMode && index === this.currentPlaylistIndex;
-      const highlightStyle = isCurrentSong ? 'background: #0a246a; color: white;' : '';
-      
-      return `
-        <div class="file-item" style="
-          padding: 4px 8px;
-          margin: 1px 0;
-          background: ${isCurrentSong ? '#0a246a' : 'white'};
-          color: ${isCurrentSong ? 'white' : 'black'};
-          border: 1px solid #c0c0c0;
-          cursor: pointer;
-          font-size: 10px;
-          display: flex;
-          align-items: center;
-          transition: background-color 0.1s;
-        " onmouseover="if(!${isCurrentSong}) { this.style.background='#0a246a'; this.style.color='white'; }" 
-           onmouseout="if(!${isCurrentSong}) { this.style.background='white'; this.style.color='black'; }"
-           onclick="window.omnivoidApp.playSpecificSong(${index})">
-          <span style="margin-right: 8px;">${isCurrentSong ? '▶' : '🎵'}</span>
-          <span>${fileName}</span>
-          ${isCurrentSong ? '<span style="margin-left: auto; font-size: 8px;">PLAYING</span>' : ''}
-        </div>
-      `;
-    }).join('');
-
-    const currentTrackName = this.isPlaylistMode && this.playlist[this.currentPlaylistIndex] 
-      ? this.playlist[this.currentPlaylistIndex].replace('.mp3', '')
-      : 'None';
 
     const content = `
       <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">
         <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID RADIO</h3>
         <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-          ${this.isPlaylistMode ? 'Playlist Mode Active - Songs will play automatically in sequence.' : 'Click the play button to start playlist mode, or select any track to play.'}
+          Streaming from Mixcloud - Audio reactivity enabled for visual effects
         </p>
         <div id="now-playing" style="border: 1px inset #333333; padding: 6px; margin: 8px 0; background: #1a1a1a; font-size: 10px; color: #99ccff;">
-          <strong>Now Playing:</strong> <span id="current-track">${currentTrackName}</span>
-          ${this.isPlaylistMode ? `<span style="margin-left: 10px; color: #66aaff;">(${this.currentPlaylistIndex + 1}/${this.playlist.length})</span>` : ''}
-          <div id="track-progress" style="margin-top: 4px; height: 4px; background: #333; border: 1px inset #666; display: ${this.isPlaylistMode ? 'block' : 'none'};">
-            <div id="progress-bar" style="height: 100%; background: #99ccff; width: 0%; transition: width 0.1s;"></div>
+          <strong>Source:</strong> <span id="current-track">Mixcloud Channel</span>
+          <div style="margin-top: 4px; color: #66aaff; font-size: 9px;">
+            Channel: <a href="https://www.mixcloud.com/roydipankar8/" target="_blank" style="color: #66aaff;">roydipankar8</a>
           </div>
         </div>
+      </div>
+      
+      <!-- Mixcloud Widget Container -->
+      <div style="border: 1px inset #333333; padding: 8px; background: #0a0a0a; margin-bottom: 8px;">
+        <div style="background: #99ccff; color: #000; padding: 2px 4px; font-size: 10px; font-weight: bold; margin-bottom: 8px;">
+          Live Stream
+        </div>
+        <div id="mixcloud-widget-container" style="
+          width: 100%;
+          height: 300px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=%2Froydipankar8%2F" 
+            frameborder="0"
+            id="mixcloud-player"
+            style="border: none;"
+            allow="autoplay"
+          ></iframe>
+        </div>
         
-        <!-- Enhanced Track Controls -->
-        <div style="display: flex; justify-content: center; gap: 8px; margin: 8px 0; ${this.isPlaylistMode ? '' : 'display: none;'}" id="track-controls">
-          <button onclick="window.omnivoidApp.previousTrack()" style="
-            background: #1a1a1a;
-            border: 1px outset #666;
-            color: #99ccff;
+        <!-- Audio Capture Instructions -->
+        <div style="margin-top: 8px; padding: 6px; background: #1a1a1a; border: 1px solid #333; font-size: 9px; color: #66aaff;">
+          <div style="margin-bottom: 4px;"><strong>Audio Reactivity:</strong></div>
+          <div style="font-size: 8px; color: #999; line-height: 1.3;">
+            1. Play music in Mixcloud widget above<br>
+            2. Visual effects will respond to Mixcloud stream<br>
+            3. No microphone access - Mixcloud only
+          </div>
+          <button onclick="window.omnivoidApp.manualAudioCapture()" style="
+            margin-top: 6px;
             padding: 4px 8px;
-            font-size: 10px;
+            background: #99ccff;
+            color: #000;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 8px;
             font-family: 'Orbitron', sans-serif;
-          " title="Previous Track">⏮</button>
+          ">🔊 Refresh Audio Capture</button>
           
-          <button onclick="window.omnivoidApp.togglePlayPause()" style="
-            background: #1a1a1a;
-            border: 1px outset #666;
-            color: #99ccff;
-            padding: 4px 8px;
-            font-size: 10px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-          " title="Play/Pause" id="radio-play-btn">${this.audioManager && this.audioManager.isPlaying ? '⏸' : '▶'}</button>
-          
-          <button onclick="window.omnivoidApp.nextTrack()" style="
-            background: #1a1a1a;
-            border: 1px outset #666;
-            color: #99ccff;
-            padding: 4px 8px;
-            font-size: 10px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-          " title="Next Track">⏭</button>
-          
-          <button onclick="window.omnivoidApp.toggleShuffle()" style="
-            background: ${this.isShuffleMode ? '#99ccff' : '#1a1a1a'};
-            color: ${this.isShuffleMode ? '#000' : '#99ccff'};
-            border: 1px outset #666;
-            padding: 4px 8px;
-            font-size: 10px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-          " title="Shuffle Mode" id="shuffle-btn">🔀</button>
+          <!-- Debug Panel -->
+          <div style="margin-top: 8px; padding: 6px; background: #000; border: 1px solid #333; font-size: 8px;">
+            <div style="margin-bottom: 4px; color: #ffaa44;"><strong>🔍 DEBUG INFO:</strong></div>
+            <div id="debug-info" style="color: #66aaff; line-height: 1.2; font-size: 7px;">
+              Loading debug information...
+            </div>
+            <button onclick="window.omnivoidApp.refreshDebugInfo()" style="
+              margin-top: 4px;
+              padding: 2px 6px;
+              background: #333;
+              color: #99ccff;
+              border: 1px solid #666;
+              border-radius: 2px;
+              cursor: pointer;
+              font-size: 7px;
+              font-family: 'Orbitron', sans-serif;
+            ">🔄 Refresh Debug</button>
+          </div>
         </div>
       </div>
       
-      <div style="border: 1px inset #333333; padding: 4px; background: #0a0a0a; height: 200px; overflow-y: auto;">
-        <div style="background: #99ccff; color: #000; padding: 2px 4px; font-size: 10px; font-weight: bold; margin-bottom: 2px;">
-          Music Library (${this.playlist.length} tracks) ${this.isPlaylistMode ? '- PLAYLIST MODE' : ''}
-        </div>
-        ${fileListHTML}
-      </div>
-      
+      <!-- Audio Reactivity Status -->
       <div style="border: 1px inset #333333; padding: 6px; margin-top: 8px; background: #1a1a1a; font-size: 10px; color: #99ccff;">
-        <strong>Controls:</strong> Use track controls above or main player controls. ${this.isPlaylistMode ? 'Songs will auto-advance when finished.' : 'Press play button to start playlist mode.'}
+        <strong>Audio Reactivity:</strong> Visual effects respond to Mixcloud stream only
         <div id="radio-status" style="margin-top: 4px; color: #66aaff; font-size: 9px;">
-          Status: ${this.audioManager && this.audioManager.isPlaying ? 'Playing' : 'Stopped'}
+          Status: <span id="reactivity-status">Monitoring Mixcloud audio</span>
+        </div>
+        <div style="margin-top: 4px; font-size: 9px; color: #999;">
+          Note: Only Mixcloud audio drives visual effects
         </div>
       </div>
     `;
 
-    console.log('🎵 Radio file explorer content generated');
+    console.log('🎵 Radio file explorer with Mixcloud integration generated');
     return content;
   }
 
   /**
-   * Start playlist mode - opens radio window and begins playing first song
+   * Initialize Mixcloud widget and audio reactivity
    */
-  async startPlaylistMode() {
-    console.log('🎵 Starting playlist mode...');
+  initializeMixcloudWidget() {
+    console.log('🎵 Initializing Mixcloud widget...');
     
-    // Open the radio window
-    if (this.retroWindows && this.retroWindows.radio) {
-      console.log('🪟 Opening radio window...');
-      this.retroWindows.radio.show();
-    }
-    
-    // Start playing the first song in the playlist
-    this.isPlaylistMode = true;
-    this.currentPlaylistIndex = 0;
-    await this.playCurrentSong();
-    
-    // Set up audio ended event listener for auto-progression
-    this.setupAutoProgression();
+    // Wait for the iframe to load
+    setTimeout(() => {
+      const mixcloudPlayer = document.getElementById('mixcloud-player');
+      if (mixcloudPlayer) {
+        console.log('✅ Mixcloud player iframe found');
+        
+        // Set up audio reactivity monitoring
+        this.setupMixcloudAudioReactivity();
+        
+        // Try to capture audio from the iframe
+        this.captureMixcloudAudio();
+        
+        // Set up iframe load event listener
+        mixcloudPlayer.addEventListener('load', () => {
+          console.log('🎵 Mixcloud iframe loaded');
+          // Try audio capture again after iframe is fully loaded
+          setTimeout(() => {
+            this.captureMixcloudAudio();
+          }, 1000);
+        });
+        
+        // Also try to capture audio periodically
+        this.setupPeriodicAudioCapture();
+        
+        // Initial debug info
+        setTimeout(() => {
+          this.refreshDebugInfo();
+        }, 2000);
+        
+      } else {
+        console.log('⚠️ Mixcloud player iframe not found, retrying...');
+        // Retry after a short delay
+        setTimeout(() => this.initializeMixcloudWidget(), 1000);
+      }
+    }, 500);
   }
 
   /**
-   * Play the current song in the playlist
+   * Set up periodic audio capture attempts
    */
-  async playCurrentSong() {
-    if (this.currentPlaylistIndex >= this.playlist.length) {
-      // Loop back to the beginning
-      this.currentPlaylistIndex = 0;
-    }
+  setupPeriodicAudioCapture() {
+    console.log('🔄 Setting up periodic audio capture...');
     
-    const currentSong = this.playlist[this.currentPlaylistIndex];
-    console.log(`🎵 Playing song ${this.currentPlaylistIndex + 1}/${this.playlist.length}: ${currentSong}`);
+    // Try to capture audio every 5 seconds for the first minute
+    let attempts = 0;
+    const maxAttempts = 12; // 1 minute
     
-    await this.playMusicFile(currentSong);
-  }
-
-  /**
-   * Set up automatic song progression when current song ends
-   */
-  setupAutoProgression() {
-    if (this.audioManager && this.audioManager.audioElement) {
-      // Remove any existing event listeners to avoid duplicates
-      this.audioManager.audioElement.removeEventListener('ended', this.onSongEnded);
+    const captureInterval = setInterval(() => {
+      attempts++;
+      console.log(`🔄 Audio capture attempt ${attempts}/${maxAttempts}`);
       
-      // Add new event listener
-      this.audioManager.audioElement.addEventListener('ended', this.onSongEnded);
-      console.log('🎵 Auto-progression listener set up');
-    }
-  }
-
-  /**
-   * Handle when a song ends - automatically play next song
-   */
-  onSongEnded = async () => {
-    if (this.isPlaylistMode) {
-      console.log('🎵 Song ended, moving to next track...');
-      this.currentPlaylistIndex++;
-      
-      // Add a small delay before playing next song
-      setTimeout(async () => {
-        await this.playCurrentSong();
-      }, 1000); // 1 second delay between songs
-    }
-  }
-
-  /**
-   * Stop playlist mode
-   */
-  stopPlaylistMode() {
-    console.log('🎵 Stopping playlist mode...');
-    this.isPlaylistMode = false;
-    
-    // Remove auto-progression listener
-    if (this.audioManager && this.audioManager.audioElement) {
-      this.audioManager.audioElement.removeEventListener('ended', this.onSongEnded);
-    }
-  }
-
-  /**
-   * Play a specific song by index in the playlist
-   */
-  async playSpecificSong(index) {
-    console.log(`🎵 Playing specific song at index: ${index}`);
-    
-    // Enable playlist mode and set the index
-    this.isPlaylistMode = true;
-    this.currentPlaylistIndex = index;
-    
-    // Play the selected song
-    await this.playCurrentSong();
-    
-    // Set up auto-progression
-    this.setupAutoProgression();
-    
-    // Update the radio window content to reflect the change
-    if (this.retroWindows && this.retroWindows.radio) {
-      const newContent = this.createRadioFileExplorer();
-      this.retroWindows.radio.setContent(newContent);
-    }
-  }
-
-  /**
-   * Play a selected music file (legacy method, now integrates with playlist)
-   */
-  async playMusicFile(fileName) {
-    try {
-      console.log(`🎵 Loading music file: ${fileName}`);
-      
-      // Update now playing display
-      const currentTrackElement = document.getElementById('current-track');
-      if (currentTrackElement) {
-        currentTrackElement.textContent = fileName.replace('.mp3', '');
+      if (attempts >= maxAttempts) {
+        clearInterval(captureInterval);
+        console.log('⏰ Stopping periodic audio capture attempts');
+        return;
       }
       
-      // Clear the current audio buffer to force reload of new file
-      this.audioManager.audioBuffer = null;
+      // Try different capture methods
+      this.captureMixcloudAudio();
       
-      // Load and play the selected file
-      const audioUrl = `public/audio/Music/${fileName}`;
-      const loaded = await this.audioManager.loadAudio(audioUrl);
-      
-      if (loaded) {
-        this.audioManager.play();
-        console.log(`✅ Now playing: ${fileName}`);
-        
-        // Update the main play button to show playing state
-        this.syncPlayButtonState(true);
-        
-        // Set up auto-progression if not already set up
-        this.setupAutoProgression();
-        
-        // Start progress tracking
-        this.startProgressTracking();
+    }, 5000); // Every 5 seconds
+    
+    // Also set up continuous debug monitoring
+    this.setupDebugMonitoring();
+  }
+
+  /**
+   * Set up continuous debug monitoring
+   */
+  setupDebugMonitoring() {
+    console.log('🔍 Setting up continuous debug monitoring...');
+    
+    // Update debug info every 3 seconds
+    const debugInterval = setInterval(() => {
+      if (document.getElementById('debug-info')) {
+        this.refreshDebugInfo();
       } else {
-        console.error(`❌ Failed to load: ${fileName}`);
-        if (currentTrackElement) {
-          currentTrackElement.textContent = 'Error loading track';
-        }
-        this.updateRadioStatus('Error loading track');
+        // Stop monitoring if debug panel is no longer visible
+        clearInterval(debugInterval);
+        console.log('🔍 Debug monitoring stopped - panel not visible');
+      }
+    }, 3000); // Every 3 seconds
+    
+    // Store the interval for cleanup
+    this.debugInterval = debugInterval;
+  }
+
+  /**
+   * Set up audio reactivity for Mixcloud audio
+   */
+  setupMixcloudAudioReactivity() {
+    console.log('🎵 Setting up Mixcloud-only audio reactivity...');
+    
+    // Update status
+    const reactivityStatus = document.getElementById('reactivity-status');
+    if (reactivityStatus) {
+      reactivityStatus.textContent = 'Mixcloud-only mode - Visual effects respond to stream only';
+    }
+    
+    console.log('✅ Mixcloud-only audio reactivity configured');
+  }
+
+  /**
+   * Capture audio from Mixcloud iframe for reactivity
+   */
+  async captureMixcloudAudio() {
+    console.log('🎵 Attempting to capture Mixcloud audio...');
+    
+    try {
+      // Method 1: Try to get audio from the iframe's audio context
+      const mixcloudPlayer = document.getElementById('mixcloud-player');
+      if (mixcloudPlayer && mixcloudPlayer.contentWindow) {
+        console.log('🔍 Accessing Mixcloud iframe content...');
+        
+        // Wait a bit more for the iframe to fully load
+        setTimeout(() => {
+          try {
+            // Try to access the iframe's audio context
+            const iframeWindow = mixcloudPlayer.contentWindow;
+            if (iframeWindow && iframeWindow.document) {
+              console.log('✅ Iframe document accessible');
+              
+              // Look for audio elements in the iframe
+              const audioElements = iframeWindow.document.querySelectorAll('audio, video');
+              console.log(`🎵 Found ${audioElements.length} audio/video elements in iframe`);
+              
+              if (audioElements.length > 0) {
+                // Try to connect the first audio element to our audio context
+                this.connectIframeAudio(audioElements[0]);
+              } else {
+                console.log('⚠️ No audio elements found in iframe, trying alternative method');
+                this.tryAlternativeAudioCapture();
+              }
+            }
+          } catch (error) {
+            console.log('⚠️ Cannot access iframe content (cross-origin restriction)');
+            this.tryAlternativeAudioCapture();
+          }
+        }, 2000);
       }
     } catch (error) {
-      console.error('❌ Error playing music file:', error);
-      this.updateRadioStatus('Playback error');
+      console.log('⚠️ Error accessing Mixcloud iframe:', error);
+      this.tryAlternativeAudioCapture();
     }
   }
+
+  /**
+   * Try alternative audio capture methods
+   */
+  tryAlternativeAudioCapture() {
+    console.log('🔄 Trying alternative Mixcloud audio capture...');
+    
+    // Only try to capture from Mixcloud iframe - no microphone or system audio
+    console.log('🎵 Mixcloud-only mode - no alternative audio sources');
+    
+    // Update status
+    const reactivityStatus = document.getElementById('reactivity-status');
+    if (reactivityStatus) {
+      reactivityStatus.textContent = 'Mixcloud-only mode - No microphone access';
+    }
+    
+    console.log('✅ Mixcloud-only audio mode configured');
+  }
+
+
+
+  /**
+   * Update reactivity status with detailed information
+   */
+  updateReactivityStatus(message) {
+    const reactivityStatus = document.getElementById('reactivity-status');
+    if (reactivityStatus) {
+      reactivityStatus.textContent = message;
+    }
+    
+    // Also log to console
+    console.log(`📊 Reactivity Status: ${message}`);
+  }
+
+  /**
+   * Connect iframe audio to our audio context
+   */
+  connectIframeAudio(audioElement) {
+    try {
+      console.log('🔗 Connecting iframe audio to our audio context...');
+      
+      if (this.audioManager && this.audioManager.audioContext) {
+        // Create a media stream source from the audio element
+        const stream = audioElement.captureStream();
+        const source = this.audioManager.audioContext.createMediaStreamSource(stream);
+        
+        // Connect to our analyzer
+        source.connect(this.audioManager.analyser);
+        
+        console.log('✅ Iframe audio connected to audio context');
+        
+        // Update status
+        const reactivityStatus = document.getElementById('reactivity-status');
+        if (reactivityStatus) {
+          reactivityStatus.textContent = 'Mixcloud audio captured - Visual effects active!';
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ Error connecting iframe audio:', error);
+      this.fallbackAudioCapture();
+    }
+  }
+
+    /**
+   * Fallback method for audio capture
+   */
+  fallbackAudioCapture() {
+    console.log('🔄 Mixcloud-only fallback mode...');
+    
+    // Update status to indicate Mixcloud-only mode
+    const reactivityStatus = document.getElementById('reactivity-status');
+    if (reactivityStatus) {
+      reactivityStatus.textContent = 'Mixcloud-only mode - No microphone or system audio';
+    }
+    
+    console.log('✅ Mixcloud-only audio mode configured');
+  }
+
+  /**
+   * Manual audio capture trigger
+   */
+  manualAudioCapture() {
+    console.log('🔊 Manual audio capture triggered...');
+    
+    // Update status
+    const reactivityStatus = document.getElementById('reactivity-status');
+    if (reactivityStatus) {
+      reactivityStatus.textContent = 'Attempting Mixcloud audio capture...';
+    }
+    
+    // Try to capture audio from Mixcloud iframe
+    this.captureMixcloudAudio();
+    
+    // Refresh debug info
+    setTimeout(() => {
+      this.refreshDebugInfo();
+    }, 1000);
+  }
+
+  /**
+   * Refresh debug information
+   */
+  refreshDebugInfo() {
+    console.log('🔍 Refreshing debug information...');
+    
+    const debugInfo = document.getElementById('debug-info');
+    if (!debugInfo) return;
+    
+    let debugText = '';
+    
+    // Audio Manager Status
+    if (this.audioManager) {
+      debugText += `✅ Audio Manager: Available<br>`;
+      debugText += `🎵 Audio Context: ${this.audioManager.audioContext ? 'Active' : 'Inactive'}<br>`;
+      debugText += `📊 Analyzer: ${this.audioManager.analyser ? 'Ready' : 'Missing'}<br>`;
+      debugText += `🔊 Is Playing: ${this.audioManager.isPlaying ? 'Yes' : 'No'}<br>`;
+    } else {
+      debugText += `❌ Audio Manager: Not Available<br>`;
+    }
+    
+    // Audio Stream Status
+    if (this.currentAudioStream) {
+      debugText += `🎵 Audio Stream: Active<br>`;
+      debugText += `🔗 Stream ID: ${this.currentAudioStream.id || 'Unknown'}<br>`;
+    } else {
+      debugText += `❌ Audio Stream: Not Active<br>`;
+    }
+    
+    // Frequency Data Test
+    if (this.audioManager && this.audioManager.analyser) {
+      try {
+        const dataArray = new Float32Array(this.audioManager.analyser.frequencyBinCount);
+        this.audioManager.analyser.getFloatFrequencyData(dataArray);
+        
+        const averageFreq = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        const hasData = dataArray.some(value => value > -Infinity);
+        
+        debugText += `📊 Frequency Data: ${hasData ? 'Yes' : 'No'}<br>`;
+        debugText += `📈 Avg Frequency: ${averageFreq.toFixed(2)}<br>`;
+        debugText += `🔢 Data Points: ${dataArray.length}<br>`;
+      } catch (error) {
+        debugText += `❌ Frequency Test: Failed (${error.message})<br>`;
+      }
+    }
+    
+    // Mixcloud Widget Status
+    const mixcloudPlayer = document.getElementById('mixcloud-player');
+    if (mixcloudPlayer) {
+      debugText += `🎵 Mixcloud Widget: Found<br>`;
+      debugText += `🔗 Widget Src: ${mixcloudPlayer.src.substring(0, 50)}...<br>`;
+    } else {
+      debugText += `❌ Mixcloud Widget: Not Found<br>`;
+    }
+    
+    // Browser Capabilities
+    debugText += `🎵 Web Audio API: ${window.AudioContext ? 'Supported' : 'Not Supported'}<br>`;
+    debugText += `🎵 Mixcloud Only: No microphone access<br>`;
+    
+    debugInfo.innerHTML = debugText;
+    
+    console.log('✅ Debug information refreshed');
+  }
+
+
 
   /**
    * Synchronize play button states across main controls and radio
    */
   syncPlayButtonState(isPlaying) {
-    // Update main play button
-    const playBtns = document.querySelectorAll('.minimal-control-btn');
-    playBtns.forEach(btn => {
-      if (btn.textContent === '▶' || btn.textContent === '⏸') {
-        btn.textContent = isPlaying ? '⏸' : '▶';
-        if (isPlaying) {
-          btn.classList.add('active');
-          btn.style.backgroundColor = '#99ccff';
-          btn.style.color = '#000000';
-        } else {
-          btn.classList.remove('active');
-          btn.style.backgroundColor = 'transparent';
-          btn.style.color = '#99ccff';
-        }
-      }
-    });
-    
-    // Update radio play button
-    const radioPlayBtn = document.getElementById('radio-play-btn');
-    if (radioPlayBtn) {
-      radioPlayBtn.textContent = isPlaying ? '⏸' : '▶';
-    }
-    
-    // Update radio status
-    this.updateRadioStatus(isPlaying ? 'Playing' : 'Paused');
+    // Update Mixcloud status only
+    this.updateRadioStatus(isPlaying ? 'Audio Active' : 'Audio Paused');
   }
 
   /**
@@ -2579,120 +2617,13 @@ export class App {
     }
   }
 
-  /**
-   * Toggle play/pause from radio controls
-   */
-  togglePlayPause() {
-    if (this.audioManager.isPlaying) {
-      this.audioManager.pause();
-      this.syncPlayButtonState(false);
-    } else {
-      if (!this.isPlaylistMode) {
-        this.startPlaylistMode();
-      } else {
-        this.audioManager.play();
-        this.syncPlayButtonState(true);
-        this.startProgressTracking();
-      }
-    }
-  }
 
-  /**
-   * Play next track in playlist
-   */
-  async nextTrack() {
-    if (!this.isPlaylistMode) return;
-    
-    if (this.isShuffleMode) {
-      // Random next track
-      let nextIndex;
-      do {
-        nextIndex = Math.floor(Math.random() * this.playlist.length);
-      } while (nextIndex === this.currentPlaylistIndex && this.playlist.length > 1);
-      this.currentPlaylistIndex = nextIndex;
-    } else {
-      // Sequential next track
-      this.currentPlaylistIndex = (this.currentPlaylistIndex + 1) % this.playlist.length;
-    }
-    
-    await this.playCurrentSong();
-    this.updateRadioWindow();
-  }
 
-  /**
-   * Play previous track in playlist
-   */
-  async previousTrack() {
-    if (!this.isPlaylistMode) return;
-    
-    if (this.isShuffleMode) {
-      // Random previous track
-      let prevIndex;
-      do {
-        prevIndex = Math.floor(Math.random() * this.playlist.length);
-      } while (prevIndex === this.currentPlaylistIndex && this.playlist.length > 1);
-      this.currentPlaylistIndex = prevIndex;
-    } else {
-      // Sequential previous track
-      this.currentPlaylistIndex = this.currentPlaylistIndex === 0 
-        ? this.playlist.length - 1 
-        : this.currentPlaylistIndex - 1;
-    }
-    
-    await this.playCurrentSong();
-    this.updateRadioWindow();
-  }
 
-  /**
-   * Toggle shuffle mode
-   */
-  toggleShuffle() {
-    this.isShuffleMode = !this.isShuffleMode;
-    console.log(`🔀 Shuffle mode: ${this.isShuffleMode ? 'ON' : 'OFF'}`);
-    
-    // Update shuffle button appearance
-    const shuffleBtn = document.getElementById('shuffle-btn');
-    if (shuffleBtn) {
-      shuffleBtn.style.background = this.isShuffleMode ? '#99ccff' : '#1a1a1a';
-      shuffleBtn.style.color = this.isShuffleMode ? '#000' : '#99ccff';
-    }
-    
-    this.updateRadioStatus(`Shuffle ${this.isShuffleMode ? 'ON' : 'OFF'}`);
-  }
 
-  /**
-   * Start progress tracking for current track
-   */
-  startProgressTracking() {
-    // Clear existing interval
-    if (this.progressInterval) {
-      clearInterval(this.progressInterval);
-    }
-    
-    this.progressInterval = setInterval(() => {
-      if (this.audioManager && this.audioManager.isPlaying && this.audioManager.audioBuffer) {
-        const currentTime = this.audioManager.audioContext.currentTime - this.audioManager.startTime;
-        const duration = this.audioManager.audioBuffer.duration;
-        const progress = Math.min((currentTime / duration) * 100, 100);
-        
-        const progressBar = document.getElementById('progress-bar');
-        if (progressBar) {
-          progressBar.style.width = `${progress}%`;
-        }
-        
-        // Update time display if available
-        const timeDisplay = document.getElementById('time-display');
-        if (timeDisplay) {
-          const currentMinutes = Math.floor(currentTime / 60);
-          const currentSeconds = Math.floor(currentTime % 60);
-          const totalMinutes = Math.floor(duration / 60);
-          const totalSeconds = Math.floor(duration % 60);
-          
-          timeDisplay.textContent = `${currentMinutes}:${currentSeconds.toString().padStart(2, '0')} / ${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
-        }
-      }
-    }, 1000); // Update every second
-  }
+
+
+
 
   /**
    * Update radio window content
@@ -2704,39 +2635,7 @@ export class App {
     }
   }
 
-  /**
-   * Enhanced song ended handler with better error handling
-   */
-  onSongEnded = async () => {
-    if (this.isPlaylistMode) {
-      console.log('🎵 Song ended, moving to next track...');
-      
-      // Clear progress tracking
-      if (this.progressInterval) {
-        clearInterval(this.progressInterval);
-      }
-      
-      // Reset progress bar
-      const progressBar = document.getElementById('progress-bar');
-      if (progressBar) {
-        progressBar.style.width = '0%';
-      }
-      
-      // Move to next track
-      this.currentPlaylistIndex++;
-      
-      // Add a small delay before playing next song
-      setTimeout(async () => {
-        try {
-          await this.playCurrentSong();
-        } catch (error) {
-          console.error('❌ Error auto-advancing to next track:', error);
-          this.updateRadioStatus('Auto-advance error');
-          this.syncPlayButtonState(false);
-        }
-      }, 1000); // 1 second delay between songs
-    }
-  }
+
 
   /**
    * Create gallery content
@@ -3465,8 +3364,8 @@ export class App {
       console.log(`📂 ${key}: ${value}`);
     });
     
-    // Test playlist integration
-    console.log('🎵 Playlist files ready for Google Drive RADIO folder:', this.playlist.length, 'tracks');
+          // Test Mixcloud integration
+      console.log('🎵 Mixcloud integration ready for audio streaming');
     
     // Log success
     this.googleDriveConfig.log('Google Drive integration test completed successfully');
@@ -3549,42 +3448,25 @@ export class App {
         }
       );
       
-      // Playlist selector
-      this.desktopControlPanel.addHeading('📻 PLAYLIST');
+      // Mixcloud integration info
+      this.desktopControlPanel.addHeading('📻 MIXCLOUD');
       
-      // Create playlist select dropdown
-      const playlistContainer = document.createElement('div');
-      playlistContainer.className = 'control-item';
-      playlistContainer.innerHTML = `
-        <label>Current Track: <span id="currentTrack">song1.mp3</span></label>
-        <div style="margin: 8px 0;">
-          <button id="prevTrack" style="margin-right: 8px; padding: 4px 8px; background: #99ccff; color: #000; border: none; border-radius: 4px; cursor: pointer;">⏮️ Prev</button>
-          <button id="nextTrack" style="padding: 4px 8px; background: #99ccff; color: #000; border: none; border-radius: 4px; cursor: pointer;">⏭️ Next</button>
+      // Add Mixcloud info
+      const mixcloudInfo = document.createElement('div');
+      mixcloudInfo.className = 'control-item';
+      mixcloudInfo.innerHTML = `
+        <div style="color: #99ccff; font-size: 12px;">
+          <div>Streaming from: <a href="https://www.mixcloud.com/roydipankar8/" target="_blank" style="color: #66aaff;">roydipankar8</a></div>
+          <div style="margin-top: 4px; font-size: 10px; color: #999;">
+            Audio reactivity enabled for visual effects
+          </div>
         </div>
       `;
       
-      // Add playlist controls to the control panel
+      // Add Mixcloud info to the control panel
       const desktopControls = document.getElementById('desktop-controls');
       if (desktopControls) {
-        desktopControls.appendChild(playlistContainer);
-        
-        // Add event listeners for playlist controls
-        const prevBtn = document.getElementById('prevTrack');
-        const nextBtn = document.getElementById('nextTrack');
-        
-        if (prevBtn) {
-          prevBtn.addEventListener('click', () => {
-            console.log('⏮️ Previous track clicked');
-            this.playPreviousTrack();
-          });
-        }
-        
-        if (nextBtn) {
-          nextBtn.addEventListener('click', () => {
-            console.log('⏭️ Next track clicked');
-            this.playNextTrack();
-          });
-        }
+        desktopControls.appendChild(mixcloudInfo);
       }
       
       // Set initial values
@@ -3692,50 +3574,8 @@ export class App {
     }
   }
 
-  /**
-   * Play next track in playlist
-   */
-  playNextTrack() {
-    if (this.playlist && this.playlist.length > 0) {
-      this.currentPlaylistIndex = (this.currentPlaylistIndex + 1) % this.playlist.length;
-      const nextTrack = this.playlist[this.currentPlaylistIndex];
-      console.log(`⏭️ Playing next track: ${nextTrack}`);
-      
-      // Update display
-      const currentTrackSpan = document.getElementById('currentTrack');
-      if (currentTrackSpan) {
-        currentTrackSpan.textContent = nextTrack;
-      }
-      
-      // Load and play the track
-      if (this.audioManager) {
-        this.audioManager.loadAudio(`./public/audio/Music/${nextTrack}`);
-      }
-    }
-  }
 
-  /**
-   * Play previous track in playlist
-   */
-  playPreviousTrack() {
-    if (this.playlist && this.playlist.length > 0) {
-      this.currentPlaylistIndex = this.currentPlaylistIndex > 0 ? 
-        this.currentPlaylistIndex - 1 : this.playlist.length - 1;
-      const prevTrack = this.playlist[this.currentPlaylistIndex];
-      console.log(`⏮️ Playing previous track: ${prevTrack}`);
-      
-      // Update display
-      const currentTrackSpan = document.getElementById('currentTrack');
-      if (currentTrackSpan) {
-        currentTrackSpan.textContent = prevTrack;
-      }
-      
-      // Load and play the track
-      if (this.audioManager) {
-        this.audioManager.loadAudio(`./public/audio/Music/${prevTrack}`);
-      }
-    }
-  }
+
   
   /**
    * Emergency close function - can be called from console if needed
@@ -3777,42 +3617,42 @@ export class App {
           filename: 'hampshire-topping-burbano-cifuentes-aubry.pdf',
           title: 'Hampshire Topping Burbano Cifuentes Aubry',
           description: 'Research on experimental music and sound art',
-          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          url: 'https://drive.google.com/file/d/1_2QgRCXMR8CNq5ghbxGahtoXOJiE2ryW/view?usp=sharing',
           thumbnail: null
         },
         {
           filename: 'Post-Music Stephenie Egedy.pdf',
           title: 'Post-Music: Stephenie Egedy',
           description: 'Theoretical framework for post-musical composition',
-          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          url: 'https://drive.google.com/file/d/1ZJF3_NeCo7JurGKkywMfeRiR8HlX67pO/view?usp=sharing',
           thumbnail: null
         },
         {
           filename: 'Shape_brochure_2022_2025_digi-1.pdf',
           title: 'Shape Brochure 2022-2025',
           description: 'Digital arts and experimental music festival documentation',
-          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          url: 'https://drive.google.com/file/d/1PsOLCd_k7st5sUC4zInComL1xrEYSdUB/view?usp=sharing',
           thumbnail: null
         },
         {
           filename: 'SONIC WARFARE_ STEVE GOODMAN.pdf',
           title: 'Sonic Warfare: Steve Goodman',
           description: 'Critical analysis of sound as weapon and resistance',
-          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          url: 'https://drive.google.com/file/d/1nrFQ_FQFML4TwlJOth-N8SCGsRPf9MrC/view?usp=sharing',
           thumbnail: null
         },
         {
           filename: 'Sound_system_culture_Place_space_and_identity_in_t.pdf',
           title: 'Sound System Culture: Place, Space and Identity',
           description: 'Cultural studies of sound system communities',
-          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          url: 'https://drive.google.com/file/d/1O3u2kJYQJlRxRvl_0uA-kqphuXOxGV2f/view?usp=sharing',
           thumbnail: null
         },
         {
           filename: 'WHAT_IS_BLACK_METAL_THEORY.pdf',
           title: 'What Is Black Metal Theory?',
           description: 'Philosophical and theoretical approaches to extreme music',
-          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          url: 'https://drive.google.com/file/d/1s-seagVZWHgQucMgu6OvItAKUvfSZ5SH/view?usp=sharing',
           thumbnail: null
         }
       ];
@@ -3859,16 +3699,19 @@ export class App {
       `;
       
       thumbnail.innerHTML = `
-        <!-- PDF icon -->
+        <!-- Research icon -->
         <div style="
           display: flex;
           align-items: center;
           justify-content: center;
           height: 40px;
-          font-size: 24px;
-          color: #ff4444;
+          width: 40px;
         ">
-          📄
+          <img src="./public/menuicons/research.png" alt="Research" style="
+            width: 32px;
+            height: 32px;
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(200deg);
+          ">
         </div>
         
         <!-- Document title -->
@@ -4039,17 +3882,45 @@ export class App {
     `;
     
     // Set PDF source - using Google Drive viewer
-    if (url) {
+    if (url && !url.includes('FILE_ID_')) {
       // Convert Google Drive URL to viewer format
       const driveId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
       if (driveId) {
         pdfViewer.src = `https://drive.google.com/file/d/${driveId}/preview`;
+        console.log(`📄 Loading PDF from Google Drive: ${driveId}`);
       } else {
         pdfViewer.src = url;
+        console.log(`📄 Loading PDF from URL: ${url}`);
       }
     } else {
-      // Fallback to local PDF if available
-      pdfViewer.src = `./public/research/${filename}`;
+      // Show helpful message for placeholder URLs
+      pdfViewer.innerHTML = `
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: #ffaa44;
+          font-family: 'Orbitron', sans-serif;
+        ">
+          <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 16px;">⚠️</div>
+            <div style="font-size: 16px; margin-bottom: 12px;">PDF URL Not Configured</div>
+            <div style="font-size: 12px; margin-bottom: 16px; color: #999999; max-width: 400px; line-height: 1.4;">
+              This PDF needs to be configured with a proper Google Drive URL.
+            </div>
+            <div style="font-size: 11px; color: #66aaff; background: #1a1a1a; padding: 12px; border-radius: 4px; border: 1px solid #333333;">
+              <strong>To fix:</strong><br>
+              1. Right-click the PDF in Google Drive<br>
+              2. Select "Get link"<br>
+              3. Copy the link<br>
+              4. Update the URL in the code
+            </div>
+          </div>
+        </div>
+      `;
+      console.log(`⚠️ PDF URL not configured for: ${filename}`);
+      return; // Don't add event listeners since we're showing a message
     }
 
     // Add error handling
@@ -4098,4 +3969,4 @@ export class App {
     };
     document.addEventListener('keydown', handleEscape);
   }
-} 
+}
