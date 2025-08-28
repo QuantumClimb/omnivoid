@@ -3763,4 +3763,339 @@ export class App {
     
     console.log('✅ Emergency close completed');
   }
+
+  /**
+   * Load PDF research papers from Google Drive
+   */
+  async loadPDFResearchPapers() {
+    try {
+      console.log('📚 Loading PDF research papers from Google Drive...');
+      
+      // Real PDF papers from the research folder
+      const pdfPapers = [
+        {
+          filename: 'hampshire-topping-burbano-cifuentes-aubry.pdf',
+          title: 'Hampshire Topping Burbano Cifuentes Aubry',
+          description: 'Research on experimental music and sound art',
+          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          thumbnail: null
+        },
+        {
+          filename: 'Post-Music Stephenie Egedy.pdf',
+          title: 'Post-Music: Stephenie Egedy',
+          description: 'Theoretical framework for post-musical composition',
+          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          thumbnail: null
+        },
+        {
+          filename: 'Shape_brochure_2022_2025_digi-1.pdf',
+          title: 'Shape Brochure 2022-2025',
+          description: 'Digital arts and experimental music festival documentation',
+          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          thumbnail: null
+        },
+        {
+          filename: 'SONIC WARFARE_ STEVE GOODMAN.pdf',
+          title: 'Sonic Warfare: Steve Goodman',
+          description: 'Critical analysis of sound as weapon and resistance',
+          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          thumbnail: null
+        },
+        {
+          filename: 'Sound_system_culture_Place_space_and_identity_in_t.pdf',
+          title: 'Sound System Culture: Place, Space and Identity',
+          description: 'Cultural studies of sound system communities',
+          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          thumbnail: null
+        },
+        {
+          filename: 'WHAT_IS_BLACK_METAL_THEORY.pdf',
+          title: 'What Is Black Metal Theory?',
+          description: 'Philosophical and theoretical approaches to extreme music',
+          url: 'https://drive.google.com/file/d/1kQsTi8q2YwxZPPTW4jiH2gUvqFEhHY1T/view',
+          thumbnail: null
+        }
+      ];
+      
+      this.pdfResearchPapers = pdfPapers;
+      this.updateReleasesContent();
+      
+    } catch (error) {
+      console.error('❌ Error loading PDF research papers:', error);
+    }
+  }
+
+  /**
+   * Update releases content with PDF papers
+   */
+  updateReleasesContent() {
+    const container = document.getElementById('releases-container');
+    if (!container || !this.pdfResearchPapers) return;
+    
+    const thumbnailsContainer = container.querySelector('#doc-thumbnails');
+    if (!thumbnailsContainer) return;
+    
+    // Clear existing content
+    thumbnailsContainer.innerHTML = '';
+    
+    // Add PDF thumbnails
+    this.pdfResearchPapers.forEach((paper, index) => {
+      const thumbnail = document.createElement('div');
+      thumbnail.className = 'pdf-thumbnail';
+      thumbnail.style.cssText = `
+        width: 80px;
+        height: 100px;
+        border: 2px outset #555555;
+        background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 4px;
+        margin: 4px;
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      `;
+      
+      thumbnail.innerHTML = `
+        <!-- PDF icon -->
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 40px;
+          font-size: 24px;
+          color: #ff4444;
+        ">
+          📄
+        </div>
+        
+        <!-- Document title -->
+        <div style="
+          flex: 1;
+          font-size: 8px;
+          line-height: 1.2;
+          color: #99ccff;
+          overflow: hidden;
+          font-family: 'Orbitron', sans-serif;
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          ${paper.title}
+        </div>
+        
+        <!-- File type indicator -->
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 4px;
+          font-size: 7px;
+          color: #66aaff;
+          font-family: 'Orbitron', sans-serif;
+        ">
+          PDF
+        </div>
+      `;
+      
+      // Add hover effects
+      thumbnail.addEventListener('mouseenter', () => {
+        thumbnail.style.borderStyle = 'inset';
+        thumbnail.style.transform = 'scale(1.05)';
+        thumbnail.style.borderColor = '#99ccff';
+      });
+      
+      thumbnail.addEventListener('mouseleave', () => {
+        thumbnail.style.borderStyle = 'outset';
+        thumbnail.style.transform = 'scale(1)';
+        thumbnail.style.borderColor = '#555555';
+      });
+      
+      // Add click handler
+      thumbnail.addEventListener('click', () => {
+        this.openPDFDocument(paper.filename, paper.title, paper.url);
+      });
+      
+      thumbnail.title = `Click to view: ${paper.title}`;
+      thumbnailsContainer.appendChild(thumbnail);
+    });
+  }
+
+  /**
+   * Open PDF document in viewer
+   */
+  async openPDFDocument(filename, title, url) {
+    console.log(`📄 Opening PDF: ${filename} - ${title}`);
+    
+    // Close any existing popup first
+    const existingPopup = document.querySelector('.pdf-viewer-overlay');
+    if (existingPopup) {
+      document.body.removeChild(existingPopup);
+    }
+
+    // Create PDF viewer overlay
+    const popup = document.createElement('div');
+    popup.className = 'pdf-viewer-overlay';
+    popup.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    `;
+
+    // Create PDF viewer content container
+    const viewerContent = document.createElement('div');
+    viewerContent.className = 'pdf-viewer-content';
+    viewerContent.style.cssText = `
+      background: #111111;
+      border: 2px solid #99ccff;
+      border-radius: 8px;
+      width: 95vw;
+      max-width: 1200px;
+      height: 95vh;
+      overflow: hidden;
+      box-shadow: 
+        0 0 30px rgba(153, 204, 255, 0.3),
+        0 0 60px rgba(153, 204, 255, 0.1);
+      animation: popupSlideIn 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      z-index: 10000;
+    `;
+
+    // Create header with title and close button
+    const header = document.createElement('div');
+    header.style.cssText = `
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #333333;
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      flex-shrink: 0;
+    `;
+
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = title;
+    titleElement.style.cssText = `
+      margin: 0;
+      color: #99ccff;
+      font-size: 14px;
+      font-family: 'Orbitron', sans-serif;
+    `;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+      background: #333333;
+      border: 1px solid #99ccff;
+      color: #99ccff;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    `;
+
+    closeBtn.addEventListener('mouseenter', () => {
+      closeBtn.style.backgroundColor = '#99ccff';
+      closeBtn.style.color = '#000000';
+    });
+
+    closeBtn.addEventListener('mouseleave', () => {
+      closeBtn.style.backgroundColor = '#333333';
+      closeBtn.style.color = '#99ccff';
+    });
+
+    closeBtn.addEventListener('click', () => {
+      document.body.removeChild(popup);
+    });
+
+    header.appendChild(titleElement);
+    header.appendChild(closeBtn);
+
+    // Create PDF viewer iframe
+    const pdfViewer = document.createElement('iframe');
+    pdfViewer.style.cssText = `
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #ffffff;
+    `;
+    
+    // Set PDF source - using Google Drive viewer
+    if (url) {
+      // Convert Google Drive URL to viewer format
+      const driveId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (driveId) {
+        pdfViewer.src = `https://drive.google.com/file/d/${driveId}/preview`;
+      } else {
+        pdfViewer.src = url;
+      }
+    } else {
+      // Fallback to local PDF if available
+      pdfViewer.src = `./public/research/${filename}`;
+    }
+
+    // Add error handling
+    pdfViewer.onerror = () => {
+      pdfViewer.innerHTML = `
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: #ff4444;
+          font-family: 'Orbitron', sans-serif;
+        ">
+          <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 16px;">❌</div>
+            <div>Error loading PDF</div>
+            <div style="font-size: 12px; margin-top: 8px; color: #999999;">
+              The PDF could not be loaded. Please check the URL or try again.
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    // Assemble the viewer
+    viewerContent.appendChild(header);
+    viewerContent.appendChild(pdfViewer);
+    popup.appendChild(viewerContent);
+
+    // Add to document
+    document.body.appendChild(popup);
+
+    // Close on background click
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) {
+        document.body.removeChild(popup);
+      }
+    });
+
+    // Close on Escape key
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        document.body.removeChild(popup);
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+  }
 } 
