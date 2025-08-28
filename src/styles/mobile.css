@@ -99,6 +99,22 @@
   transform: scale(1.1);
 }
 
+/* Custom menu icon images */
+.dropdown-menu-item img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.dropdown-menu-item:hover img {
+  filter: brightness(0) saturate(100%);
+}
+
+.dropdown-menu-item.active img {
+  filter: brightness(0) saturate(100%);
+}
+
 /* Custom tooltip styling */
 .custom-tooltip {
   position: absolute;

@@ -1329,15 +1329,15 @@ export class App {
       align-items: center;
     `;
 
-    // Menu items with icons
+    // Menu items with custom icons
     const menuItems = [
-      { text: 'Conundrum', icon: '🧩', window: 'conundrum' },
-      { text: 'Releases', icon: '📚', window: 'releases' },
-      { text: 'Live Transmissions', icon: '📡', window: 'live' },
-      { text: 'Radio', icon: '📻', window: 'radio' },
-      { text: 'Gallery', icon: '🖼️', window: 'gallery' },
-      { text: 'Contact', icon: '📧', window: 'contact' },
-      { text: 'LATEST GIG', icon: '🎵', window: 'latest-gig' }
+      { text: 'Conundrum', icon: './public/menuicons/conundrum.png', window: 'conundrum', isImage: true },
+      { text: 'Releases', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
+      { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
+      { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
+      { text: 'Gallery', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
+      { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
+      { text: 'LATEST GIG', icon: './public/menuicons/gigs.png', window: 'latest-gig', isImage: true }
     ];
 
     // Create retro windows for each menu item
@@ -1361,8 +1361,20 @@ export class App {
       const menuItem = document.createElement('div');
       menuItem.className = 'dropdown-menu-item';
       
-      // Always show only icons as circular buttons
-      menuItem.innerHTML = `<span class="menu-icon">${item.icon}</span>`;
+      // Show custom icons or fallback to text
+      if (item.isImage) {
+        const iconImg = document.createElement('img');
+        iconImg.src = item.icon;
+        iconImg.alt = item.text;
+        iconImg.style.cssText = `
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+        `;
+        menuItem.appendChild(iconImg);
+      } else {
+        menuItem.innerHTML = `<span class="menu-icon">${item.icon}</span>`;
+      }
       menuItem.title = item.text; // Add tooltip on hover
       menuItem.style.cssText = `
         width: 50px;
