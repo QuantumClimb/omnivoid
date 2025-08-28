@@ -2169,6 +2169,10 @@ export class App {
           </div>`;
 
       case 'releases':
+        // Load PDFs after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          this.loadPDFResearchPapers();
+        }, 100);
         return this.createReleasesContent();
 
       case 'live':
