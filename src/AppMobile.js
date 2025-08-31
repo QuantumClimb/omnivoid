@@ -72,6 +72,10 @@ export class App {
       this.splashScreen.log('✅ Audio ready', 45);
       this.googleDriveConfig.log('Audio system initialized for external audio sources');
 
+      // Load conundrum content immediately at startup
+      this.splashScreen.log('🧩 Loading conundrum content...', 50);
+      await this.loadConundrumContent();
+
       // Initialize visible components (AgentSystem, Logo only)
       this.splashScreen.log('✨ Loading visual elements...', 55);
       this.agentSystem = new AgentSystem(this.audioManager);
@@ -2100,13 +2104,37 @@ export class App {
     
     switch (windowType) {
       case 'conundrum':
+        console.log('🎭 Rendering conundrum window...');
+        console.log('🎭 this.conundrumContent exists:', !!this.conundrumContent);
+        console.log('🎭 this.conundrumContent:', this.conundrumContent);
+        
+        // If content hasn't loaded yet, show loading state
+        if (!this.conundrumContent) {
+          console.log('🎭 Content not loaded yet, showing loading state...');
+          return `
+            <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+              <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">
+                LOADING CONUNDRUM...
+              </h3>
+              <div style="font-size: 11px; color: #99ccff; line-height: 1.4;">
+                <div style="text-align: center; padding: 20px;">
+                  <div style="margin-bottom: 10px;">⏳</div>
+                  <div>Loading mystical content...</div>
+                </div>
+              </div>
+            </div>`;
+        }
+        
+        console.log('🎭 Title to display:', this.conundrumContent.title);
+        console.log('🎭 Content to display:', this.conundrumContent.content);
+        
         return `
           <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
             <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">
-              ${this.conundrumContent ? this.conundrumContent.title : 'OMNIVOID CONUNDRUM'}
+              ${this.conundrumContent.title}
             </h3>
             <div style="font-size: 11px; color: #99ccff; line-height: 1.4;">
-              ${this.conundrumContent ? this.conundrumContent.content.replace(/\n/g, '<br>') : 'Loading conundrum content...'}
+              ${this.conundrumContent.content.replace(/\n/g, '<br>')}
             </div>
           </div>`;
 
@@ -3882,8 +3910,8 @@ export class App {
           // Test Mixcloud integration
       console.log('🎵 Mixcloud integration ready for audio streaming');
     
-    // Load dynamic content from Google Drive
-    this.loadDynamicContent();
+    // Conundrum content already loaded at startup
+    console.log('🧩 Conundrum content ready from startup');
     
     // Log success
     this.googleDriveConfig.log('Google Drive integration test completed successfully');
@@ -4203,20 +4231,34 @@ export class App {
   }
 
   /**
-   * Load Conundrum content from Google Drive
+   * Load Conundrum content from local file
    */
   async loadConundrumContent() {
     try {
       console.log('🧩 Loading Conundrum content from local file...');
+      console.log('📁 File path: ./public/links/conundrum.txt');
       
-      // Read the conundrum.txt file from the public/links folder (same method as live_transmissions.txt)
+      // Read the conundrum.txt file from the public/links folder
       const content = await readPublicFile('./public/links/conundrum.txt');
+      
+      console.log('📄 Raw content received:', content ? 'YES' : 'NO');
+      console.log('📄 Content length:', content ? content.length : 0);
+      console.log('📄 First 100 chars:', content ? content.substring(0, 100) : 'NONE');
       
       if (content) {
         // Parse the content to extract title and body
-        const lines = content.split('\n').filter(line => line.trim());
+        const lines = content.split('\n');
+        console.log('📝 Total lines:', lines.length);
+        console.log('📝 Line 0 (title):', lines[0]);
+        console.log('📝 Line 1:', lines[1]);
+        console.log('📝 Line 2:', lines[2]);
+        
         const title = lines[0] || 'THE OMNIVOID CONUNDRUM';
         const bodyContent = lines.slice(1).join('\n') || 'Content loaded from local file.';
+        
+        console.log('🏷️ Final title:', title);
+        console.log('📖 Final body content length:', bodyContent.length);
+        console.log('📖 Body preview:', bodyContent.substring(0, 100));
         
         this.conundrumContent = {
           title: title,
@@ -4224,6 +4266,9 @@ export class App {
         };
         
         console.log('✅ Conundrum content loaded from local file');
+        console.log('🎯 this.conundrumContent set to:', this.conundrumContent);
+        
+
       } else {
         // Fallback to placeholder content if fetch fails
         this.conundrumContent = {
@@ -4250,6 +4295,8 @@ The conundrum lies in the space between digital and analog, between past and fut
       };
     }
   }
+
+
 
   /**
    * Load Contact content from Google Drive
