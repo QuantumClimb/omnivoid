@@ -4,7 +4,7 @@ import { AudioManager } from './controllers/AudioManager.js';
 import { ThemeManager } from './controllers/ThemeManager.js';
 import { SplashScreen } from './components/SplashScreen.js';
 import { RetroWindow } from './components/RetroWindow.js';
-import { GOOGLE_DRIVE_CONFIG, readPublicFile } from './config/googleDrive.js';
+import { GOOGLE_DRIVE_CONFIG, readPublicFile, fetchGoogleDriveTextFile } from './config/googleDrive.js';
 
 // Import all other components but keep them hidden initially
 import { Grid } from './components/Grid.js';
@@ -14,6 +14,7 @@ import { VectorGrid } from './components/VectorGrid.js';
 import { ASCIITunnel } from './components/ASCIITunnel.js';
 import { Cylinder3D } from './components/Cylinder3D.js';
 import { Headline } from './components/Headline.js';
+import { PolygonEcho } from './components/PolygonEcho.js';
 import { AnimationController } from './controllers/AnimationController.js';
 import { ControlPanel } from './controllers/ControlPanel.js';
 
@@ -86,6 +87,10 @@ export class App {
       this.grid = new Grid();
       this.solarSystem = new SolarSystem();
       this.headline = new Headline(this.audioManager);
+      this.polygonEcho = new PolygonEcho();
+      
+      // Connect ThemeManager with visual components for dynamic color updates
+      this.themeManager.setComponents(this.solarSystem, this.agentSystem, this.polygonEcho);
       
       // Hide advanced visual layers but keep starfield visible
       this.hideAdvancedLayers();
@@ -93,11 +98,14 @@ export class App {
       // Set up responsive controls based on device
       this.splashScreen.log('📱 Setting up responsive controls...', 85);
       
-      // Complete initialization
-      this.splashScreen.log('🌌 Welcome to OMNIVOID', 100);
-      
-      // Test Google Drive integration
-      this.testGoogleDriveIntegration();
+          // Complete initialization
+    this.splashScreen.log('🌌 Welcome to OMNIVOID', 100);
+    
+    // Test Google Drive integration
+    this.testGoogleDriveIntegration();
+    
+    // Add console commands for color system exploration
+    this.setupConsoleCommands();
       
       // Initialize responsive mode based on screen size
       this.initializeResponsiveMode();
@@ -130,6 +138,7 @@ export class App {
     this.grid.setVisibility(false);
     this.solarSystem.setVisibility(false);
     this.headline.setVisibility(false);
+    this.polygonEcho.setVisibility(false);
     
     // Hide the control panel
     const controlsDiv = document.getElementById('controls');
@@ -189,7 +198,7 @@ export class App {
       justify-content: center;
       font-size: 14px;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       flex-shrink: 0;
     `;
     
@@ -247,7 +256,7 @@ export class App {
       justify-content: center;
       font-size: 14px;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       flex-shrink: 0;
     `;
     
@@ -305,7 +314,7 @@ export class App {
       justify-content: center;
       font-size: 14px;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       flex-shrink: 0;
     `;
     
@@ -345,11 +354,69 @@ export class App {
       }
     });
     
+    // Polygon Echo toggle button
+    const polygonBtn = document.createElement('button');
+    polygonBtn.className = 'minimal-control-btn';
+    polygonBtn.innerHTML = '⬟';
+    polygonBtn.title = 'Toggle Polygon Echo';
+    polygonBtn.style.cssText = `
+      background: transparent;
+      border: 1px solid #99ccff;
+      color: #99ccff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+      font-family: 'Space Mono', monospace;
+      flex-shrink: 0;
+    `;
+    
+    polygonBtn.addEventListener('mouseenter', () => {
+      if (polygonBtn.classList.contains('active')) {
+        polygonBtn.style.backgroundColor = '#336699';
+        polygonBtn.style.color = '#ffffff';
+      } else {
+        polygonBtn.style.backgroundColor = '#99ccff';
+        polygonBtn.style.color = '#000000';
+      }
+    });
+    
+    polygonBtn.addEventListener('mouseleave', () => {
+      if (polygonBtn.classList.contains('active')) {
+        polygonBtn.style.backgroundColor = '#99ccff';
+        polygonBtn.style.color = '#000000';
+      } else {
+        polygonBtn.style.backgroundColor = 'transparent';
+        polygonBtn.style.color = '#99ccff';
+      }
+    });
+    
+    polygonBtn.addEventListener('click', () => {
+      const isVisible = this.polygonEcho.isVisible;
+      this.polygonEcho.setVisibility(!isVisible);
+      if (!isVisible) {
+        polygonBtn.classList.add('active');
+        polygonBtn.innerHTML = '⬟';
+        polygonBtn.style.backgroundColor = '#99ccff';
+        polygonBtn.style.color = '#000000';
+      } else {
+        polygonBtn.classList.remove('active');
+        polygonBtn.innerHTML = '⬟';
+        polygonBtn.style.backgroundColor = 'transparent';
+        polygonBtn.style.color = '#99ccff';
+      }
+    });
+
     // Theme toggle button
     const themeBtn = document.createElement('button');
     themeBtn.className = 'minimal-control-btn';
-    themeBtn.innerHTML = '🌙';
-    themeBtn.title = 'Toggle Theme';
+    themeBtn.innerHTML = '🌙'; // Start with dark mode icon
+    themeBtn.title = 'Dark Theme - Click for random colors';
     themeBtn.style.cssText = `
       background: transparent;
       border: 1px solid #99ccff;
@@ -363,7 +430,7 @@ export class App {
       justify-content: center;
       font-size: 14px;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       flex-shrink: 0;
     `;
     
@@ -378,12 +445,34 @@ export class App {
     });
     
     themeBtn.addEventListener('click', () => {
-      this.themeManager.toggleTheme();
-      // Update icon based on theme
-      if (document.body.classList.contains('light-theme')) {
-        themeBtn.innerHTML = '☀️';
+      const currentTheme = this.themeManager.getCurrentTheme();
+      
+      if (currentTheme === 'random') {
+        // If already in random theme, generate new colors
+        this.themeManager.forceNewRandomTheme();
+        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Click for new colors`;
+        console.log('🎨 New random colors generated');
+        
+        // Also randomize polygon echo if it's visible
+        if (this.polygonEcho && this.polygonEcho.isVisible) {
+          this.polygonEcho.randomize();
+          console.log('⬟ Polygon echo also randomized!');
+        }
       } else {
-        themeBtn.innerHTML = '🌙';
+        // Switch to random theme
+        this.themeManager.cycleTheme();
+        themeBtn.innerHTML = '🎨';
+        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Click for dark theme`;
+      }
+    });
+
+    // Double-click to cycle through color strategies when in random mode
+    themeBtn.addEventListener('dblclick', () => {
+      if (this.themeManager.getCurrentTheme() === 'random') {
+        // Force a new strategy
+        this.themeManager.forceNewRandomTheme();
+        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Double-click for new strategy`;
+        console.log('🎨 New color strategy: ' + this.themeManager.getCurrentStrategy());
       }
     });
     
@@ -393,23 +482,24 @@ export class App {
     controlsContainer.appendChild(starfieldBtn);
     controlsContainer.appendChild(asciiBtn);
     controlsContainer.appendChild(solarBtn);
+    controlsContainer.appendChild(polygonBtn);
     controlsContainer.appendChild(themeBtn);
     
     document.body.appendChild(controlsContainer);
     this.minimalControls = controlsContainer;
     
-    // Create separate containers for volume and agent controls
-    this.createVolumeContainer();
+    // Create separate containers for QR code and agent controls
+    this.createQRCodeContainer();
     this.createAgentControlsContainer();
   }
 
   /**
-   * Create volume control container (right side)
+   * Create QR code container (right side)
    */
-  createVolumeContainer() {
-    const volumeContainer = document.createElement('div');
-    volumeContainer.className = 'volume-control-container';
-    volumeContainer.style.cssText = `
+  createQRCodeContainer() {
+    const qrContainer = document.createElement('div');
+    qrContainer.className = 'qr-code-container';
+    qrContainer.style.cssText = `
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -427,107 +517,50 @@ export class App {
         0 0 20px rgba(153, 204, 255, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
     `;
-    
-    const volumeIcon = document.createElement('span');
-    volumeIcon.innerHTML = '🔊';
-    volumeIcon.style.cssText = `
-      font-size: 14px;
-      color: #99ccff;
-    `;
-    
-    // Volume up button
-    const volumeUpBtn = document.createElement('button');
-    volumeUpBtn.innerHTML = '+';
-    volumeUpBtn.className = 'volume-btn';
-    volumeUpBtn.title = 'Volume Up';
-    volumeUpBtn.style.cssText = `
-      background: transparent;
-      border: 1px solid #99ccff;
-      color: #99ccff;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+
+    // QR Code icon
+    const qrIcon = document.createElement('span');
+    qrIcon.innerHTML = '📱';
+    qrIcon.style.cssText = `
       font-size: 16px;
-      font-weight: bold;
-      transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
-    `;
-    
-    // Volume display
-    const volumeDisplay = document.createElement('div');
-    volumeDisplay.className = 'volume-display';
-    volumeDisplay.style.cssText = `
       color: #99ccff;
-      font-size: 10px;
-      font-family: 'Orbitron', sans-serif;
-      text-align: center;
-      min-width: 30px;
+      margin-bottom: 4px;
     `;
-    
-    // Volume down button
-    const volumeDownBtn = document.createElement('button');
-    volumeDownBtn.innerHTML = '−';
-    volumeDownBtn.className = 'volume-btn';
-    volumeDownBtn.title = 'Volume Down';
-    volumeDownBtn.style.cssText = `
-      background: transparent;
-      border: 1px solid #99ccff;
-      color: #99ccff;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+
+    // QR Code image
+    const qrImage = document.createElement('img');
+    qrImage.src = 'public/gigs/workshop.png'; // Using workshop image as QR code placeholder
+    qrImage.style.cssText = `
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      border: 1px solid #333333;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: bold;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
     `;
-    
-    // Initialize volume
-    let currentVolume = 0.7;
-    this.audioManager.setVolume(currentVolume);
-    volumeDisplay.textContent = Math.round(currentVolume * 100) + '%';
-    
-    // Volume button hover effects
-    [volumeUpBtn, volumeDownBtn].forEach(btn => {
-      btn.addEventListener('mouseenter', () => {
-        btn.style.backgroundColor = '#99ccff';
-        btn.style.color = '#000000';
-      });
-      
-      btn.addEventListener('mouseleave', () => {
-        btn.style.backgroundColor = 'transparent';
-        btn.style.color = '#99ccff';
-      });
+    qrImage.title = 'Scan QR Code';
+
+    // QR Code hover effects
+    qrImage.addEventListener('mouseenter', () => {
+      qrImage.style.transform = 'scale(1.1)';
+      qrImage.style.borderColor = '#99ccff';
     });
     
-    // Volume control logic
-    volumeUpBtn.addEventListener('click', () => {
-      currentVolume = Math.min(1.0, currentVolume + 0.1);
-      this.audioManager.setVolume(currentVolume);
-      volumeDisplay.textContent = Math.round(currentVolume * 100) + '%';
+    qrImage.addEventListener('mouseleave', () => {
+      qrImage.style.transform = 'scale(1)';
+      qrImage.style.borderColor = '#333333';
     });
-    
-    volumeDownBtn.addEventListener('click', () => {
-      currentVolume = Math.max(0.0, currentVolume - 0.1);
-      this.audioManager.setVolume(currentVolume);
-      volumeDisplay.textContent = Math.round(currentVolume * 100) + '%';
+
+    // QR Code click to open in new tab
+    qrImage.addEventListener('click', () => {
+      window.open(qrImage.src, '_blank');
     });
-    
-    volumeContainer.appendChild(volumeIcon);
-    volumeContainer.appendChild(volumeUpBtn);
-    volumeContainer.appendChild(volumeDisplay);
-    volumeContainer.appendChild(volumeDownBtn);
-    
-    document.body.appendChild(volumeContainer);
-    this.volumeContainer = volumeContainer;
+
+    qrContainer.appendChild(qrIcon);
+    qrContainer.appendChild(qrImage);
+
+    document.body.appendChild(qrContainer);
+    this.qrContainer = qrContainer;
   }
 
   /**
@@ -543,11 +576,11 @@ export class App {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       z-index: 1001;
       background: #111111;
       backdrop-filter: blur(10px);
-      padding: 12px 8px;
+      padding: 16px 12px;
       border-radius: 20px;
       border: 1px solid #333333;
       box-shadow: 
@@ -562,7 +595,7 @@ export class App {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 8px;
       flex-shrink: 0;
     `;
     
@@ -570,9 +603,9 @@ export class App {
     agentCountLabel.innerHTML = '👥';
     agentCountLabel.title = 'Agent Count';
     agentCountLabel.style.cssText = `
-      font-size: 12px;
+      font-size: 16px;
       color: #99ccff;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
     
     // Agent count buttons container
@@ -591,27 +624,27 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: bold;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
     
     const agentCountDisplay = document.createElement('div');
     agentCountDisplay.className = 'agent-count-display';
     agentCountDisplay.style.cssText = `
       color: #99ccff;
-      font-size: 9px;
-      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-family: 'Space Mono', monospace;
       text-align: center;
-      min-width: 24px;
+      min-width: 32px;
     `;
     
     const agentCountDownBtn = document.createElement('button');
@@ -622,17 +655,17 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: bold;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
     
     // Initialize agent count
@@ -679,7 +712,7 @@ export class App {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 8px;
       flex-shrink: 0;
     `;
     
@@ -687,9 +720,9 @@ export class App {
     connectionLabel.innerHTML = '🔗';
     connectionLabel.title = 'Connection Distance';
     connectionLabel.style.cssText = `
-      font-size: 12px;
+      font-size: 16px;
       color: #99ccff;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
     
     // Connection distance buttons container
@@ -708,27 +741,27 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: bold;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
     
     const connectionDisplay = document.createElement('div');
     connectionDisplay.className = 'connection-display';
     connectionDisplay.style.cssText = `
       color: #99ccff;
-      font-size: 9px;
-      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-family: 'Space Mono', monospace;
       text-align: center;
-      min-width: 24px;
+      min-width: 32px;
     `;
     
     const connectionDownBtn = document.createElement('button');
@@ -739,17 +772,17 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: bold;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
     
     // Initialize connection distance
@@ -824,46 +857,41 @@ export class App {
           font-size: 12px !important;
         }
         
-        /* Volume container mobile */
-        .volume-control-container {
+        /* QR Code container mobile */
+        .qr-code-container {
           bottom: 10px !important;
           right: 10px !important;
           padding: 8px 6px !important;
           gap: 6px !important;
         }
         
-        .volume-btn {
-          width: 24px !important;
-          height: 24px !important;
-          font-size: 14px !important;
-        }
-        
-        .volume-display {
-          font-size: 8px !important;
+        .qr-code-container img {
+          width: 50px !important;
+          height: 50px !important;
         }
         
         /* Agent controls container mobile */
         .agent-controls-container {
           bottom: 10px !important;
           left: 10px !important;
-          padding: 8px 6px !important;
-          gap: 8px !important;
+          padding: 12px 8px !important;
+          gap: 12px !important;
         }
         
         .dial-container {
-          gap: 2px !important;
+          gap: 6px !important;
         }
         
         .agent-btn {
-          width: 20px !important;
-          height: 20px !important;
-          font-size: 10px !important;
+          width: 28px !important;
+          height: 28px !important;
+          font-size: 14px !important;
         }
         
         .agent-count-display,
         .connection-display {
-          font-size: 6px !important;
-          min-width: 18px !important;
+          font-size: 12px !important;
+          min-width: 28px !important;
         }
         
         /* Radio Controls - Small Mobile */
@@ -1016,7 +1044,7 @@ export class App {
           padding: 6px 10px !important;
           font-size: 12px !important;
           cursor: pointer !important;
-          font-family: 'Orbitron', sans-serif !important;
+          font-family: 'Space Mono', monospace !important;
           min-width: 40px !important;
           transition: all 0.2s !important;
           border-radius: 3px !important;
@@ -1083,19 +1111,14 @@ export class App {
           font-size: 10px !important;
         }
         
-        .volume-control-container {
+        .qr-code-container {
           padding: 6px 4px !important;
           gap: 4px !important;
         }
         
-        .volume-btn {
-          width: 22px !important;
-          height: 22px !important;
-          font-size: 9px !important;
-        }
-        
-        .volume-display {
-          font-size: 8px !important;
+        .qr-code-container img {
+          width: 45px !important;
+          height: 45px !important;
         }
         
         .agent-controls-container {
@@ -1168,7 +1191,7 @@ export class App {
         .gallery-thumbnail,
         .doc-thumbnail,
         .file-item,
-        .volume-control-container,
+        .qr-code-container,
         .agent-controls-container {
           touch-action: manipulation;
         }
@@ -1214,7 +1237,7 @@ export class App {
       z-index: 1000;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       box-shadow: 
         0 0 15px rgba(153, 204, 255, 0.2),
         2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -1318,7 +1341,7 @@ export class App {
         transition: all 0.3s ease;
         margin-bottom: 8px;
         backdrop-filter: blur(10px);
-        font-family: 'Orbitron', sans-serif;
+        font-family: 'Space Mono', monospace;
         box-shadow: 
           0 0 15px rgba(153, 204, 255, 0.2),
           2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -1506,7 +1529,7 @@ export class App {
       color: #99ccff;
       padding: 8px 12px;
       border-radius: 6px;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 11px;
       white-space: nowrap;
       z-index: 10000;
@@ -1777,7 +1800,7 @@ export class App {
       justify-content: center !important;
       transition: all 0.2s ease !important;
       box-sizing: border-box !important;
-      font-family: 'Orbitron', sans-serif !important;
+      font-family: 'Space Mono', monospace !important;
       font-weight: bold !important;
       outline: none !important;
       user-select: none !important;
@@ -2079,20 +2102,12 @@ export class App {
       case 'conundrum':
         return `
           <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-            <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID CONUNDRUM</h3>
-            <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              Welcome to the OMNIVOID experience. This retro-style interface brings you back to the golden age of computing while delivering cutting-edge audio-visual artistry.
-            </p>
-            <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              Navigate through our immersive soundscapes and discover the hidden layers of digital consciousness that lie beneath the surface of reality.
-            </p>
-            <hr style="border: none; border-top: 1px inset #333333; margin: 8px 0;">
-            <p style="margin: 0; font-size: 10px; color: #66aaff;">
-              <strong>System Status:</strong> All systems operational<br>
-              <strong>Audio Engine:</strong> Web Audio API v2.0<br>
-              <strong>Visual Processing:</strong> Canvas 2D + WebGL<br>
-              <strong>Particle Systems:</strong> Active
-            </p>
+            <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">
+              ${this.conundrumContent ? this.conundrumContent.title : 'OMNIVOID CONUNDRUM'}
+            </h3>
+            <div style="font-size: 11px; color: #99ccff; line-height: 1.4;">
+              ${this.conundrumContent ? this.conundrumContent.content.replace(/\n/g, '<br>') : 'Loading conundrum content...'}
+            </div>
           </div>`;
 
       case 'releases':
@@ -2117,36 +2132,10 @@ export class App {
         return this.createGalleryContent();
 
       case 'contact':
-        return `
-          <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-            <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">CONTACT OMNIVOID</h3>
-            <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              Connect with the OMNIVOID collective. We're always interested in collaborations and feedback.
-            </p>
-            <div style="font-size: 10px; line-height: 1.4; color: #66aaff;">
-              <div style="margin-bottom: 4px;"><strong>Email:</strong> contact@omnivoid.net</div>
-              <div style="margin-bottom: 4px;"><strong>GitHub:</strong> github.com/QuantumClimb/omnivoid</div>
-              <div style="margin-bottom: 4px;"><strong>Status:</strong> Available for projects</div>
-            </div>
-          </div>`;
+        return this.createContactContent();
 
       case 'latest-gig':
-        return `
-          <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-            <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">LATEST GIG</h3>
-            <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              Check out our most recent live performance and upcoming gigs. Experience OMNIVOID in its natural habitat - the live stage.
-            </p>
-            <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-              From intimate club shows to festival stages, we bring our unique blend of experimental electronic music and visual art to audiences worldwide.
-            </p>
-            <hr style="border: none; border-top: 1px inset #333333; margin: 8px 0;">
-            <div style="font-size: 10px; color: #66aaff;">
-              <div><strong>Next Show:</strong> TBA</div>
-              <div><strong>Last Performance:</strong> Electronic Arts Festival</div>
-              <div><strong>Booking:</strong> Available for 2024</div>
-            </div>
-          </div>`;
+        return this.createGigsContent();
 
       default:
         return '<p style="font-size: 11px; padding: 12px; color: #99ccff; background: #0a0a0a;">Content loading...</p>';
@@ -2218,11 +2207,12 @@ export class App {
           <iframe 
             width="100%" 
             height="100%" 
-            src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=%2Froydipankar8%2F" 
+            src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=%2Froydipankar8%2F&light=1&autoplay=0&hide_tracklist=1&hide_artwork=1&classic=1" 
             frameborder="0"
             id="mixcloud-player"
             style="border: none;"
             allow="autoplay"
+            title="Mixcloud Player"
           ></iframe>
         </div>
         
@@ -2243,8 +2233,18 @@ export class App {
             border-radius: 4px;
             cursor: pointer;
             font-size: 8px;
-            font-family: 'Orbitron', sans-serif;
-          ">🔊 Refresh Audio Capture</button>
+            font-family: 'Space Mono', monospace;
+          ">🎵 Start Visual Effects</button>
+          <button onclick="window.omnivoidApp.stopTestOscillator()" style="
+            background: #333; 
+            border: 1px solid #666; 
+            color: #99ccff; 
+            padding: 4px 8px; 
+            font-size: 8px; 
+            cursor: pointer; 
+            margin-top: 4px;
+            margin-left: 4px;
+          ">⏹️ Stop Audio Proxy</button>
           
           <!-- Debug Panel -->
           <div style="margin-top: 8px; padding: 6px; background: #000; border: 1px solid #333; font-size: 8px;">
@@ -2261,7 +2261,7 @@ export class App {
               border-radius: 2px;
               cursor: pointer;
               font-size: 7px;
-              font-family: 'Orbitron', sans-serif;
+              font-family: 'Space Mono', monospace;
             ">🔄 Refresh Debug</button>
           </div>
         </div>
@@ -2289,29 +2289,20 @@ export class App {
   initializeMixcloudWidget() {
     console.log('🎵 Initializing Mixcloud widget...');
     
+    // Initialize Mixcloud event tracking
+    this.mixcloudEventsReceived = false;
+    
     // Wait for the iframe to load
     setTimeout(() => {
       const mixcloudPlayer = document.getElementById('mixcloud-player');
       if (mixcloudPlayer) {
         console.log('✅ Mixcloud player iframe found');
         
+        // Set up Mixcloud widget event listeners
+        this.setupMixcloudWidgetEvents();
+        
         // Set up audio reactivity monitoring
         this.setupMixcloudAudioReactivity();
-        
-        // Try to capture audio from the iframe
-        this.captureMixcloudAudio();
-        
-        // Set up iframe load event listener
-        mixcloudPlayer.addEventListener('load', () => {
-          console.log('🎵 Mixcloud iframe loaded');
-          // Try audio capture again after iframe is fully loaded
-          setTimeout(() => {
-            this.captureMixcloudAudio();
-          }, 1000);
-        });
-        
-        // Also try to capture audio periodically
-        this.setupPeriodicAudioCapture();
         
         // Initial debug info
         setTimeout(() => {
@@ -2327,27 +2318,199 @@ export class App {
   }
 
   /**
-   * Set up periodic audio capture attempts
+   * Set up Mixcloud widget event listeners
+   */
+  setupMixcloudWidgetEvents() {
+    console.log('🎵 Setting up Mixcloud widget events...');
+    
+    try {
+      // Listen for messages from the Mixcloud iframe
+      window.addEventListener('message', (event) => {
+        // Only accept messages from Mixcloud
+        if (event.origin !== 'https://www.mixcloud.com') {
+          return;
+        }
+        
+        console.log('📨 Message from Mixcloud widget:', event.data);
+        
+        // Handle different widget events
+        if (event.data && event.data.type) {
+          switch (event.data.type) {
+            case 'play':
+              console.log('▶️ Mixcloud track started playing');
+              this.onMixcloudPlay();
+              break;
+            case 'pause':
+              console.log('⏸️ Mixcloud track paused');
+              this.onMixcloudPause();
+              break;
+            case 'finish':
+              console.log('⏹️ Mixcloud track finished');
+              this.onMixcloudFinish();
+              break;
+            case 'progress':
+              console.log('📊 Mixcloud progress:', event.data.data);
+              this.onMixcloudProgress(event.data.data);
+              break;
+            case 'error':
+              console.log('❌ Mixcloud widget error:', event.data.data);
+              this.onMixcloudError(event.data.data);
+              break;
+            default:
+              console.log('📨 Unknown Mixcloud event:', event.data.type);
+          }
+        }
+      });
+      
+      // Also listen for iframe load errors
+      const mixcloudPlayer = document.getElementById('mixcloud-player');
+      if (mixcloudPlayer) {
+        mixcloudPlayer.addEventListener('error', (error) => {
+          console.log('⚠️ Mixcloud iframe error:', error);
+          this.updateReactivityStatus('Mixcloud widget error - using fallback');
+        });
+        
+        // Listen for iframe load completion
+        mixcloudPlayer.addEventListener('load', () => {
+          console.log('🎵 Mixcloud iframe loaded successfully');
+          // Wait a bit then check if we need to fall back
+          setTimeout(() => {
+            this.checkMixcloudStatus();
+          }, 3000);
+        });
+      }
+      
+      console.log('✅ Mixcloud widget events configured');
+      
+    } catch (error) {
+      console.log('❌ Error setting up Mixcloud widget events:', error);
+    }
+  }
+
+  /**
+   * Check Mixcloud widget status and fall back if needed
+   */
+  checkMixcloudStatus() {
+    console.log('🔍 Checking Mixcloud widget status...');
+    
+    // If we haven't received any play events after 3 seconds, 
+    // the widget might have issues, so fall back to test oscillator
+    if (!this.mixcloudEventsReceived) {
+      console.log('⚠️ No Mixcloud events received - falling back to test oscillator');
+      this.updateReactivityStatus('Mixcloud not responding - using fallback');
+      this.createTestOscillator();
+    }
+  }
+
+  /**
+   * Handle Mixcloud play event
+   */
+  onMixcloudPlay() {
+    console.log('🎵 Mixcloud track playing - starting audio reactivity');
+    
+    // Mark that we've received Mixcloud events
+    this.mixcloudEventsReceived = true;
+    
+    // Since we can't capture audio directly, use the test oscillator for visual effects
+    this.createTestOscillator();
+    
+    // Update status
+    this.updateReactivityStatus('Mixcloud playing - Visual effects active (test oscillator)');
+  }
+
+  /**
+   * Handle Mixcloud pause event
+   */
+  onMixcloudPause() {
+    console.log('⏸️ Mixcloud track paused - pausing visual effects');
+    
+    // Stop the test oscillator
+    this.stopTestOscillator();
+    
+    // Update status
+    this.updateReactivityStatus('Mixcloud paused - Visual effects paused');
+  }
+
+  /**
+   * Handle Mixcloud finish event
+   */
+  onMixcloudFinish() {
+    console.log('⏹️ Mixcloud track finished - stopping visual effects');
+    
+    // Stop the test oscillator
+    this.stopTestOscillator();
+    
+    // Update status
+    this.updateReactivityStatus('Mixcloud track finished - Visual effects stopped');
+  }
+
+  /**
+   * Handle Mixcloud progress event
+   */
+  onMixcloudProgress(progressData) {
+    // Update progress display if needed
+    if (progressData && progressData.currentTime !== undefined) {
+      console.log('📊 Mixcloud progress:', progressData.currentTime);
+    }
+  }
+
+  /**
+   * Handle Mixcloud error event
+   */
+  onMixcloudError(errorData) {
+    console.log('❌ Mixcloud widget error:', errorData);
+    
+    // Update status to show error
+    this.updateReactivityStatus('Mixcloud error - using fallback visual effects');
+    
+    // Fall back to test oscillator for visual effects
+    this.createTestOscillator();
+  }
+
+  /**
+   * Stop test oscillator
+   */
+  stopTestOscillator() {
+    if (this.audioProxy.testOscillator) {
+      try {
+        this.audioProxy.testOscillator.stop();
+        this.audioProxy.testOscillator.disconnect();
+        this.audioProxy.testOscillator = null;
+        
+        if (this.audioProxy.testGain) {
+          this.audioProxy.testGain.disconnect();
+          this.audioProxy.testGain = null;
+        }
+        
+        console.log('⏹️ Test oscillator stopped');
+      } catch (error) {
+        console.log('⚠️ Error stopping test oscillator:', error);
+      }
+    }
+  }
+
+  /**
+   * Set up periodic audio proxy attempts
    */
   setupPeriodicAudioCapture() {
-    console.log('🔄 Setting up periodic audio capture...');
+    console.log('🔄 Setting up periodic audio proxy attempts...');
     
-    // Try to capture audio every 5 seconds for the first minute
+    // Try to start audio proxy every 5 seconds for the first minute
     let attempts = 0;
     const maxAttempts = 12; // 1 minute
     
     const captureInterval = setInterval(() => {
       attempts++;
-      console.log(`🔄 Audio capture attempt ${attempts}/${maxAttempts}`);
+      console.log(`🔄 Audio proxy attempt ${attempts}/${maxAttempts}`);
       
       if (attempts >= maxAttempts) {
         clearInterval(captureInterval);
-        console.log('⏰ Stopping periodic audio capture attempts');
+        console.log('⏰ Stopping periodic audio proxy attempts');
         return;
       }
       
-      // Try different capture methods
-      this.captureMixcloudAudio();
+      // Try to start audio proxy
+      this.startAudioProxy();
       
     }, 5000); // Every 5 seconds
     
@@ -2395,43 +2558,19 @@ export class App {
    * Capture audio from Mixcloud iframe for reactivity
    */
   async captureMixcloudAudio() {
-    console.log('🎵 Attempting to capture Mixcloud audio...');
+    console.log('🎵 Starting Mixcloud audio through proxy...');
     
     try {
-      // Method 1: Try to get audio from the iframe's audio context
-      const mixcloudPlayer = document.getElementById('mixcloud-player');
-      if (mixcloudPlayer && mixcloudPlayer.contentWindow) {
-        console.log('🔍 Accessing Mixcloud iframe content...');
-        
-        // Wait a bit more for the iframe to fully load
-        setTimeout(() => {
-          try {
-            // Try to access the iframe's audio context
-            const iframeWindow = mixcloudPlayer.contentWindow;
-            if (iframeWindow && iframeWindow.document) {
-              console.log('✅ Iframe document accessible');
-              
-              // Look for audio elements in the iframe
-              const audioElements = iframeWindow.document.querySelectorAll('audio, video');
-              console.log(`🎵 Found ${audioElements.length} audio/video elements in iframe`);
-              
-              if (audioElements.length > 0) {
-                // Try to connect the first audio element to our audio context
-                this.connectIframeAudio(audioElements[0]);
-              } else {
-                console.log('⚠️ No audio elements found in iframe, trying alternative method');
-                this.tryAlternativeAudioCapture();
-              }
-            }
-          } catch (error) {
-            console.log('⚠️ Cannot access iframe content (cross-origin restriction)');
-            this.tryAlternativeAudioCapture();
-          }
-        }, 2000);
-      }
+      // Initialize and start audio proxy
+      this.initializeAudioProxy();
+      this.startAudioProxy();
+      
+      console.log('✅ Mixcloud audio proxy started');
+      this.updateReactivityStatus('Audio proxy active - Mixcloud stream connected');
+      
     } catch (error) {
-      console.log('⚠️ Error accessing Mixcloud iframe:', error);
-      this.tryAlternativeAudioCapture();
+      console.log('❌ Error starting Mixcloud audio proxy:', error);
+      this.updateReactivityStatus('Audio proxy failed - ' + error.message);
     }
   }
 
@@ -2439,18 +2578,53 @@ export class App {
    * Try alternative audio capture methods
    */
   tryAlternativeAudioCapture() {
-    console.log('🔄 Trying alternative Mixcloud audio capture...');
+    console.log('🔄 Trying alternative audio capture methods...');
     
-    // Only try to capture from Mixcloud iframe - no microphone or system audio
-    console.log('🎵 Mixcloud-only mode - no alternative audio sources');
+    // Since CORS blocks iframe access, create a test oscillator for visual effects
+    this.createTestOscillator();
+  }
+
+  /**
+   * Create a test oscillator for visual effects when audio capture fails
+   */
+  createTestOscillator() {
+    console.log('🎵 Creating test oscillator for visual effects...');
     
-    // Update status
-    const reactivityStatus = document.getElementById('reactivity-status');
-    if (reactivityStatus) {
-      reactivityStatus.textContent = 'Mixcloud-only mode - No microphone access';
+    try {
+      if (this.audioManager && this.audioManager.audioContext) {
+        // Create a simple oscillator
+        const oscillator = this.audioManager.audioContext.createOscillator();
+        const gainNode = this.audioManager.audioContext.createGain();
+        
+        // Configure oscillator
+        oscillator.frequency.setValueAtTime(440, this.audioManager.audioContext.currentTime); // A4 note
+        oscillator.type = 'sine';
+        
+        // Set very low volume
+        gainNode.gain.setValueAtTime(0.001, this.audioManager.audioContext.currentTime);
+        
+        // Connect oscillator to analyser
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioManager.analyser);
+        
+        // Start the oscillator
+        oscillator.start();
+        
+        console.log('✅ Test oscillator created and connected');
+        this.updateReactivityStatus('Test oscillator active - Visual effects working');
+        
+        // Store for cleanup
+        this.audioProxy.testOscillator = oscillator;
+        this.audioProxy.testGain = gainNode;
+        
+      } else {
+        console.log('❌ Audio manager not available for test oscillator');
+        this.updateReactivityStatus('Audio manager not available');
+      }
+    } catch (error) {
+      console.log('❌ Error creating test oscillator:', error);
+      this.updateReactivityStatus('Test oscillator failed: ' + error.message);
     }
-    
-    console.log('✅ Mixcloud-only audio mode configured');
   }
 
 
@@ -2513,19 +2687,19 @@ export class App {
   }
 
   /**
-   * Manual audio capture trigger
+   * Manual visual effects trigger
    */
   manualAudioCapture() {
-    console.log('🔊 Manual audio capture triggered...');
+    console.log('🔊 Manual visual effects trigger...');
     
     // Update status
     const reactivityStatus = document.getElementById('reactivity-status');
     if (reactivityStatus) {
-      reactivityStatus.textContent = 'Attempting Mixcloud audio capture...';
+      reactivityStatus.textContent = 'Starting visual effects...';
     }
     
-    // Try to capture audio from Mixcloud iframe
-    this.captureMixcloudAudio();
+    // Start test oscillator for visual effects
+    this.createTestOscillator();
     
     // Refresh debug info
     setTimeout(() => {
@@ -2587,6 +2761,20 @@ export class App {
     } else {
       debugText += `❌ Mixcloud Widget: Not Found<br>`;
     }
+    
+    // Audio Proxy Status
+    debugText += `🎵 Audio Proxy: ${this.audioProxy.isActive ? 'Active' : 'Not Active'}<br>`;
+    debugText += `🎵 Proxy Context: ${this.audioProxy.audioContext ? 'Active' : 'Not Available'}<br>`;
+    debugText += `🎵 Proxy Analyser: ${this.audioProxy.analyser ? 'Active' : 'Not Available'}<br>`;
+    debugText += `🎵 Proxy Audio: ${this.audioProxy.audioElement ? 'Loaded' : 'Not Loaded'}<br>`;
+    debugText += `🎵 Audio Source: ${this.audioProxy.source ? 'Connected' : 'Not Connected'}<br>`;
+    debugText += `🎵 Iframe Source: ${this.audioProxy.iframeSource ? 'Connected' : 'Not Connected'}<br>`;
+    debugText += `🎵 Test Oscillator: ${this.audioProxy.testOscillator ? 'Active' : 'Not Active'}<br>`;
+    debugText += `🎵 Main Analyser: ${this.audioManager && this.audioManager.analyser ? 'Available' : 'Not Available'}<br>`;
+    
+    // Mixcloud Widget Status
+    debugText += `🎵 Mixcloud Events: ${this.mixcloudEventsReceived ? 'Received' : 'Not Received'}<br>`;
+    debugText += `🎵 Widget Status: ${this.mixcloudEventsReceived ? 'Working' : 'May have issues'}<br>`;
     
     // Browser Capabilities
     debugText += `🎵 Web Audio API: ${window.AudioContext ? 'Supported' : 'Not Supported'}<br>`;
@@ -2727,6 +2915,333 @@ export class App {
   }
 
   /**
+   * Create gigs content with tabbed interface
+   */
+  createGigsContent() {
+    return `
+      <div id="gigs-container" style="background: #0a0a0a;">
+        <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">
+          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID EVENTS</h3>
+          <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
+            Experience OMNIVOID live - from electrifying performances to immersive workshops. Join us in the digital consciousness.
+          </p>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div style="
+          display: flex;
+          margin-bottom: 8px;
+          border: 1px inset #333333;
+          background: #1a1a1a;
+        ">
+          <button id="gig-tab" onclick="window.omnivoidApp.switchGigTab('gig')" style="
+            flex: 1;
+            padding: 8px;
+            background: #99ccff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.2s;
+          ">🎵 LIVE GIG</button>
+          <button id="workshop-tab" onclick="window.omnivoidApp.switchGigTab('workshop')" style="
+            flex: 1;
+            padding: 8px;
+            background: #333;
+            color: #99ccff;
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.2s;
+          ">🔬 WORKSHOP</button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div id="gig-content" class="gig-tab-content" style="
+          border: 1px inset #333333;
+          padding: 8px;
+          background: #1a1a1a;
+          display: block;
+        ">
+          <div style="text-align: center; margin-bottom: 12px;">
+            <img src="public/gigs/gig.png" alt="OMNIVOID Live Gig" style="
+              max-width: 100%;
+              height: auto;
+              border: 1px solid #333;
+              border-radius: 4px;
+            ">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">🎵 OMNIVOID LIVE PERFORMANCE</h4>
+            <p style="margin: 0 0 8px 0; font-size: 10px; color: #66aaff; line-height: 1.4;">
+              Experience the full spectrum of OMNIVOID's experimental electronic soundscapes and immersive visual art. 
+              A journey through digital consciousness and sonic exploration.
+            </p>
+            <div style="font-size: 9px; color: #999; margin-bottom: 8px;">
+              <div><strong>Genre:</strong> Experimental Electronic / Ambient</div>
+              <div><strong>Duration:</strong> 60-90 minutes</div>
+              <div><strong>Visuals:</strong> Real-time audio-reactive art</div>
+            </div>
+          </div>
+          <a href="https://skillboxes.com" target="_blank" style="
+            display: block;
+            text-align: center;
+            padding: 8px 16px;
+            background: #99ccff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.2s;
+          " onmouseover="this.style.background='#66aaff'" onmouseout="this.style.background='#99ccff'">
+            🎫 GET TICKETS - SKILLBOXES.COM
+          </a>
+        </div>
+        
+        <div id="workshop-content" class="gig-tab-content" style="
+          border: 1px inset #333333;
+          padding: 8px;
+          background: #1a1a1a;
+          display: none;
+        ">
+          <div style="text-align: center; margin-bottom: 12px;">
+            <img src="public/gigs/workshop.png" alt="OMNIVOID Workshop" style="
+              max-width: 100%;
+              height: auto;
+              border: 1px solid #333;
+              border-radius: 4px;
+            ">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">🔬 OMNIVOID WORKSHOP</h4>
+            <p style="margin: 0 0 8px 0; font-size: 10px; color: #66aaff; line-height: 1.4;">
+              Dive deep into the world of experimental electronic music production and audio-reactive visual art. 
+              Learn the techniques behind OMNIVOID's unique sound and visual aesthetic.
+            </p>
+            <div style="font-size: 9px; color: #999; margin-bottom: 8px;">
+              <div><strong>Focus:</strong> Electronic Music Production</div>
+              <div><strong>Duration:</strong> 3-4 hours</div>
+              <div><strong>Level:</strong> Intermediate to Advanced</div>
+            </div>
+          </div>
+          <a href="https://forms.google.com" target="_blank" style="
+            display: block;
+            text-align: center;
+            padding: 8px 16px;
+            background: #99ccff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.2s;
+          " onmouseover="this.style.background='#66aaff'" onmouseout="this.style.background='#99ccff'">
+            📝 REGISTER - GOOGLE FORM
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Create contact content with Instagram and partner logos
+   */
+  createContactContent() {
+    return `
+      <div id="contact-container" style="background: #0a0a0a;">
+        <!-- Main Contact Info -->
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">
+            ${this.contactContent ? this.contactContent.title : 'CONTACT OMNIVOID'}
+          </h3>
+          <div style="font-size: 11px; color: #99ccff; line-height: 1.4;">
+            ${this.contactContent ? this.contactContent.content.replace(/\n/g, '<br>') : 'Loading contact content...'}
+          </div>
+        </div>
+        
+        <!-- Social Media Section -->
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">📱 SOCIAL MEDIA</h4>
+          
+          <!-- Instagram Logo and Link -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/omnivoid_collective', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">📷</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid_collective</div>
+              <div style="font-size: 9px; color: #66aaff;">Follow us on Instagram</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Partner Logos Section -->
+        <div style="border: 1px inset #333333; padding: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🤝 PARTNERS & COLLABORATORS</h4>
+          
+          <!-- Partner 1 -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/quantumclimb', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #00d4ff 0%, #0099cc 50%, #006699 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">⚡</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@quantumclimb</div>
+              <div style="font-size: 9px; color: #66aaff;">Lead Developer & Artist</div>
+            </div>
+          </div>
+          
+          <!-- Partner 2 -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/omnivoid_labs', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #ff6b6b 0%, #ee5a24 50%, #d63031 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🔬</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid_labs</div>
+              <div style="font-size: 9px; color: #66aaff;">Research & Development</div>
+            </div>
+          </div>
+          
+          <!-- Partner 3 -->
+          <div style="
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/omnivoid_radio', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #a29bfe 0%, #6c5ce7 50%, #5f3dc4 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">📻</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid_radio</div>
+              <div style="font-size: 9px; color: #66aaff;">Radio & Broadcasting</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Switch between gig tabs
+   */
+  switchGigTab(tabName) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.gig-tab-content');
+    tabContents.forEach(content => {
+      content.style.display = 'none';
+    });
+    
+    // Reset all tab button styles
+    const tabButtons = document.querySelectorAll('#gig-tab, #workshop-tab');
+    tabButtons.forEach(button => {
+      button.style.background = '#333';
+      button.style.color = '#99ccff';
+    });
+    
+    // Show selected tab content
+    const selectedContent = document.getElementById(tabName + '-content');
+    if (selectedContent) {
+      selectedContent.style.display = 'block';
+    }
+    
+    // Update selected tab button style
+    const selectedButton = document.getElementById(tabName + '-tab');
+    if (selectedButton) {
+      selectedButton.style.background = '#99ccff';
+      selectedButton.style.color = '#000';
+    }
+  }
+
+  /**
    * Expand gallery image to full view in a popup window
    */
   expandGalleryImage(filename, description) {
@@ -2787,7 +3302,7 @@ export class App {
     title.style.cssText = `
       margin: 0;
       color: #99ccff;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 14px;
       font-weight: bold;
     `;
@@ -2807,7 +3322,7 @@ export class App {
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
 
     // Close button hover effects
@@ -2876,7 +3391,7 @@ export class App {
         <div style="
           padding: 40px;
           color: #99ccff;
-          font-family: 'Orbitron', sans-serif;
+          font-family: 'Space Mono', monospace;
           text-align: center;
         ">
           <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
@@ -2901,7 +3416,7 @@ export class App {
     descriptionText.style.cssText = `
       margin: 0;
       color: #99ccff;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 12px;
       line-height: 1.5;
       text-align: center;
@@ -3062,7 +3577,7 @@ export class App {
             line-height: 1.2;
             color: #99ccff;
             overflow: hidden;
-            font-family: 'Courier New', monospace;
+            font-family: 'Space Mono', monospace;
           ">
             ${article.title.substring(0, 40)}...
           </div>
@@ -3075,7 +3590,7 @@ export class App {
             margin-top: 4px;
             font-size: 7px;
             color: #66aaff;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Space Mono', monospace;
           ">
             📄 ${article.filename.substring(0, 8)}...
           </div>
@@ -3202,7 +3717,7 @@ export class App {
     titleElement.style.cssText = `
       margin: 0;
       color: #99ccff;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 14px;
       font-weight: bold;
     `;
@@ -3222,7 +3737,7 @@ export class App {
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
 
     // Close button hover effects
@@ -3281,7 +3796,7 @@ export class App {
     contentText.style.cssText = `
       margin: 0;
       color: #99ccff;
-      font-family: 'Courier New', monospace;
+              font-family: 'Space Mono', monospace;
       font-size: 12px;
       line-height: 1.6;
       white-space: pre-wrap;
@@ -3301,7 +3816,7 @@ export class App {
 
     const fileInfo = document.createElement('p');
     fileInfo.innerHTML = `
-      <span style="color: #99ccff; font-family: 'Orbitron', sans-serif; font-size: 10px;">
+      <span style="color: #99ccff; font-family: 'Space Mono', monospace; font-size: 10px;">
         <strong>File:</strong> ${filename} • 
         <strong>Length:</strong> ${documentContent.length} characters • 
         <strong>Type:</strong> Research Document
@@ -3366,6 +3881,9 @@ export class App {
     
           // Test Mixcloud integration
       console.log('🎵 Mixcloud integration ready for audio streaming');
+    
+    // Load dynamic content from Google Drive
+    this.loadDynamicContent();
     
     // Log success
     this.googleDriveConfig.log('Google Drive integration test completed successfully');
@@ -3532,8 +4050,8 @@ export class App {
       console.log('📱 Mobile controls shown');
     }
     
-    if (this.volumeContainer) {
-      this.volumeContainer.style.display = 'flex';
+    if (this.qrContainer) {
+      this.qrContainer.style.display = 'flex';
     }
     
     if (this.agentControlsContainer) {
@@ -3666,6 +4184,120 @@ export class App {
   }
 
   /**
+   * Load dynamic content from Google Drive text files
+   */
+  async loadDynamicContent() {
+    console.log('📄 Loading dynamic content from Google Drive...');
+    
+    try {
+      // Load Conundrum content
+      await this.loadConundrumContent();
+      
+      // Load Contact content
+      await this.loadContactContent();
+      
+      console.log('✅ Dynamic content loaded successfully');
+    } catch (error) {
+      console.log('❌ Error loading dynamic content:', error);
+    }
+  }
+
+  /**
+   * Load Conundrum content from Google Drive
+   */
+  async loadConundrumContent() {
+    try {
+      console.log('🧩 Loading Conundrum content from local file...');
+      
+      // Read the conundrum.txt file from the public/links folder (same method as live_transmissions.txt)
+      const content = await readPublicFile('./public/links/conundrum.txt');
+      
+      if (content) {
+        // Parse the content to extract title and body
+        const lines = content.split('\n').filter(line => line.trim());
+        const title = lines[0] || 'THE OMNIVOID CONUNDRUM';
+        const bodyContent = lines.slice(1).join('\n') || 'Content loaded from local file.';
+        
+        this.conundrumContent = {
+          title: title,
+          content: bodyContent
+        };
+        
+        console.log('✅ Conundrum content loaded from local file');
+      } else {
+        // Fallback to placeholder content if fetch fails
+        this.conundrumContent = {
+          title: 'THE OMNIVOID CONUNDRUM',
+          content: `Welcome to the OMNIVOID experience. This retro-style interface brings you back to the golden age of computing while delivering cutting-edge audio-visual artistry.
+
+Navigate through our immersive soundscapes and discover the hidden layers of digital consciousness that lie beneath the surface of reality.
+
+System Status: All systems operational
+Audio Engine: Web Audio API v2.0
+Visual Processing: Canvas 2D + WebGL
+Particle Systems: Active
+
+The conundrum lies in the space between digital and analog, between past and future, between what is seen and what is felt.`
+        };
+        console.log('⚠️ Using fallback Conundrum content');
+      }
+    } catch (error) {
+      console.log('❌ Error loading Conundrum content:', error);
+      // Fallback content
+      this.conundrumContent = {
+        title: 'THE OMNIVOID CONUNDRUM',
+        content: 'Content loading failed. Please check your connection.'
+      };
+    }
+  }
+
+  /**
+   * Load Contact content from Google Drive
+   */
+  async loadContactContent() {
+    try {
+      console.log('📧 Loading Contact content from local file...');
+      
+      // Read the contact.txt file from the public/links folder (same method as live_transmissions.txt)
+      const content = await readPublicFile('./public/links/contact.txt');
+      
+      if (content) {
+        // Parse the content to extract title and body
+        const lines = content.split('\n').filter(line => line.trim());
+        const title = lines[0] || 'CONTACT OMNIVOID';
+        const bodyContent = lines.slice(1).join('\n') || 'Content loaded from local file.';
+        
+        this.contactContent = {
+          title: title,
+          content: bodyContent
+        };
+        
+        console.log('✅ Contact content loaded from local file');
+      } else {
+        // Fallback to placeholder content if fetch fails
+        this.contactContent = {
+          title: 'CONTACT OMNIVOID',
+          content: `Connect with the OMNIVOID collective. We're always interested in collaborations and feedback.
+
+Email: contact@omnivoid.net
+GitHub: github.com/QuantumClimb/omnivoid
+Status: Available for projects
+
+Let's create something extraordinary together.`
+        };
+        console.log('⚠️ Using fallback Contact content');
+      }
+    } catch (error) {
+      console.log('❌ Error loading Contact content:', error);
+      // Fallback content
+      this.contactContent = {
+        title: 'CONTACT OMNIVOID',
+        content: 'Content loading failed. Please check your connection.'
+      };
+    }
+  }
+
+  /**
    * Update releases content with PDF papers
    */
   updateReleasesContent() {
@@ -3721,7 +4353,7 @@ export class App {
           line-height: 1.2;
           color: #99ccff;
           overflow: hidden;
-          font-family: 'Orbitron', sans-serif;
+          font-family: 'Space Mono', monospace;
           text-align: center;
           display: flex;
           align-items: center;
@@ -3738,7 +4370,7 @@ export class App {
           margin-top: 4px;
           font-size: 7px;
           color: #66aaff;
-          font-family: 'Orbitron', sans-serif;
+          font-family: 'Space Mono', monospace;
         ">
           PDF
         </div>
@@ -3835,7 +4467,7 @@ export class App {
       margin: 0;
       color: #99ccff;
       font-size: 14px;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
 
     const closeBtn = document.createElement('button');
@@ -3901,7 +4533,7 @@ export class App {
           justify-content: center;
           height: 100%;
           color: #ffaa44;
-          font-family: 'Orbitron', sans-serif;
+          font-family: 'Space Mono', monospace;
         ">
           <div style="text-align: center;">
             <div style="font-size: 24px; margin-bottom: 16px;">⚠️</div>
@@ -3932,7 +4564,7 @@ export class App {
           justify-content: center;
           height: 100%;
           color: #ff4444;
-          font-family: 'Orbitron', sans-serif;
+          font-family: 'Space Mono', monospace;
         ">
           <div style="text-align: center;">
             <div style="font-size: 24px; margin-bottom: 16px;">❌</div>
@@ -3968,5 +4600,348 @@ export class App {
       }
     };
     document.addEventListener('keydown', handleEscape);
+  }
+
+  /**
+   * Audio proxy system to avoid CORS issues
+   */
+  audioProxy = {
+    isActive: false,
+    audioContext: null,
+    audioElement: null,
+    analyser: null,
+    source: null,
+    iframeSource: null,
+    testOscillator: null,
+    testGain: null
+  };
+
+  /**
+   * Initialize audio proxy system
+   */
+  initializeAudioProxy() {
+    console.log('🎵 Initializing audio proxy system...');
+    
+    try {
+      // Use the main audio manager's context instead of creating a new one
+      if (this.audioManager && this.audioManager.audioContext) {
+        this.audioProxy.audioContext = this.audioManager.audioContext;
+        this.audioProxy.analyser = this.audioManager.analyser;
+        console.log('✅ Audio proxy using main audio manager context');
+      } else {
+        // Fallback: create new context only if main one doesn't exist
+        this.audioProxy.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.audioProxy.analyser = this.audioProxy.audioContext.createAnalyser();
+        
+        // Configure analyser
+        this.audioProxy.analyser.fftSize = 256;
+        this.audioProxy.analyser.smoothingTimeConstant = 0.8;
+        console.log('✅ Audio proxy created new audio context');
+      }
+      
+      console.log('✅ Audio proxy system initialized');
+      this.audioProxy.isActive = true;
+      
+    } catch (error) {
+      console.log('❌ Error initializing audio proxy:', error);
+      this.audioProxy.isActive = false;
+    }
+  }
+
+  /**
+   * Start audio proxy with Mixcloud stream
+   */
+  startAudioProxy() {
+    if (!this.audioProxy.isActive) {
+      console.log('⚠️ Audio proxy not active, initializing...');
+      this.initializeAudioProxy();
+    }
+    
+    console.log('🎵 Starting audio proxy for Mixcloud...');
+    
+    try {
+      // Create audio element for Mixcloud stream
+      this.audioProxy.audioElement = new Audio();
+      this.audioProxy.audioElement.crossOrigin = 'anonymous';
+      this.audioProxy.audioElement.loop = true;
+      
+      // Set up audio source from Mixcloud
+      this.setupMixcloudAudioSource();
+      
+      // Connect to analyser (use the same analyser from main audio manager)
+      this.audioProxy.source = this.audioProxy.audioContext.createMediaElementSource(this.audioProxy.audioElement);
+      
+      // Connect to the main audio manager's analyser for visual effects
+      if (this.audioManager && this.audioManager.analyser) {
+        this.audioProxy.source.connect(this.audioManager.analyser);
+        console.log('✅ Audio proxy connected to main audio manager analyser');
+      } else {
+        // Fallback: connect to proxy analyser
+        this.audioProxy.source.connect(this.audioProxy.analyser);
+        console.log('✅ Audio proxy connected to proxy analyser');
+      }
+      
+      console.log('✅ Audio proxy started successfully');
+      this.updateReactivityStatus('Audio proxy active - Audio stream connected');
+      
+    } catch (error) {
+      console.log('❌ Error starting audio proxy:', error);
+      this.updateReactivityStatus('Audio proxy failed - ' + error.message);
+    }
+  }
+
+  /**
+   * Setup Mixcloud audio source through proxy
+   */
+  setupMixcloudAudioSource() {
+    console.log('🔗 Setting up Mixcloud audio source...');
+    
+    const proxyAudioUrl = this.getProxyAudioUrl();
+    
+    if (proxyAudioUrl) {
+      // Use proxy audio source
+      this.audioProxy.audioElement.src = proxyAudioUrl;
+      this.audioProxy.audioElement.load();
+      
+      // Start playing when ready
+      this.audioProxy.audioElement.addEventListener('canplay', () => {
+        console.log('🎵 Audio proxy ready to play');
+        this.audioProxy.audioElement.play().catch(error => {
+          console.log('⚠️ Auto-play blocked:', error);
+          this.updateReactivityStatus('Click to start audio proxy');
+        });
+      });
+      
+    } else {
+      console.log('⚠️ No proxy audio URL - falling back to iframe capture');
+      this.updateReactivityStatus('Using Mixcloud iframe capture');
+      
+      // Try to capture audio directly from Mixcloud iframe
+      this.attemptIframeCapture();
+    }
+  }
+
+  /**
+   * Get proxy audio URL from our proxy server
+   */
+  getProxyAudioUrl() {
+    // Use our local proxy server to avoid CORS issues
+    const proxyUrl = 'http://localhost:3001/proxy/mixcloud';
+    
+    // For testing, we can use a sample audio stream
+    // In production, this would be a real Mixcloud stream URL
+    const testStreamUrl = 'https://www.mixcloud.com/roydipankar8/';
+    
+    // Return the proxy URL with the Mixcloud stream
+    return `${proxyUrl}?url=${encodeURIComponent(testStreamUrl)}`;
+    
+    // Note: This will only work if Mixcloud provides direct stream URLs
+    // Most music platforms don't expose direct audio streams for security
+  }
+
+  /**
+   * Stop audio proxy
+   */
+  stopAudioProxy() {
+    if (this.audioProxy.audioElement) {
+      this.audioProxy.audioElement.pause();
+      this.audioProxy.audioElement.src = '';
+    }
+    
+    if (this.audioProxy.source) {
+      this.audioProxy.source.disconnect();
+      this.audioProxy.source = null;
+    }
+    
+    console.log('⏹️ Audio proxy stopped');
+    this.updateReactivityStatus('Audio proxy stopped');
+  }
+
+  /**
+   * Get audio data from proxy
+   */
+  getProxyAudioData() {
+    if (!this.audioProxy.isActive || !this.audioProxy.analyser) {
+      return null;
+    }
+    
+    const dataArray = new Float32Array(this.audioProxy.analyser.frequencyBinCount);
+    this.audioProxy.analyser.getFloatFrequencyData(dataArray);
+    return dataArray;
+  }
+
+  /**
+   * Attempt to capture audio directly from Mixcloud iframe
+   */
+  attemptIframeCapture() {
+    console.log('🎵 Attempting iframe audio capture...');
+    
+    try {
+      const mixcloudFrame = document.getElementById('mixcloud-player');
+      if (!mixcloudFrame) {
+        console.log('❌ Mixcloud iframe not found');
+        this.updateReactivityStatus('Mixcloud iframe not found');
+        return;
+      }
+      
+      // Wait for iframe to be fully loaded
+      setTimeout(() => {
+        try {
+          // Try to access iframe content
+          if (mixcloudFrame.contentWindow) {
+            console.log('✅ Mixcloud iframe accessible');
+            
+            // Look for audio elements in the iframe
+            const iframeDoc = mixcloudFrame.contentWindow.document;
+            if (iframeDoc) {
+              const audioElements = iframeDoc.querySelectorAll('audio, video');
+              console.log(`🎵 Found ${audioElements.length} audio/video elements in iframe`);
+              
+              if (audioElements.length > 0) {
+                // Try to connect the first audio element
+                this.connectIframeAudio(audioElements[0]);
+              } else {
+                console.log('⚠️ No audio elements found in iframe');
+                this.updateReactivityStatus('No audio elements in Mixcloud iframe');
+              }
+            } else {
+              console.log('⚠️ Cannot access iframe document (CORS restriction)');
+              this.updateReactivityStatus('CORS restriction - iframe not accessible');
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ CORS error accessing iframe:', error.message);
+          this.updateReactivityStatus('CORS blocked - iframe not accessible');
+        }
+      }, 2000); // Wait 2 seconds for iframe to load
+      
+    } catch (error) {
+      console.log('❌ Error in iframe capture:', error);
+      this.updateReactivityStatus('Iframe capture failed: ' + error.message);
+    }
+  }
+
+  /**
+   * Connect iframe audio to our audio context
+   */
+  connectIframeAudio(audioElement) {
+    try {
+      console.log('🔗 Connecting iframe audio to audio context...');
+      
+      if (this.audioManager && this.audioManager.audioContext) {
+        // Create a media stream source from the audio element
+        const stream = audioElement.captureStream();
+        const source = this.audioManager.audioContext.createMediaStreamSource(stream);
+        
+        // Connect to our analyser
+        source.connect(this.audioManager.analyser);
+        
+        console.log('✅ Iframe audio connected to audio context');
+        this.updateReactivityStatus('Mixcloud audio captured - Visual effects active!');
+        
+        // Store the source for cleanup
+        this.audioProxy.iframeSource = source;
+        
+      } else {
+        console.log('❌ Audio manager not available');
+        this.updateReactivityStatus('Audio manager not available');
+      }
+    } catch (error) {
+      console.log('⚠️ Error connecting iframe audio:', error);
+      this.updateReactivityStatus('Iframe connection failed: ' + error.message);
+    }
+  }
+
+
+
+  /**
+   * Set up console commands for color system exploration
+   */
+  setupConsoleCommands() {
+    // Make color system accessible from console
+    window.omnivoidColors = {
+      // Get current theme info
+      getTheme: () => this.themeManager.getCurrentTheme(),
+      
+      // Get current color strategy
+      getStrategy: () => this.themeManager.getCurrentStrategy(),
+      
+      // Get all available color strategies
+      getStrategies: () => this.themeManager.getColorStrategyInfo(),
+      
+      // Preview a specific strategy
+      previewStrategy: (strategyName) => this.themeManager.previewColorStrategy(strategyName),
+      
+      // Force new random colors
+      newColors: () => {
+        if (this.themeManager.getCurrentTheme() === 'random') {
+          this.themeManager.forceNewRandomTheme();
+          console.log('🎨 New random colors generated!');
+          console.log('🎲 Agent structure also randomized!');
+        } else {
+          console.log('⚠️ Not in random theme. Switch to random theme first.');
+        }
+      },
+      
+      // Manually randomize agent structure
+      randomizeAgents: () => {
+        if (this.agentSystem) {
+          this.agentSystem.randomizeStructure();
+          console.log('🎲 Agent structure manually randomized!');
+        } else {
+          console.log('⚠️ Agent system not available');
+        }
+      },
+      
+      // Manually randomize polygon echo
+      randomizePolygon: () => {
+        if (this.polygonEcho) {
+          this.polygonEcho.randomize();
+          console.log('⬟ Polygon echo manually randomized!');
+        } else {
+          console.log('⚠️ Polygon echo not available');
+        }
+      },
+      
+
+      
+      // Help
+      help: () => {
+        console.log(`
+🎨 OMNIVOID Color System Console Commands:
+
+📋 Info:
+  omnivoidColors.getTheme()      - Get current theme
+  omnivoidColors.getStrategy()   - Get current color strategy
+  omnivoidColors.getStrategies() - List all available strategies
+
+🎯 Actions:
+  omnivoidColors.newColors()     - Generate new random colors
+  omnivoidColors.randomizeAgents() - Manually randomize agent structure
+  omnivoidColors.randomizePolygon() - Manually randomize polygon echo
+  omnivoidColors.previewStrategy('strategy-name') - Preview a strategy
+
+🔍 Available Strategies:
+  - complementary: Opposite colors for high contrast
+  - triadic: Three equally spaced colors
+  - analogous: Adjacent colors for smooth transitions
+  - monochromatic: Same hue variations
+  - split-complementary: Base + adjacent to complement
+  - random-spectrum: Full spectrum randomness
+
+💡 Tips:
+  - Click theme button to cycle themes
+  - Double-click theme button in random mode for new strategy
+  - Colors only change when you click - no automatic changes
+  - Agent count and connection distance also randomize with colors
+  - Use polygon echo toggle button (⬟) for geometric overlay effects
+        `);
+      }
+    };
+    
+    console.log(`
+🎨 OMNIVOID Color System loaded!
+Type 'omnivoidColors.help()' to see available commands.
+    `);
   }
 }

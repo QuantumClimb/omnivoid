@@ -27,6 +27,10 @@ export class AgentSystem extends Component {
     this.connectDist = 100; // Current connection distance (will be modulated by audio)
     this.audioManager = audioManager;
     
+    // Store default values for restoration
+    this.defaultAgentCount = 60;
+    this.defaultConnectDist = 100;
+    
     // Audio visualization properties
     this.audioScale = 1.0;
     this.baseSize = 2;
@@ -38,6 +42,16 @@ export class AgentSystem extends Component {
     // Color lookup table for audio-reactive colors
     this.colorLUT = this.createColorLookupTable();
     this.defaultColor = getComputedStyle(document.documentElement).getPropertyValue('--fg-color').trim();
+    
+    // Store default colors for restoration
+    this.defaultColors = {
+      agent: this.defaultColor,
+      connection: this.defaultColor,
+      accent: '#99ccff' // OMNIVOID blue
+    };
+    
+    // Current theme colors
+    this.currentThemeColors = { ...this.defaultColors };
     
     this.setupCanvas();
     this.initAgents();
@@ -71,6 +85,103 @@ export class AgentSystem extends Component {
   }
 
   /**
+   * Update colors with new random theme palette
+   * @param {Object} colorPalette Color palette object from ThemeManager
+   */
+  updateColors(colorPalette) {
+    this.currentThemeColors = {
+      agent: colorPalette.accent1 || colorPalette.foreground,
+      connection: colorPalette.accent2 || colorPalette.track,
+      accent: colorPalette.accent3 || colorPalette.thumb
+    };
+    
+    // Update the color lookup table with theme colors
+    this.updateColorLookupTable(colorPalette);
+  }
+
+  /**
+   * Update the color lookup table with theme colors
+   * @param {Object} colorPalette Color palette object
+   */
+  updateColorLookupTable(colorPalette) {
+    // Create new color variations based on the theme palette
+    const themeColors = [
+      colorPalette.accent1,
+      colorPalette.accent2,
+      colorPalette.accent3,
+      colorPalette.thumb,
+      colorPalette.track,
+      colorPalette.foreground,
+      colorPalette.background,
+      colorPalette.panel
+    ].filter(Boolean); // Remove undefined colors
+    
+    if (themeColors.length === 0) return;
+    
+    // Update the color lookup table with theme-based colors
+    this.colorLUT = this.colorLUT.map((colorObj, index) => {
+      const themeColor = themeColors[index % themeColors.length];
+      const rgb = this.hslToRgb(themeColor);
+      
+      return {
+        ...colorObj,
+        r: rgb.r,
+        g: rgb.g,
+        b: rgb.b
+      };
+    });
+  }
+
+  /**
+   * Convert HSL color to RGB
+   * @param {string} hslColor HSL color string
+   * @returns {Object} RGB object
+   */
+  hslToRgb(hslColor) {
+    const hslMatch = hslColor.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+    if (!hslMatch) return { r: 255, g: 255, b: 255 }; // Default white
+    
+    const h = parseInt(hslMatch[1]) / 360;
+    const s = parseInt(hslMatch[2]) / 100;
+    const l = parseInt(hslMatch[3]) / 100;
+    
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    
+    let r, g, b;
+    
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+    
+    return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+    };
+  }
+
+  /**
+   * Reset colors to default theme
+   */
+  resetColors() {
+    this.currentThemeColors = { ...this.defaultColors };
+    this.colorLUT = this.createColorLookupTable();
+  }
+
+  /**
    * Get color for an agent based on its frequency data
    * @param {number} agentIndex Index of the agent
    * @param {number} intensity Audio intensity multiplier (0-1)
@@ -78,7 +189,7 @@ export class AgentSystem extends Component {
    */
   getAgentColor(agentIndex, intensity = 1) {
     if (!this.frequencyData || this.frequencyData.length === 0) {
-      return this.defaultColor;
+      return this.currentThemeColors.agent;
     }
     
     // Map agent index to frequency position (0-1)
@@ -123,7 +234,7 @@ export class AgentSystem extends Component {
    */
   getConnectionColor(agentIndex1, agentIndex2) {
     if (!this.frequencyData || this.frequencyData.length === 0) {
-      return this.defaultColor;
+      return this.currentThemeColors.connection;
     }
     
     // Blend colors of the two connected agents
@@ -387,5 +498,31 @@ export class AgentSystem extends Component {
    */
   getConnectionDistance() {
     return this.connectDist;
+  }
+
+  /**
+   * Randomize agent count and connection distance for variety
+   */
+  randomizeStructure() {
+    // Random agent count between 30 and 100
+    const newAgentCount = Math.floor(Math.random() * 71) + 30;
+    
+    // Random connection distance between 60 and 180
+    const newConnectDist = Math.floor(Math.random() * 121) + 60;
+    
+    console.log(`🎲 AgentSystem: Randomizing structure - Agents: ${newAgentCount}, Connect: ${newConnectDist}`);
+    
+    this.setAgentCount(newAgentCount);
+    this.setConnectionDistance(newConnectDist);
+  }
+
+  /**
+   * Reset agent count and connection distance to defaults
+   */
+  resetStructure() {
+    console.log(`🔄 AgentSystem: Resetting structure to defaults - Agents: ${this.defaultAgentCount}, Connect: ${this.defaultConnectDist}`);
+    
+    this.setAgentCount(this.defaultAgentCount);
+    this.setConnectionDistance(this.defaultConnectDist);
   }
 } 

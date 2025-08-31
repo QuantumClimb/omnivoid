@@ -110,7 +110,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center center;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   font-size: 120px;
   font-weight: bold;
   color: var(--fg-color);
@@ -272,7 +272,7 @@
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   transition: opacity 1s ease-out;
   margin: 0;
   padding: 0;

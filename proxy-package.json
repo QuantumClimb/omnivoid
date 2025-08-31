@@ -1,0 +1,21 @@
+{
+  "name": "omnivoid-audio-proxy",
+  "version": "1.0.0",
+  "description": "Audio proxy server for Mixcloud integration",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js",
+    "dev": "nodemon proxy.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["audio", "proxy", "mixcloud", "cors"],
+  "author": "QuantumClimb",
+  "license": "MIT"
+}

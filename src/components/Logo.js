@@ -84,7 +84,7 @@ export class Logo extends Component {
     this.logoElement.className = 'logo-svg';
     this.logoElement.style.cssText = `
       color: white;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 24px;
       font-weight: bold;
       text-align: center;

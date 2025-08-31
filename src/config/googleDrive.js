@@ -58,4 +58,32 @@ export async function readPublicFile(filePath) {
   }
 }
 
+// Helper function to fetch text file content from Google Drive
+export async function fetchGoogleDriveTextFile(fileUrl) {
+  try {
+    // Extract file ID from Google Drive sharing URL
+    const fileIdMatch = fileUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!fileIdMatch) {
+      throw new Error('Invalid Google Drive URL format');
+    }
+    
+    const fileId = fileIdMatch[1];
+    const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    
+    GOOGLE_DRIVE_CONFIG.log(`Fetching text file content from: ${directUrl}`);
+    
+    const response = await fetch(directUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const content = await response.text();
+    GOOGLE_DRIVE_CONFIG.log(`Successfully fetched text file content, length: ${content.length}`);
+    return content;
+  } catch (error) {
+    GOOGLE_DRIVE_CONFIG.log(`Error fetching Google Drive text file: ${error.message}`);
+    return null;
+  }
+}
+
 export default GOOGLE_DRIVE_CONFIG;

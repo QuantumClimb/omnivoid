@@ -40,7 +40,7 @@ export class RetroWindow extends Component {
       box-shadow: 
         0 0 20px rgba(153, 204, 255, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 12px;
       z-index: 9999;
       display: none;
@@ -74,7 +74,7 @@ export class RetroWindow extends Component {
       text-shadow: 0 0 5px rgba(153, 204, 255, 0.5);
       flex-grow: 1;
       padding-left: 4px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
 
     // Create close button
@@ -95,7 +95,7 @@ export class RetroWindow extends Component {
       justify-content: center;
       padding: 0;
       line-height: 1;
-      font-family: monospace;
+      font-family: 'Space Mono', monospace;
       border-radius: 0;
       transition: background-color 0.2s, color 0.2s;
     `;
@@ -112,7 +112,7 @@ export class RetroWindow extends Component {
       padding: 15px;
       color: #99ccff;
       line-height: 1.4;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Space Mono', monospace;
     `;
 
     // Set initial content

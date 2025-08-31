@@ -15,7 +15,7 @@
 #controls h3 {
   margin-bottom: 6px;
   font-size: 14px;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -26,7 +26,7 @@
   justify-content: space-between;
   margin-bottom: 6px;
   font-size: 11px;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
 }
 
 #controls input[type=range] {
@@ -96,7 +96,7 @@ select.animation-select {
   border: 1px solid var(--track-color);
   padding: 3px;
   border-radius: 3px;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   font-size: 10px;
 }
 
@@ -110,7 +110,7 @@ select.animation-select {
   text-align: center;
   font-size: 18px;
   color: #99ccff;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -119,7 +119,7 @@ select.animation-select {
   margin: 15px 0 10px 0;
   font-size: 14px;
   color: #99ccff;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
   border-bottom: 1px solid rgba(153, 204, 255, 0.3);
@@ -136,7 +136,7 @@ select.animation-select {
   justify-content: space-between;
   margin-bottom: 8px;
   font-size: 12px;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Space Mono', monospace;
   color: #99ccff;
 }
 
