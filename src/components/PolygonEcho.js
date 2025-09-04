@@ -7,13 +7,15 @@ export class PolygonEcho {
     this.element = null;
     this.animationId = null;
     this.polygons = [];
-    this.maxPolygons = 8;
-    this.baseSize = 100;
-    this.scaleFactor = 1.2;
+    this.maxPolygons = 20;
+    this.baseSize = 50;
+    this.scaleFactor = 1.15;
     this.rotationSpeed = 0.5;
-    this.opacityDecay = 0.15;
-    this.color = '#ff6b9d';
+    this.opacityDecay = 0.08;
+    this.color = '#ffffff';
     this.isVisible = false;
+    this.tunnelSpeed = 2;
+    this.time = 0;
     
     this.init();
   }
@@ -47,17 +49,17 @@ export class PolygonEcho {
     this.element.innerHTML = '';
     
     // Generate random polygon properties
-    const sides = Math.floor(Math.random() * 4) + 3; // 3-6 sides
-    const centerX = Math.random() * window.innerWidth;
-    const centerY = Math.random() * window.innerHeight;
+    const sides = Math.floor(Math.random() * 3) + 4; // 4-6 sides for more tunnel-like effect
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
     const baseRotation = Math.random() * Math.PI * 2;
     
-    // Create multiple scaled copies
+    // Create tunnel effect with continuous scaling
     for (let i = 0; i < this.maxPolygons; i++) {
       const scale = Math.pow(this.scaleFactor, i);
       const size = this.baseSize * scale;
-      const opacity = Math.max(0.1, 1 - (i * this.opacityDecay));
-      const rotation = baseRotation + (i * 0.1);
+      const opacity = Math.max(0.05, 1 - (i * this.opacityDecay));
+      const rotation = baseRotation + (i * 0.05);
       
       const polygon = this.createPolygon(
         centerX, 
@@ -129,11 +131,22 @@ export class PolygonEcho {
   animate() {
     if (!this.isVisible) return;
     
+    this.time += this.tunnelSpeed;
+    
     this.polygons.forEach((polygon, index) => {
-      const scale = Math.pow(this.scaleFactor, index);
-      const rotation = (Date.now() * this.rotationSpeed * 0.001) + (index * 0.2);
+      // Create tunnel effect by moving polygons outward and scaling them
+      const tunnelProgress = (this.time + index * 50) % 2000; // Cycle every 2000ms
+      const normalizedProgress = tunnelProgress / 2000;
       
-      polygon.style.transform = `translate(-50%, -50%) rotate(${rotation}rad) scale(${scale})`;
+      // Scale increases as we go "deeper" into the tunnel
+      const tunnelScale = 0.1 + (normalizedProgress * 3);
+      const rotation = (this.time * this.rotationSpeed * 0.001) + (index * 0.1);
+      
+      // Opacity fades as polygons move away
+      const tunnelOpacity = Math.max(0, 1 - normalizedProgress);
+      polygon.style.opacity = tunnelOpacity;
+      
+      polygon.style.transform = `translate(-50%, -50%) rotate(${rotation}rad) scale(${tunnelScale})`;
     });
     
     this.animationId = requestAnimationFrame(() => this.animate());
