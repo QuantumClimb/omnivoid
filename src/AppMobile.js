@@ -3059,7 +3059,7 @@ export class App {
               <div><strong>Visuals:</strong> Real-time audio-reactive art</div>
             </div>
           </div>
-          <a href="https://skillboxes.com" target="_blank" style="
+          <a href="https://events.fanpit.live/events/9aBdBr4U" target="_blank" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
@@ -3072,7 +3072,7 @@ export class App {
             font-family: 'Space Mono', monospace;
             transition: all 0.2s;
           " onmouseover="this.style.background='#66aaff'" onmouseout="this.style.background='#99ccff'">
-            🎫 GET TICKETS - SKILLBOXES.COM
+            🎫 GET TICKETS - FANPIT
           </a>
         </div>
         
@@ -3102,7 +3102,7 @@ export class App {
               <div><strong>Level:</strong> Intermediate to Advanced</div>
             </div>
           </div>
-          <a href="https://forms.google.com" target="_blank" style="
+          <a href="https://hostlink.site/ip4LhY" target="_blank" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
