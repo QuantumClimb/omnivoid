@@ -22,14 +22,27 @@ export class AgentSystem extends Component {
     
     this.ctx = this.canvas.getContext('2d');
     this.agents = [];
-    this.agentCount = 120;
-    this.baseConnectDist = 200; // Base connection distance
-    this.connectDist = 200; // Current connection distance (will be modulated by audio)
-    this.audioManager = audioManager;
     
-    // Store default values for restoration
-    this.defaultAgentCount = 120;
-    this.defaultConnectDist = 200;
+    // Mobile detection and performance optimization
+    this.isMobile = this.detectMobile();
+    
+    if (this.isMobile) {
+      // Mobile-optimized values for better performance
+      this.agentCount = 100;
+      this.baseConnectDist = 60;
+      this.connectDist = 60;
+      this.defaultAgentCount = 100;
+      this.defaultConnectDist = 60;
+    } else {
+      // Desktop values
+      this.agentCount = 120;
+      this.baseConnectDist = 200;
+      this.connectDist = 200;
+      this.defaultAgentCount = 120;
+      this.defaultConnectDist = 200;
+    }
+    
+    this.audioManager = audioManager;
     
     // Audio visualization properties
     this.audioScale = 1.0;
@@ -57,6 +70,17 @@ export class AgentSystem extends Component {
     this.initAgents();
     this.setupAudioVisualization();
     this.animate();
+  }
+
+  /**
+   * Detect if the device is mobile for performance optimization
+   * @returns {boolean} True if mobile device, false otherwise
+   */
+  detectMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768) ||
+           ('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0);
   }
 
   /**

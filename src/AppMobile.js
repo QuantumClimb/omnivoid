@@ -53,6 +53,25 @@ export class App {
   }
 
   /**
+   * Detect if the device is mobile for performance optimization
+   * @returns {boolean} True if mobile device, false otherwise
+   */
+  detectMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768) ||
+           ('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0);
+  }
+
+  /**
+   * Get mobile detection status
+   * @returns {boolean} True if mobile device, false otherwise
+   */
+  get isMobile() {
+    return this.detectMobile();
+  }
+
+  /**
    * Initialize the OMNIVOID application
    */
   async initializeComponents() {
@@ -732,13 +751,15 @@ export class App {
     
     // Agent count control logic
     agentCountUpBtn.addEventListener('click', () => {
-      currentAgentCount = Math.min(200, currentAgentCount + 10);
+      const maxAgents = this.isMobile ? 100 : 200;
+      currentAgentCount = Math.min(maxAgents, currentAgentCount + 10);
       this.agentSystem.setAgentCount(currentAgentCount);
       agentCountDisplay.textContent = currentAgentCount;
     });
     
     agentCountDownBtn.addEventListener('click', () => {
-      currentAgentCount = Math.max(50, currentAgentCount - 10);
+      const minAgents = this.isMobile ? 20 : 50;
+      currentAgentCount = Math.max(minAgents, currentAgentCount - 10);
       this.agentSystem.setAgentCount(currentAgentCount);
       agentCountDisplay.textContent = currentAgentCount;
     });
@@ -840,13 +861,15 @@ export class App {
     
     // Connection distance control logic
     connectionUpBtn.addEventListener('click', () => {
-      currentConnectionDistance = Math.min(300, currentConnectionDistance + 10);
+      const maxDistance = this.isMobile ? 60 : 300;
+      currentConnectionDistance = Math.min(maxDistance, currentConnectionDistance + 10);
       this.agentSystem.setConnectDistance(currentConnectionDistance);
       connectionDisplay.textContent = currentConnectionDistance;
     });
     
     connectionDownBtn.addEventListener('click', () => {
-      currentConnectionDistance = Math.max(100, currentConnectionDistance - 10);
+      const minDistance = this.isMobile ? 20 : 100;
+      currentConnectionDistance = Math.max(minDistance, currentConnectionDistance - 10);
       this.agentSystem.setConnectDistance(currentConnectionDistance);
       connectionDisplay.textContent = currentConnectionDistance;
     });
