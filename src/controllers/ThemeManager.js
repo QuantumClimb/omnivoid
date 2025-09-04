@@ -278,12 +278,12 @@ export class ThemeManager {
       this.solarSystem.updateColors(colorPalette);
     }
     
-    // Update Agent System colors and randomize structure
-    if (this.agentSystem) {
-      this.agentSystem.updateColors(colorPalette);
-      // Randomize agent count and connection distance for variety
-      this.agentSystem.randomizeStructure();
-    }
+    // Skip Agent System color updates - keep default colors
+    // if (this.agentSystem) {
+    //   this.agentSystem.updateColors(colorPalette);
+    //   // Randomize agent count and connection distance for variety
+    //   this.agentSystem.randomizeStructure();
+    // }
     
     // Update Polygon Echo colors
     if (this.polygonEcho) {
@@ -299,11 +299,12 @@ export class ThemeManager {
       this.solarSystem.resetColors();
     }
     
-    if (this.agentSystem) {
-      this.agentSystem.resetColors();
-      // Reset agent structure to defaults
-      this.agentSystem.resetStructure();
-    }
+    // Skip Agent System color resets - keep default colors
+    // if (this.agentSystem) {
+    //   this.agentSystem.resetColors();
+    //   // Reset agent structure to defaults
+    //   this.agentSystem.resetStructure();
+    // }
     
     if (this.polygonEcho) {
       this.polygonEcho.updateColors('#ff6b9d', '#ffb6d4');
@@ -361,6 +362,28 @@ export class ThemeManager {
    */
   getCurrentStrategy() {
     return this.colorStrategies[this.currentStrategy];
+  }
+
+  /**
+   * Get the current color palette
+   * @returns {Object} Current color palette object
+   */
+  getCurrentPalette() {
+    if (this.currentTheme === 'random') {
+      return this.generateColorPalette();
+    } else {
+      // Return default dark theme colors
+      return {
+        background: '#111111',
+        foreground: '#99ccff',
+        panel: '#1a1a1a',
+        track: '#333333',
+        thumb: '#99ccff',
+        accent1: '#99ccff',
+        accent2: '#66aaff',
+        accent3: '#336699'
+      };
+    }
   }
 
   /**

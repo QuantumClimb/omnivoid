@@ -386,24 +386,34 @@
   
   /* Agent controls mobile - shorter box */
   .agent-controls-container {
-    padding: 6px 4px !important;
-    gap: 4px !important;
+    padding: 4px 4px !important;
+    gap: 2px !important;
+    height: 225px !important;
+    min-height: 225px !important;
   }
   
   .agent-controls-container .dial-container {
-    gap: 2px !important;
+    gap: 4px !important;
+  }
+  
+  /* Ensure container only takes needed space */
+  .agent-controls-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
   }
   
   .agent-btn {
-    width: 22px !important;
-    height: 22px !important;
-    font-size: 11px !important;
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 14px !important;
   }
   
   .agent-count-display,
   .connection-display {
-    font-size: 9px !important;
-    min-width: 22px !important;
+    font-size: 12px !important;
+    min-width: 30px !important;
   }
   
   /* Adjust orbit radius for mobile */

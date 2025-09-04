@@ -5,11 +5,12 @@ import { Component } from './Base.js';
  * Dark theme with blue aesthetic
  */
 export class RetroWindow extends Component {
-  constructor(id, title, content = '') {
+  constructor(id, title, content = '', onClose = null) {
     super();
     this.id = id;
     this.title = title;
     this.content = content;
+    this.onClose = onClose;
     this.isVisible = false;
     this.isDragging = false;
     this.dragOffset = { x: 0, y: 0 };
@@ -268,6 +269,11 @@ export class RetroWindow extends Component {
   hide() {
     this.isVisible = false;
     this.element.style.opacity = '0';
+    
+    // Call onClose callback if provided
+    if (this.onClose && typeof this.onClose === 'function') {
+      this.onClose(this.id);
+    }
     
     setTimeout(() => {
       if (!this.isVisible) {

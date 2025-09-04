@@ -22,14 +22,14 @@ export class AgentSystem extends Component {
     
     this.ctx = this.canvas.getContext('2d');
     this.agents = [];
-    this.agentCount = 60;
-    this.baseConnectDist = 100; // Base connection distance
-    this.connectDist = 100; // Current connection distance (will be modulated by audio)
+    this.agentCount = 120;
+    this.baseConnectDist = 200; // Base connection distance
+    this.connectDist = 200; // Current connection distance (will be modulated by audio)
     this.audioManager = audioManager;
     
     // Store default values for restoration
-    this.defaultAgentCount = 60;
-    this.defaultConnectDist = 100;
+    this.defaultAgentCount = 120;
+    this.defaultConnectDist = 200;
     
     // Audio visualization properties
     this.audioScale = 1.0;
@@ -188,42 +188,8 @@ export class AgentSystem extends Component {
    * @returns {string} CSS color string
    */
   getAgentColor(agentIndex, intensity = 1) {
-    if (!this.frequencyData || this.frequencyData.length === 0) {
-      return this.currentThemeColors.agent;
-    }
-    
-    // Map agent index to frequency position (0-1)
-    const freqPosition = agentIndex / this.agentCount;
-    
-    // Get the frequency bin for this agent
-    const frequencyIndex = Math.floor(freqPosition * this.frequencyData.length);
-    const frequencyValue = this.frequencyData[frequencyIndex];
-    
-    // Convert from dB to linear scale (frequency data is typically -140 to 0 dB)
-    const normalizedFreq = Math.max(0, Math.min(1, (frequencyValue + 140) / 140));
-    
-    // Find the appropriate color from the lookup table
-    let selectedColor = this.colorLUT[0]; // Default to first color
-    for (const color of this.colorLUT) {
-      if (freqPosition >= color.freqMin && freqPosition < color.freqMax) {
-        selectedColor = color;
-        break;
-      }
-    }
-    
-    // Apply intensity-based brightness and saturation
-    const brightness = 0.3 + (normalizedFreq * intensity * 0.7); // 30% to 100% brightness
-    const saturation = 0.5 + (normalizedFreq * 0.5); // 50% to 100% saturation
-    
-    // Calculate final RGB values with brightness applied
-    const r = Math.floor(selectedColor.r * brightness);
-    const g = Math.floor(selectedColor.g * brightness);
-    const b = Math.floor(selectedColor.b * brightness);
-    
-    // Add some alpha based on audio intensity for subtle transparency effects
-    const alpha = 0.7 + (this.audioIntensity * 0.3);
-    
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    // Always return the default theme color (no color randomization)
+    return this.currentThemeColors.agent;
   }
 
   /**
@@ -233,26 +199,8 @@ export class AgentSystem extends Component {
    * @returns {string} CSS color string
    */
   getConnectionColor(agentIndex1, agentIndex2) {
-    if (!this.frequencyData || this.frequencyData.length === 0) {
-      return this.currentThemeColors.connection;
-    }
-    
-    // Blend colors of the two connected agents
-    const color1 = this.getAgentColor(agentIndex1, this.audioIntensity);
-    const color2 = this.getAgentColor(agentIndex2, this.audioIntensity);
-    
-    // For simplicity, use the color of the agent with higher frequency response
-    const freq1Position = agentIndex1 / this.agentCount;
-    const freq2Position = agentIndex2 / this.agentCount;
-    
-    const freq1Index = Math.floor(freq1Position * this.frequencyData.length);
-    const freq2Index = Math.floor(freq2Position * this.frequencyData.length);
-    
-    const freq1Value = this.frequencyData[freq1Index];
-    const freq2Value = this.frequencyData[freq2Index];
-    
-    // Use the color of the agent with higher frequency response
-    return freq1Value > freq2Value ? color1 : color2;
+    // Always return the default connection color (no color randomization)
+    return this.currentThemeColors.connection;
   }
 
   /**
@@ -481,7 +429,7 @@ export class AgentSystem extends Component {
    */
   setConnectionDistance(distance) {
     console.log(`🔗 AgentSystem: Setting connection distance to ${distance}`);
-    this.connectDist = Math.max(50, Math.min(200, distance));
+    this.connectDist = Math.max(100, Math.min(300, distance));
   }
 
   /**
@@ -504,11 +452,11 @@ export class AgentSystem extends Component {
    * Randomize agent count and connection distance for variety
    */
   randomizeStructure() {
-    // Random agent count between 30 and 100
-    const newAgentCount = Math.floor(Math.random() * 71) + 30;
+    // Random agent count between 80 and 150
+    const newAgentCount = Math.floor(Math.random() * 71) + 80;
     
-    // Random connection distance between 60 and 180
-    const newConnectDist = Math.floor(Math.random() * 121) + 60;
+    // Random connection distance between 150 and 250
+    const newConnectDist = Math.floor(Math.random() * 101) + 150;
     
     console.log(`🎲 AgentSystem: Randomizing structure - Agents: ${newAgentCount}, Connect: ${newConnectDist}`);
     

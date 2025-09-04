@@ -165,23 +165,23 @@ export class App {
     controlsContainer.className = 'minimal-controls';
     controlsContainer.style.cssText = `
       position: fixed;
-      bottom: 20px;
+      bottom: 45px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 9px;
       z-index: 1001;
       background: #111111;
       backdrop-filter: blur(10px);
-      padding: 8px 12px;
-      border-radius: 20px;
+      padding: 9px 14px;
+      border-radius: 23px;
       border: 1px solid #333333;
       box-shadow: 
-        0 0 20px rgba(153, 204, 255, 0.2),
-        4px 4px 8px rgba(0, 0, 0, 0.5);
+        0 0 23px rgba(153, 204, 255, 0.2),
+        5px 5px 9px rgba(0, 0, 0, 0.5);
       max-width: 95vw;
     `;
     
@@ -196,14 +196,14 @@ export class App {
       background: #99ccff;
       border: 1px solid #99ccff;
       color: #000000;
-      width: 36px;
-      height: 36px;
+      width: 41px;
+      height: 41px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
       flex-shrink: 0;
@@ -254,14 +254,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 36px;
-      height: 36px;
+      width: 41px;
+      height: 41px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
       flex-shrink: 0;
@@ -312,14 +312,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 36px;
-      height: 36px;
+      width: 41px;
+      height: 41px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
       flex-shrink: 0;
@@ -370,14 +370,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 36px;
-      height: 36px;
+      width: 41px;
+      height: 41px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
       flex-shrink: 0;
@@ -422,33 +422,72 @@ export class App {
     // Theme toggle button
     const themeBtn = document.createElement('button');
     themeBtn.className = 'minimal-control-btn';
-    themeBtn.innerHTML = '🌙'; // Start with dark mode icon
+    themeBtn.innerHTML = '<img src="./public/ascii/D.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1);" alt="Random Colors">';
     themeBtn.title = 'Dark Theme - Click for random colors';
+    
+    // Function to update button appearance based on current theme
+    const updateButtonAppearance = () => {
+      const currentTheme = this.themeManager.getCurrentTheme();
+      const palette = this.themeManager.getCurrentPalette();
+      const img = themeBtn.querySelector('img');
+      
+      if (currentTheme === 'random') {
+        // Use accent1 color as background when in random theme
+        themeBtn.style.background = palette.accent1;
+        themeBtn.style.color = '#000000';
+        themeBtn.style.border = `1px solid ${palette.accent1}`;
+        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Click for new colors`;
+        // Update image filter for better contrast
+        if (img) img.style.filter = 'brightness(0) invert(0)';
+      } else {
+        // Default dark theme appearance
+        themeBtn.style.background = 'transparent';
+        themeBtn.style.color = '#99ccff';
+        themeBtn.style.border = '1px solid #99ccff';
+        themeBtn.title = 'Dark Theme - Click for random colors';
+        // Update image filter for better contrast
+        if (img) img.style.filter = 'brightness(0) invert(1)';
+      }
+    };
+    
     themeBtn.style.cssText = `
-      background: transparent;
-      border: 1px solid #99ccff;
-      color: #99ccff;
-      width: 36px;
-      height: 36px;
+      width: 41px;
+      height: 41px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
       flex-shrink: 0;
     `;
     
+    // Set initial appearance
+    updateButtonAppearance();
+    
     themeBtn.addEventListener('mouseenter', () => {
-      themeBtn.style.backgroundColor = '#99ccff';
-      themeBtn.style.color = '#000000';
+      const currentTheme = this.themeManager.getCurrentTheme();
+      if (currentTheme === 'random') {
+        // Darken the current color on hover
+        const palette = this.themeManager.getCurrentPalette();
+        themeBtn.style.backgroundColor = palette.accent2 || palette.accent3;
+        // Update image filter for better contrast
+        const img = themeBtn.querySelector('img');
+        if (img) img.style.filter = 'brightness(0) invert(1)';
+      } else {
+        themeBtn.style.backgroundColor = '#99ccff';
+        themeBtn.style.color = '#000000';
+        // Update image filter for better contrast
+        const img = themeBtn.querySelector('img');
+        if (img) img.style.filter = 'brightness(0) invert(0)';
+      }
     });
     
     themeBtn.addEventListener('mouseleave', () => {
-      themeBtn.style.backgroundColor = 'transparent';
-      themeBtn.style.color = '#99ccff';
+      // Restore the current theme appearance
+      updateButtonAppearance();
     });
     
     themeBtn.addEventListener('click', () => {
@@ -457,7 +496,6 @@ export class App {
       if (currentTheme === 'random') {
         // If already in random theme, generate new colors
         this.themeManager.forceNewRandomTheme();
-        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Click for new colors`;
         console.log('🎨 New random colors generated');
         
         // Also randomize polygon echo if it's visible
@@ -468,9 +506,10 @@ export class App {
       } else {
         // Switch to random theme
         this.themeManager.cycleTheme();
-        themeBtn.innerHTML = '🎨';
-        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Click for dark theme`;
       }
+      
+      // Update button appearance after theme change
+      updateButtonAppearance();
     });
 
     // Double-click to cycle through color strategies when in random mode
@@ -478,8 +517,10 @@ export class App {
       if (this.themeManager.getCurrentTheme() === 'random') {
         // Force a new strategy
         this.themeManager.forceNewRandomTheme();
-        themeBtn.title = `Random Theme (${this.themeManager.getCurrentStrategy()}) - Double-click for new strategy`;
         console.log('🎨 New color strategy: ' + this.themeManager.getCurrentStrategy());
+        
+        // Update button appearance after strategy change
+        updateButtonAppearance();
       }
     });
     
@@ -505,7 +546,7 @@ export class App {
   createLatestGigButton() {
     const gigButton = document.createElement('button');
     gigButton.className = 'latest-gig-button';
-    gigButton.innerHTML = '🎵 LATEST GATHERINGS';
+    gigButton.innerHTML = '<img src="./public/ascii/V.svg" style="width: 20px; height: 20px; margin-right: 8px; filter: brightness(0) invert(1);" alt="Gatherings"> LATEST GATHERINGS';
     gigButton.title = 'View Latest Gig';
     gigButton.style.cssText = `
       position: fixed;
@@ -530,6 +571,9 @@ export class App {
         4px 4px 8px rgba(0, 0, 0, 0.5);
       text-transform: uppercase;
       letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `;
 
     // Hover effects
@@ -537,12 +581,18 @@ export class App {
       gigButton.style.backgroundColor = '#99ccff';
       gigButton.style.color = '#000000';
       gigButton.style.transform = 'translate(-50%, -50%) scale(1.05)';
+      // Update image filter for better contrast on hover
+      const img = gigButton.querySelector('img');
+      if (img) img.style.filter = 'brightness(0) invert(0)';
     });
-    
+
     gigButton.addEventListener('mouseleave', () => {
       gigButton.style.backgroundColor = '#111111';
       gigButton.style.color = '#99ccff';
       gigButton.style.transform = 'translate(-50%, -50%) scale(1)';
+      // Restore image filter for normal state
+      const img = gigButton.querySelector('img');
+      if (img) img.style.filter = 'brightness(0) invert(1)';
     });
 
     // Click handler to open gigs content
@@ -551,7 +601,7 @@ export class App {
       
       // Create gigs content if it doesn't exist
       if (!this.retroWindows['latest-gig']) {
-        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST GATHERINGS', this.createGigsContent());
+        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST GATHERINGS', this.createGigsContent(), null);
       }
       
       // Open the gigs window
@@ -600,12 +650,15 @@ export class App {
     `;
     
     const agentCountLabel = document.createElement('label');
-    agentCountLabel.innerHTML = '👥';
+    agentCountLabel.innerHTML = '<img src="./public/ascii/A.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1);" alt="Agents">';
     agentCountLabel.title = 'Agent Count';
     agentCountLabel.style.cssText = `
       font-size: 16px;
       color: #99ccff;
       font-family: 'Space Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `;
     
     const agentCountUpBtn = document.createElement('button');
@@ -661,7 +714,7 @@ export class App {
     `;
     
     // Initialize agent count
-    let currentAgentCount = 60;
+    let currentAgentCount = 120;
     agentCountDisplay.textContent = currentAgentCount;
     
     // Agent count button hover effects
@@ -679,13 +732,13 @@ export class App {
     
     // Agent count control logic
     agentCountUpBtn.addEventListener('click', () => {
-      currentAgentCount = Math.min(150, currentAgentCount + 10);
+      currentAgentCount = Math.min(200, currentAgentCount + 10);
       this.agentSystem.setAgentCount(currentAgentCount);
       agentCountDisplay.textContent = currentAgentCount;
     });
     
     agentCountDownBtn.addEventListener('click', () => {
-      currentAgentCount = Math.max(20, currentAgentCount - 10);
+      currentAgentCount = Math.max(50, currentAgentCount - 10);
       this.agentSystem.setAgentCount(currentAgentCount);
       agentCountDisplay.textContent = currentAgentCount;
     });
@@ -769,7 +822,7 @@ export class App {
     `;
     
     // Initialize connection distance
-    let currentConnectionDistance = 100;
+    let currentConnectionDistance = 200;
     connectionDisplay.textContent = currentConnectionDistance;
     
     // Connection distance button hover effects
@@ -787,13 +840,13 @@ export class App {
     
     // Connection distance control logic
     connectionUpBtn.addEventListener('click', () => {
-      currentConnectionDistance = Math.min(200, currentConnectionDistance + 10);
+      currentConnectionDistance = Math.min(300, currentConnectionDistance + 10);
       this.agentSystem.setConnectDistance(currentConnectionDistance);
       connectionDisplay.textContent = currentConnectionDistance;
     });
     
     connectionDownBtn.addEventListener('click', () => {
-      currentConnectionDistance = Math.max(50, currentConnectionDistance - 10);
+      currentConnectionDistance = Math.max(100, currentConnectionDistance - 10);
       this.agentSystem.setConnectDistance(currentConnectionDistance);
       connectionDisplay.textContent = currentConnectionDistance;
     });
@@ -1267,7 +1320,7 @@ export class App {
               { text: 'Research', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
       { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
       { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
-      { text: 'Labs', icon: './public/menuicons/research.png', window: 'labs', isImage: true },
+      { text: 'Labs', icon: './public/ascii/WORM.svg', window: 'labs', isImage: true },
       { text: 'Gallery', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
       { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
     ];
@@ -1279,10 +1332,17 @@ export class App {
       const windowContent = this.getWindowContent(item.window);
       console.log(`📄 Content length for ${item.window}: ${windowContent.length}`);
       
+      // Create onClose callback for radio window
+      const onCloseCallback = item.window === 'radio' ? (windowId) => {
+        console.log(`🎵 Radio window closed: ${windowId}`);
+        this.stopMixcloudAudio();
+      } : null;
+
       this.retroWindows[item.window] = new RetroWindow(
         `${item.window}-window`,
         `OMNIVOID ${item.text.toUpperCase()}`,
-        windowContent
+        windowContent,
+        onCloseCallback
       );
       
       console.log(`✅ RetroWindow created for: ${item.window}`);
@@ -1362,6 +1422,11 @@ export class App {
             const radioContent = this.getWindowContent('radio');
             console.log('🎵 Radio content length:', radioContent.length);
             this.retroWindows[item.window].setContent(radioContent);
+            
+            // Recreate Mixcloud iframe after content is set
+            setTimeout(() => {
+              this.recreateMixcloudIframe();
+            }, 100);
           }
           
           // For live transmissions window, load content dynamically
@@ -1607,25 +1672,46 @@ export class App {
   }
 
   /**
-   * Fetch YouTube video metadata using the Data API
+   * Fetch YouTube video metadata using oEmbed API
    */
   async fetchYouTubeMetadata(videoIds) {
     const videos = [];
     
     for (const videoId of videoIds) {
       try {
-        // Note: You'll need to add your YouTube Data API key to make this work
-        // For now, we'll create basic metadata from the video ID
+        // Use YouTube oEmbed API to get video title
+        const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+        
+        const response = await fetch(oEmbedUrl);
+        if (response.ok) {
+          const data = await response.json();
+          const video = {
+            id: videoId,
+            title: data.title,
+            thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+            url: `https://www.youtube.com/watch?v=${videoId}`
+          };
+          videos.push(video);
+        } else {
+          // Fallback if oEmbed fails
+          const video = {
+            id: videoId,
+            title: `Live Transmission ${videoIds.indexOf(videoId) + 1}`,
+            thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+            url: `https://www.youtube.com/watch?v=${videoId}`
+          };
+          videos.push(video);
+        }
+      } catch (error) {
+        console.error(`❌ Error fetching metadata for video ${videoId}:`, error);
+        // Fallback on error
         const video = {
           id: videoId,
           title: `Live Transmission ${videoIds.indexOf(videoId) + 1}`,
           thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
           url: `https://www.youtube.com/watch?v=${videoId}`
         };
-        
         videos.push(video);
-      } catch (error) {
-        console.error(`❌ Error fetching metadata for video ${videoId}:`, error);
       }
     }
     
@@ -2181,32 +2267,14 @@ export class App {
    * Create radio file explorer content
    */
   createRadioFileExplorer() {
-    console.log('🎵 Creating radio file explorer with Mixcloud integration...');
-
-
+    console.log('🎵 Creating radio file explorer with full Mixcloud widget...');
 
     const content = `
-      <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">
-        <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID RADIO</h3>
-        <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-          Streaming from Mixcloud - Audio reactivity enabled for visual effects
-        </p>
-        <div id="now-playing" style="border: 1px inset #333333; padding: 6px; margin: 8px 0; background: #1a1a1a; font-size: 10px; color: #99ccff;">
-          <strong>Source:</strong> <span id="current-track">Mixcloud Channel</span>
-          <div style="margin-top: 4px; color: #66aaff; font-size: 9px;">
-            Channel: <a href="https://www.mixcloud.com/roydipankar8/" target="_blank" style="color: #66aaff;">roydipankar8</a>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Mixcloud Widget Container -->
+      <!-- Full Mixcloud Widget Container -->
       <div style="border: 1px inset #333333; padding: 8px; background: #0a0a0a; margin-bottom: 8px;">
-        <div style="background: #99ccff; color: #000; padding: 2px 4px; font-size: 10px; font-weight: bold; margin-bottom: 8px;">
-          Live Stream
-        </div>
         <div id="mixcloud-widget-container" style="
           width: 100%;
-          height: 300px;
+          height: 400px;
           background: #1a1a1a;
           border: 1px solid #333;
           display: flex;
@@ -2216,74 +2284,13 @@ export class App {
           <iframe 
             width="100%" 
             height="100%" 
-            src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=%2Froydipankar8%2F&light=1&autoplay=0&hide_tracklist=1&hide_artwork=1&classic=1" 
+            src="https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1" 
             frameborder="0"
             id="mixcloud-player"
             style="border: none;"
             allow="autoplay"
             title="Mixcloud Player"
           ></iframe>
-        </div>
-        
-        <!-- Audio Capture Instructions -->
-        <div style="margin-top: 8px; padding: 6px; background: #1a1a1a; border: 1px solid #333; font-size: 9px; color: #66aaff;">
-          <div style="margin-bottom: 4px;"><strong>Audio Reactivity:</strong></div>
-          <div style="font-size: 8px; color: #999; line-height: 1.3;">
-            1. Play music in Mixcloud widget above<br>
-            2. Visual effects will respond to Mixcloud stream<br>
-            3. No microphone access - Mixcloud only
-          </div>
-          <button onclick="window.omnivoidApp.manualAudioCapture()" style="
-            margin-top: 6px;
-            padding: 4px 8px;
-            background: #99ccff;
-            color: #000;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 8px;
-            font-family: 'Space Mono', monospace;
-          ">🎵 Start Visual Effects</button>
-          <button onclick="window.omnivoidApp.stopTestOscillator()" style="
-            background: #333; 
-            border: 1px solid #666; 
-            color: #99ccff; 
-            padding: 4px 8px; 
-            font-size: 8px; 
-            cursor: pointer; 
-            margin-top: 4px;
-            margin-left: 4px;
-          ">⏹️ Stop Audio Proxy</button>
-          
-          <!-- Debug Panel -->
-          <div style="margin-top: 8px; padding: 6px; background: #000; border: 1px solid #333; font-size: 8px;">
-            <div style="margin-bottom: 4px; color: #ffaa44;"><strong>🔍 DEBUG INFO:</strong></div>
-            <div id="debug-info" style="color: #66aaff; line-height: 1.2; font-size: 7px;">
-              Loading debug information...
-            </div>
-            <button onclick="window.omnivoidApp.refreshDebugInfo()" style="
-              margin-top: 4px;
-              padding: 2px 6px;
-              background: #333;
-              color: #99ccff;
-              border: 1px solid #666;
-              border-radius: 2px;
-              cursor: pointer;
-              font-size: 7px;
-              font-family: 'Space Mono', monospace;
-            ">🔄 Refresh Debug</button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Audio Reactivity Status -->
-      <div style="border: 1px inset #333333; padding: 6px; margin-top: 8px; background: #1a1a1a; font-size: 10px; color: #99ccff;">
-        <strong>Audio Reactivity:</strong> Visual effects respond to Mixcloud stream only
-        <div id="radio-status" style="margin-top: 4px; color: #66aaff; font-size: 9px;">
-          Status: <span id="reactivity-status">Monitoring Mixcloud audio</span>
-        </div>
-        <div style="margin-top: 4px; font-size: 9px; color: #999;">
-          Note: Only Mixcloud audio drives visual effects
         </div>
       </div>
     `;
@@ -3121,19 +3128,10 @@ export class App {
   createContactContent() {
     return `
       <div id="contact-container" style="background: #0a0a0a;">
-        <!-- Main Contact Info -->
-        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">
-            ${this.contactContent ? this.contactContent.title : 'CONTACT OMNIVOID'}
-          </h3>
-          <div style="font-size: 11px; color: #99ccff; line-height: 1.4;">
-            ${this.contactContent ? this.contactContent.content.replace(/\n/g, '<br>') : 'Loading contact content...'}
-          </div>
-        </div>
         
         <!-- Social Media Section -->
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">📱 OMNIVOID LABS</h4>
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">OMNIVOID LABS</h4>
           
           <!-- Main Instagram Logo and Link -->
           <div style="
@@ -3149,19 +3147,14 @@ export class App {
           " onclick="window.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">📷</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid.labs</div>
               <div style="font-size: 9px; color: #66aaff;">Main Laboratory</div>
@@ -3171,7 +3164,7 @@ export class App {
         
         <!-- Partners Section -->
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🤝 PARTNERS</h4>
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">PARTNERS</h4>
           
           <!-- Royville Media -->
           <div style="
@@ -3187,22 +3180,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #00d4ff 0%, #0099cc 50%, #006699 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🎬</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@royvillemedia.film</div>
-              <div style="font-size: 9px; color: #66aaff;">Film Production</div>
             </div>
           </div>
           
@@ -3220,22 +3207,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/quantum.climb/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #ff6b6b 0%, #ee5a24 50%, #d63031 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">⚡</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@quantum.climb</div>
-              <div style="font-size: 9px; color: #66aaff;">Development & Art</div>
             </div>
           </div>
           
@@ -3253,22 +3234,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/theinventory.in/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #a29bfe 0%, #6c5ce7 50%, #5f3dc4 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">📦</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@theinventory.in</div>
-              <div style="font-size: 9px; color: #66aaff;">Creative Archive</div>
             </div>
           </div>
           
@@ -3286,22 +3261,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/promusicals/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #fdcb6e 0%, #e17055 50%, #d63031 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🎵</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@promusicals</div>
-              <div style="font-size: 9px; color: #66aaff;">Musical Productions</div>
             </div>
           </div>
           
@@ -3318,29 +3287,23 @@ export class App {
           " onclick="window.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #00b894 0%, #00a085 50%, #00cec9 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🏙️</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@thechennaiscene</div>
-              <div style="font-size: 9px; color: #66aaff;">Local Culture</div>
             </div>
           </div>
         </div>
         
-        <!-- Team Section -->
+        <!-- Lab Rats Section -->
         <div style="border: 1px inset #333333; padding: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">👥 TEAM</h4>
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">LAB RATS</h4>
           
           <!-- Roy Van Winkle -->
           <div style="
@@ -3356,22 +3319,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #6c5ce7 0%, #a29bfe 50%, #fd79a8 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🎭</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@roydvanwinkle</div>
-              <div style="font-size: 9px; color: #66aaff;">Creative Director</div>
             </div>
           </div>
           
@@ -3389,22 +3346,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/the_juncando/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #fd79a8 0%, #fdcb6e 50%, #e17055 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🎨</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@the_juncando</div>
-              <div style="font-size: 9px; color: #66aaff;">Visual Artist</div>
             </div>
           </div>
           
@@ -3422,22 +3373,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/designst3in/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #00cec9 0%, #55a3ff 50%, #74b9ff 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🎨</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@designst3in</div>
-              <div style="font-size: 9px; color: #66aaff;">Design Specialist</div>
             </div>
           </div>
           
@@ -3455,22 +3400,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/television_dust/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #2d3436 0%, #636e72 50%, #b2bec3 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">📺</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@television_dust</div>
-              <div style="font-size: 9px; color: #66aaff;">Media Production</div>
             </div>
           </div>
           
@@ -3487,22 +3426,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/krishnamurthy/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <div style="
-              width: 32px;
-              height: 32px;
-              background: linear-gradient(45deg, #e84393 0%, #fd79a8 50%, #fdcb6e 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-right: 12px;
-              font-size: 18px;
-              color: white;
-              font-weight: bold;
-            ">🌟</div>
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@krishnamurthy</div>
-              <div style="font-size: 9px; color: #66aaff;">Creative Collaborator</div>
             </div>
           </div>
         </div>
@@ -3901,9 +3834,8 @@ export class App {
     return `
       <div id="releases-container" style="background: #0a0a0a;">
         <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">
-          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID RESEARCH PAPERS</h3>
           <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-            Collection of ${docArticles.length} research documents exploring the intersection of sound, technology, and consciousness.
+            Collection of research documents through time and from around the globe, exploring the intersection of sound science, tech, subcultures, humanities, and future methodologies in art.
           </p>
           <p style="margin: 0; font-size: 10px; color: #66aaff;">
             Click any document thumbnail to open in text viewer.
@@ -5066,14 +4998,60 @@ Let's create something extraordinary together.`
       this.audioProxy.audioElement.pause();
       this.audioProxy.audioElement.src = '';
     }
-    
-    if (this.audioProxy.source) {
-      this.audioProxy.source.disconnect();
-      this.audioProxy.source = null;
+  }
+
+  /**
+   * Stop Mixcloud audio when radio window is closed
+   */
+  stopMixcloudAudio() {
+    console.log('🎵 Stopping Mixcloud audio...');
+    const mixcloudPlayer = document.getElementById('mixcloud-player');
+    if (mixcloudPlayer) {
+      // Remove the iframe from DOM to stop audio
+      console.log('🎵 Removing Mixcloud iframe from DOM');
+      mixcloudPlayer.remove();
+      
+      // Also try to pause via postMessage as backup
+      try {
+        mixcloudPlayer.contentWindow.postMessage('{"method":"pause"}', '*');
+      } catch (error) {
+        console.log('🎵 Could not pause Mixcloud player via postMessage:', error);
+      }
+    } else {
+      console.log('🎵 Mixcloud player iframe not found');
     }
-    
-    console.log('⏹️ Audio proxy stopped');
-    this.updateReactivityStatus('Audio proxy stopped');
+  }
+
+  /**
+   * Recreate Mixcloud iframe when radio window is opened
+   */
+  recreateMixcloudIframe() {
+    console.log('🎵 Recreating Mixcloud iframe...');
+    const container = document.getElementById('mixcloud-widget-container');
+    if (container) {
+      // Check if iframe already exists
+      const existingIframe = document.getElementById('mixcloud-player');
+      if (existingIframe) {
+        console.log('🎵 Mixcloud iframe already exists');
+        return;
+      }
+
+      // Create new iframe
+      const iframe = document.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '100%';
+      iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
+      iframe.frameBorder = '0';
+      iframe.id = 'mixcloud-player';
+      iframe.style.border = 'none';
+      iframe.allow = 'autoplay';
+      iframe.title = 'Mixcloud Player';
+
+      container.appendChild(iframe);
+      console.log('🎵 Mixcloud iframe recreated');
+    } else {
+      console.log('🎵 Mixcloud container not found');
+    }
   }
 
   /**
