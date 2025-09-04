@@ -158,6 +158,9 @@ export class App {
     // Add mobile-responsive CSS styles
     this.addMobileStyles();
     
+    // Create Latest Gig button above minimal controls
+    this.createLatestGigButton();
+    
     const controlsContainer = document.createElement('div');
     controlsContainer.className = 'minimal-controls';
     controlsContainer.style.cssText = `
@@ -493,78 +496,69 @@ export class App {
     this.minimalControls = controlsContainer;
     
     // Create separate containers for QR code and agent controls
-    this.createQRCodeContainer();
     this.createAgentControlsContainer();
   }
 
   /**
-   * Create QR code container (right side)
+   * Create Latest Gig button above minimal controls
    */
-  createQRCodeContainer() {
-    const qrContainer = document.createElement('div');
-    qrContainer.className = 'qr-code-container';
-    qrContainer.style.cssText = `
+  createLatestGigButton() {
+    const gigButton = document.createElement('button');
+    gigButton.className = 'latest-gig-button';
+    gigButton.innerHTML = '🎵 LATEST GIG';
+    gigButton.title = 'View Latest Gig';
+    gigButton.style.cssText = `
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      z-index: 1001;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
       background: #111111;
-      backdrop-filter: blur(10px);
-      padding: 12px 8px;
+      border: 1px solid #99ccff;
+      color: #99ccff;
+      padding: 8px 16px;
       border-radius: 20px;
-      border: 1px solid #333333;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.2s;
+      font-family: 'Space Mono', monospace;
+      z-index: 1001;
+      backdrop-filter: blur(10px);
       box-shadow: 
         0 0 20px rgba(153, 204, 255, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     `;
 
-    // QR Code icon
-    const qrIcon = document.createElement('span');
-    qrIcon.innerHTML = '📱';
-    qrIcon.style.cssText = `
-      font-size: 16px;
-      color: #99ccff;
-      margin-bottom: 4px;
-    `;
-
-    // QR Code image
-    const qrImage = document.createElement('img');
-    qrImage.src = 'public/gigs/workshop.png'; // Using workshop image as QR code placeholder
-    qrImage.style.cssText = `
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      border: 1px solid #333333;
-      cursor: pointer;
-      transition: all 0.2s;
-    `;
-    qrImage.title = 'Scan QR Code';
-
-    // QR Code hover effects
-    qrImage.addEventListener('mouseenter', () => {
-      qrImage.style.transform = 'scale(1.1)';
-      qrImage.style.borderColor = '#99ccff';
+    // Hover effects
+    gigButton.addEventListener('mouseenter', () => {
+      gigButton.style.backgroundColor = '#99ccff';
+      gigButton.style.color = '#000000';
+      gigButton.style.transform = 'translateX(-50%) scale(1.05)';
     });
     
-    qrImage.addEventListener('mouseleave', () => {
-      qrImage.style.transform = 'scale(1)';
-      qrImage.style.borderColor = '#333333';
+    gigButton.addEventListener('mouseleave', () => {
+      gigButton.style.backgroundColor = '#111111';
+      gigButton.style.color = '#99ccff';
+      gigButton.style.transform = 'translateX(-50%) scale(1)';
     });
 
-    // QR Code click to open in new tab
-    qrImage.addEventListener('click', () => {
-      window.open(qrImage.src, '_blank');
+    // Click handler to open gigs content
+    gigButton.addEventListener('click', () => {
+      console.log('🎵 Latest Gig button clicked');
+      
+      // Create gigs content if it doesn't exist
+      if (!this.retroWindows['latest-gig']) {
+        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST GIG', this.createGigsContent());
+      }
+      
+      // Open the gigs window
+      this.retroWindows['latest-gig'].show();
     });
 
-    qrContainer.appendChild(qrIcon);
-    qrContainer.appendChild(qrImage);
-
-    document.body.appendChild(qrContainer);
-    this.qrContainer = qrContainer;
+    document.body.appendChild(gigButton);
+    this.latestGigButton = gigButton;
   }
 
   /**
@@ -1291,7 +1285,6 @@ export class App {
       { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
       { text: 'Gallery', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
       { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
-      { text: 'LATEST GIG', icon: './public/menuicons/gigs.png', window: 'latest-gig', isImage: true }
     ];
 
     // Create retro windows for each menu item

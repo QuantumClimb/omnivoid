@@ -161,16 +161,7 @@
 }
 
 .audio-player {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: rgba(0, 0, 0, 0.8);
-  border-top: 1px solid var(--fg-color);
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
+  display: none;
 }
 
 .progress-container {
