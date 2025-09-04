@@ -505,13 +505,14 @@ export class App {
   createLatestGigButton() {
     const gigButton = document.createElement('button');
     gigButton.className = 'latest-gig-button';
-    gigButton.innerHTML = '🎵 LATEST GIG';
+    gigButton.innerHTML = '🎵 LATEST GATHERINGS';
     gigButton.title = 'View Latest Gig';
     gigButton.style.cssText = `
       position: fixed;
-      bottom: 200px;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
+      margin-top: -180px;
       background: #111111;
       border: 1px solid #99ccff;
       color: #99ccff;
@@ -535,13 +536,13 @@ export class App {
     gigButton.addEventListener('mouseenter', () => {
       gigButton.style.backgroundColor = '#99ccff';
       gigButton.style.color = '#000000';
-      gigButton.style.transform = 'translateX(-50%) scale(1.05)';
+      gigButton.style.transform = 'translate(-50%, -50%) scale(1.05)';
     });
     
     gigButton.addEventListener('mouseleave', () => {
       gigButton.style.backgroundColor = '#111111';
       gigButton.style.color = '#99ccff';
-      gigButton.style.transform = 'translateX(-50%) scale(1)';
+      gigButton.style.transform = 'translate(-50%, -50%) scale(1)';
     });
 
     // Click handler to open gigs content
@@ -550,7 +551,7 @@ export class App {
       
       // Create gigs content if it doesn't exist
       if (!this.retroWindows['latest-gig']) {
-        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST GIG', this.createGigsContent());
+        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST GATHERINGS', this.createGigsContent());
       }
       
       // Open the gigs window
@@ -569,31 +570,32 @@ export class App {
     agentContainer.className = 'agent-controls-container';
     agentContainer.style.cssText = `
       position: fixed;
-      bottom: 20px;
+      top: 50%;
       left: 20px;
+      transform: translateY(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
       z-index: 1001;
       background: #111111;
       backdrop-filter: blur(10px);
-      padding: 16px 12px;
-      border-radius: 20px;
+      padding: 12px 8px;
+      border-radius: 15px;
       border: 1px solid #333333;
       box-shadow: 
         0 0 20px rgba(153, 204, 255, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
     `;
 
-    // Agent Count Controls
+    // Agent Count Controls - Vertical Layout
     const agentCountContainer = document.createElement('div');
     agentCountContainer.className = 'dial-container';
     agentCountContainer.style.cssText = `
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       flex-shrink: 0;
     `;
     
@@ -606,14 +608,6 @@ export class App {
       font-family: 'Space Mono', monospace;
     `;
     
-    // Agent count buttons container
-    const agentButtonsContainer = document.createElement('div');
-    agentButtonsContainer.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    `;
-    
     const agentCountUpBtn = document.createElement('button');
     agentCountUpBtn.innerHTML = '+';
     agentCountUpBtn.className = 'agent-btn';
@@ -622,14 +616,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
@@ -639,10 +633,10 @@ export class App {
     agentCountDisplay.className = 'agent-count-display';
     agentCountDisplay.style.cssText = `
       color: #99ccff;
-      font-size: 14px;
+      font-size: 12px;
       font-family: 'Space Mono', monospace;
       text-align: center;
-      min-width: 32px;
+      min-width: 28px;
     `;
     
     const agentCountDownBtn = document.createElement('button');
@@ -653,14 +647,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
@@ -696,21 +690,20 @@ export class App {
       agentCountDisplay.textContent = currentAgentCount;
     });
     
-    agentButtonsContainer.appendChild(agentCountDownBtn);
-    agentButtonsContainer.appendChild(agentCountDisplay);
-    agentButtonsContainer.appendChild(agentCountUpBtn);
-    
+    // Vertical layout: Icon, +, Count, -
     agentCountContainer.appendChild(agentCountLabel);
-    agentCountContainer.appendChild(agentButtonsContainer);
+    agentCountContainer.appendChild(agentCountUpBtn);
+    agentCountContainer.appendChild(agentCountDisplay);
+    agentCountContainer.appendChild(agentCountDownBtn);
 
-    // Connection Distance Controls
+    // Connection Distance Controls - Vertical Layout
     const connectionContainer = document.createElement('div');
     connectionContainer.className = 'dial-container';
     connectionContainer.style.cssText = `
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       flex-shrink: 0;
     `;
     
@@ -723,14 +716,6 @@ export class App {
       font-family: 'Space Mono', monospace;
     `;
     
-    // Connection distance buttons container
-    const connectionButtonsContainer = document.createElement('div');
-    connectionButtonsContainer.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    `;
-    
     const connectionUpBtn = document.createElement('button');
     connectionUpBtn.innerHTML = '+';
     connectionUpBtn.className = 'agent-btn';
@@ -739,14 +724,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
@@ -756,10 +741,10 @@ export class App {
     connectionDisplay.className = 'connection-display';
     connectionDisplay.style.cssText = `
       color: #99ccff;
-      font-size: 14px;
+      font-size: 12px;
       font-family: 'Space Mono', monospace;
       text-align: center;
-      min-width: 32px;
+      min-width: 28px;
     `;
     
     const connectionDownBtn = document.createElement('button');
@@ -770,14 +755,14 @@ export class App {
       background: transparent;
       border: 1px solid #99ccff;
       color: #99ccff;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
       transition: all 0.2s;
       font-family: 'Space Mono', monospace;
@@ -813,12 +798,11 @@ export class App {
       connectionDisplay.textContent = currentConnectionDistance;
     });
     
-    connectionButtonsContainer.appendChild(connectionDownBtn);
-    connectionButtonsContainer.appendChild(connectionDisplay);
-    connectionButtonsContainer.appendChild(connectionUpBtn);
-    
+    // Vertical layout: Icon, +, Count, -
     connectionContainer.appendChild(connectionLabel);
-    connectionContainer.appendChild(connectionButtonsContainer);
+    connectionContainer.appendChild(connectionUpBtn);
+    connectionContainer.appendChild(connectionDisplay);
+    connectionContainer.appendChild(connectionDownBtn);
     
     agentContainer.appendChild(agentCountContainer);
     agentContainer.appendChild(connectionContainer);
@@ -1283,6 +1267,7 @@ export class App {
               { text: 'Research', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
       { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
       { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
+      { text: 'Labs', icon: './public/menuicons/research.png', window: 'labs', isImage: true },
       { text: 'Gallery', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
       { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
     ];
@@ -2149,6 +2134,9 @@ export class App {
         }, 100);
         return this.createRadioFileExplorer();
 
+      case 'labs':
+        return this.createLabsContent();
+
       case 'gallery':
         return this.createGalleryContent();
 
@@ -2930,6 +2918,62 @@ export class App {
           color: #99ccff;
         ">
           <strong>Navigation:</strong> Click any thumbnail to view full image • Press ESC or click outside popup to close • ${galleryImages.length} images total
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Create labs content with workshop information
+   */
+  createLabsContent() {
+    return `
+      <div id="labs-container" style="background: #0a0a0a;">
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">🔬 OMNIVOID LABS</h3>
+          <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
+            An immersive, hands-on session where you'll explore hardware synthesizers, Understand the Basics of Synthesis, Experience a Group Drone Jam Session, Insights into creative sampling, and a special Producer Roulette Challenge feat. guest Music Producers.
+          </p>
+        </div>
+        
+        <!-- Workshop Details -->
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🎛️ WORKSHOP ACTIVITIES</h4>
+          
+          <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🔧 Hardware Synthesizers</div>
+            <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
+              Hands-on exploration of analog and digital synthesizers, learning their unique characteristics and sound design capabilities.
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🎵 Synthesis Fundamentals</div>
+            <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
+              Understanding oscillators, filters, envelopes, and modulation - the building blocks of electronic sound creation.
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🌊 Group Drone Jam Session</div>
+            <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
+              Collaborative creation of ambient soundscapes through collective improvisation and experimental techniques.
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🎧 Creative Sampling</div>
+            <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
+              Techniques for capturing, manipulating, and transforming audio samples into unique musical elements.
+            </div>
+          </div>
+          
+          <div style="padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🎲 Producer Roulette Challenge</div>
+            <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
+              A special collaborative challenge featuring guest music producers, where participants work together to create tracks in real-time.
+            </div>
+          </div>
         </div>
       </div>
     `;

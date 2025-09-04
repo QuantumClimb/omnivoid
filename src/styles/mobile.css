@@ -437,7 +437,9 @@
   
   /* Make agent controls larger on desktop */
   .agent-controls-container {
-    bottom: 30px !important;
+    top: 50% !important;
+    left: 30px !important;
+    transform: translateY(-50%) !important;
     padding: 16px 12px !important;
     border-radius: 25px !important;
     box-shadow: 
@@ -446,16 +448,16 @@
   }
   
   .agent-btn {
-    width: 28px !important;
-    height: 28px !important;
-    font-size: 14px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
     border-width: 2px !important;
   }
   
   .agent-count-display,
   .connection-display {
-    font-size: 11px !important;
-    min-width: 28px !important;
+    font-size: 12px !important;
+    min-width: 32px !important;
   }
   
   /* Enhanced floating menu for desktop */
