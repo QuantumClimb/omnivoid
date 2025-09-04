@@ -103,7 +103,7 @@ export class App {
       this.splashScreen.log('📱 Setting up responsive controls...', 85);
       
           // Complete initialization
-    this.splashScreen.log('🌌 Welcome to OMNIVOID', 100);
+    this.splashScreen.log('🌌 Welcome to the OMNIVOID LABS Repository', 100);
     
     // Test Google Drive integration
     this.testGoogleDriveIntegration();
@@ -3089,9 +3089,9 @@ export class App {
         
         <!-- Social Media Section -->
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">📱 SOCIAL MEDIA</h4>
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">📱 OMNIVOID LABS</h4>
           
-          <!-- Instagram Logo and Link -->
+          <!-- Main Instagram Logo and Link -->
           <div style="
             display: flex;
             align-items: center;
@@ -3102,7 +3102,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/omnivoid_collective', '_blank')" 
+          " onclick="window.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <div style="
@@ -3119,17 +3119,17 @@ export class App {
               font-weight: bold;
             ">📷</div>
             <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid_collective</div>
-              <div style="font-size: 9px; color: #66aaff;">Follow us on Instagram</div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid.labs</div>
+              <div style="font-size: 9px; color: #66aaff;">Main Laboratory</div>
             </div>
           </div>
         </div>
         
-        <!-- Partner Logos Section -->
-        <div style="border: 1px inset #333333; padding: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🤝 PARTNERS & COLLABORATORS</h4>
+        <!-- Partners Section -->
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🤝 PARTNERS</h4>
           
-          <!-- Partner 1 -->
+          <!-- Royville Media -->
           <div style="
             display: flex;
             align-items: center;
@@ -3140,7 +3140,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/quantumclimb', '_blank')" 
+          " onclick="window.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <div style="
@@ -3155,14 +3155,14 @@ export class App {
               font-size: 18px;
               color: white;
               font-weight: bold;
-            ">⚡</div>
+            ">🎬</div>
             <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@quantumclimb</div>
-              <div style="font-size: 9px; color: #66aaff;">Lead Developer & Artist</div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@royvillemedia.film</div>
+              <div style="font-size: 9px; color: #66aaff;">Film Production</div>
             </div>
           </div>
           
-          <!-- Partner 2 -->
+          <!-- Quantum Climb -->
           <div style="
             display: flex;
             align-items: center;
@@ -3173,7 +3173,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/omnivoid_labs', '_blank')" 
+          " onclick="window.open('https://www.instagram.com/quantum.climb/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <div style="
@@ -3188,24 +3188,25 @@ export class App {
               font-size: 18px;
               color: white;
               font-weight: bold;
-            ">🔬</div>
+            ">⚡</div>
             <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid_labs</div>
-              <div style="font-size: 9px; color: #66aaff;">Research & Development</div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@quantum.climb</div>
+              <div style="font-size: 9px; color: #66aaff;">Development & Art</div>
             </div>
           </div>
           
-          <!-- Partner 3 -->
+          <!-- The Inventory -->
           <div style="
             display: flex;
             align-items: center;
+            margin-bottom: 12px;
             padding: 8px;
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/omnivoid_radio', '_blank')" 
+          " onclick="window.open('https://www.instagram.com/theinventory.in/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <div style="
@@ -3220,10 +3221,244 @@ export class App {
               font-size: 18px;
               color: white;
               font-weight: bold;
-            ">📻</div>
+            ">📦</div>
             <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid_radio</div>
-              <div style="font-size: 9px; color: #66aaff;">Radio & Broadcasting</div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@theinventory.in</div>
+              <div style="font-size: 9px; color: #66aaff;">Creative Archive</div>
+            </div>
+          </div>
+          
+          <!-- Pro Musicals -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/promusicals/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #fdcb6e 0%, #e17055 50%, #d63031 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🎵</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@promusicals</div>
+              <div style="font-size: 9px; color: #66aaff;">Musical Productions</div>
+            </div>
+          </div>
+          
+          <!-- The Chennai Scene -->
+          <div style="
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #00b894 0%, #00a085 50%, #00cec9 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🏙️</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@thechennaiscene</div>
+              <div style="font-size: 9px; color: #66aaff;">Local Culture</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Team Section -->
+        <div style="border: 1px inset #333333; padding: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">👥 TEAM</h4>
+          
+          <!-- Roy Van Winkle -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #6c5ce7 0%, #a29bfe 50%, #fd79a8 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🎭</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@roydvanwinkle</div>
+              <div style="font-size: 9px; color: #66aaff;">Creative Director</div>
+            </div>
+          </div>
+          
+          <!-- The Juncando -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/the_juncando/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #fd79a8 0%, #fdcb6e 50%, #e17055 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🎨</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@the_juncando</div>
+              <div style="font-size: 9px; color: #66aaff;">Visual Artist</div>
+            </div>
+          </div>
+          
+          <!-- Design Stein -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/designst3in/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #00cec9 0%, #55a3ff 50%, #74b9ff 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🎨</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@designst3in</div>
+              <div style="font-size: 9px; color: #66aaff;">Design Specialist</div>
+            </div>
+          </div>
+          
+          <!-- Television Dust -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/television_dust/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #2d3436 0%, #636e72 50%, #b2bec3 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">📺</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@television_dust</div>
+              <div style="font-size: 9px; color: #66aaff;">Media Production</div>
+            </div>
+          </div>
+          
+          <!-- Krishnamurthy -->
+          <div style="
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/krishnamurthy/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <div style="
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(45deg, #e84393 0%, #fd79a8 50%, #fdcb6e 100%);
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 12px;
+              font-size: 18px;
+              color: white;
+              font-weight: bold;
+            ">🌟</div>
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@krishnamurthy</div>
+              <div style="font-size: 9px; color: #66aaff;">Creative Collaborator</div>
             </div>
           </div>
         </div>
