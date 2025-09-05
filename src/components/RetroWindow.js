@@ -15,6 +15,17 @@ export class RetroWindow extends Component {
     this.isDragging = false;
     this.dragOffset = { x: 0, y: 0 };
     
+    // Define desktop window positions for different windows
+    this.desktopPositions = {
+      'conundrum': { top: '10%', left: '10%' },
+      'releases': { top: '10%', left: '35%' },
+      'live': { top: '10%', left: '60%' },
+      'radio': { top: '50%', left: '10%' },
+      'labs': { top: '50%', left: '35%' },
+      'gallery': { top: '50%', left: '60%' },
+      'contact': { top: '50%', left: '75%' }
+    };
+    
     this.createElement();
     this.addEventListeners();
   }
@@ -27,11 +38,32 @@ export class RetroWindow extends Component {
     this.element = document.createElement('div');
     this.element.className = 'retro-window';
     this.element.id = this.id;
+    
+    // Check if we're on desktop and set appropriate positioning
+    const isDesktop = window.innerWidth >= 768;
+    const position = this.desktopPositions[this.id];
+    
+    let positionStyle = '';
+    if (isDesktop && position) {
+      // Desktop: Use predefined positions
+      positionStyle = `
+        position: fixed;
+        top: ${position.top};
+        left: ${position.left};
+        transform: none;
+      `;
+    } else {
+      // Mobile: Center the window
+      positionStyle = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      `;
+    }
+    
     this.element.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      ${positionStyle}
       width: 480px;
       max-width: 90vw;
       height: 360px;
@@ -278,10 +310,19 @@ export class RetroWindow extends Component {
     setTimeout(() => {
       if (!this.isVisible) {
         this.element.style.display = 'none';
-        // Reset position to center
-        this.element.style.left = '';
-        this.element.style.top = '';
-        this.element.style.transform = 'translate(-50%, -50%)';
+        // Reset position based on screen size
+        const isDesktop = window.innerWidth >= 768;
+        const position = this.desktopPositions[this.id];
+        
+        if (isDesktop && position) {
+          this.element.style.left = position.left;
+          this.element.style.top = position.top;
+          this.element.style.transform = 'none';
+        } else {
+          this.element.style.left = '';
+          this.element.style.top = '';
+          this.element.style.transform = 'translate(-50%, -50%)';
+        }
       }
     }, 200);
   }
