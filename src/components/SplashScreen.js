@@ -74,7 +74,7 @@ export class SplashScreen extends Component {
   log(message, progress) {
     const logEntry = document.createElement('div');
     logEntry.className = 'splash-log';
-    logEntry.textContent = message;
+    logEntry.innerHTML = message;
     this.logContainer.appendChild(logEntry);
     this.logContainer.scrollTop = this.logContainer.scrollHeight;
     

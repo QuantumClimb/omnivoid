@@ -44,7 +44,7 @@ export class App {
     
     // Initialize splash screen
     this.splashScreen = new SplashScreen();
-    this.splashScreen.log('Initializing OMNIVOID...', 10);
+    this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Initializing OMNIVOID...', 10);
     
     // Initialize components in sequence
     this.initializeComponents();
@@ -77,31 +77,31 @@ export class App {
   async initializeComponents() {
     try {
       // Initialize core managers
-      this.splashScreen.log('📦 Loading core systems...', 15);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading core systems...', 15);
       this.animationController = new AnimationController();
       
       // Initialize audio system
-      this.splashScreen.log('🎵 Initializing audio...', 25);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Initializing audio...', 25);
       await this.audioManager.initializeAudioContext();
       
       // Audio system ready for Mixcloud integration
-      this.splashScreen.log('📥 Audio system ready...', 35);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Audio system ready...', 35);
       this.googleDriveConfig.log('Audio system ready for Mixcloud integration');
       
-      this.splashScreen.log('✅ Audio ready', 45);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Audio ready', 45);
       this.googleDriveConfig.log('Audio system initialized for external audio sources');
 
       // Load conundrum content immediately at startup
-      this.splashScreen.log('🧩 Loading conundrum content...', 50);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading conundrum content...', 50);
       await this.loadConundrumContent();
 
       // Initialize visible components (AgentSystem, Logo only)
-      this.splashScreen.log('✨ Loading visual elements...', 55);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading visual elements...', 55);
       this.agentSystem = new AgentSystem(this.audioManager);
       this.logo = new Logo(this.audioManager);
       
       // Initialize all other components but keep them hidden (for future use)
-      this.splashScreen.log('🔧 Loading components...', 65);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading components...', 65);
       this.controlPanel = new ControlPanel('control-panels');
       this.starfield = new Starfield();
       this.vectorGrid = new VectorGrid();
@@ -119,10 +119,10 @@ export class App {
       this.hideAdvancedLayers();
       
       // Set up responsive controls based on device
-      this.splashScreen.log('📱 Setting up responsive controls...', 85);
+      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Setting up responsive controls...', 85);
       
           // Complete initialization
-    this.splashScreen.log('🌌 Welcome to the OMNIVOID LABS Repository', 100);
+    this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 20px; height: 20px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Welcome to the OMNIVOID LABS Repository', 100);
     
     // Test Google Drive integration
     this.testGoogleDriveIntegration();
@@ -142,7 +142,7 @@ export class App {
       }, 2000);
       
     } catch (error) {
-      this.splashScreen.log(`❌ Error: ${error.message}`, 100);
+      this.splashScreen.log(`<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Error: ${error.message}`, 100);
       console.error('Initialization error:', error);
     }
   }
@@ -565,8 +565,8 @@ export class App {
   createLatestGigButton() {
     const gigButton = document.createElement('button');
     gigButton.className = 'latest-gig-button';
-    gigButton.innerHTML = '<img src="./public/ascii/V.svg" style="width: 20px; height: 20px; margin-right: 8px; filter: brightness(0) invert(1);" alt="Gatherings"> LATEST GATHERINGS';
-    gigButton.title = 'View Latest Gig';
+    gigButton.innerHTML = '<img src="./public/ascii/V.svg" style="width: 20px; height: 20px; margin-right: 8px; filter: brightness(0) invert(1);" alt="Latest Rituals"> LATEST RITUALS';
+    gigButton.title = 'View Latest Rituals';
     gigButton.style.cssText = `
       position: fixed;
       top: 50%;
@@ -620,7 +620,7 @@ export class App {
       
       // Create gigs content if it doesn't exist
       if (!this.retroWindows['latest-gig']) {
-        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST GATHERINGS', this.createGigsContent(), null);
+        this.retroWindows['latest-gig'] = new RetroWindow('latest-gig', 'LATEST RITUALS', this.createGigsContent(), null);
       }
       
       // Open the gigs window
@@ -1344,7 +1344,7 @@ export class App {
       { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
       { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
       { text: 'Labs', icon: './public/ascii/WORM.svg', window: 'labs', isImage: true },
-      { text: 'Gallery', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
+      { text: 'Archive', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
       { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
     ];
 
@@ -2919,10 +2919,9 @@ export class App {
 
     return `
       <div id="gallery-container" style="background: #0a0a0a;">
-        <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">
-          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID GALLERY</h3>
+        <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">          
           <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-            Visual collection featuring ${galleryImages.length} digital art pieces. Click any thumbnail to open in popup viewer.
+           ${galleryImages.length} images loaded
           </p>
         </div>
         
@@ -2960,10 +2959,43 @@ export class App {
     return `
       <div id="labs-container" style="background: #0a0a0a;">
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">🔬 OMNIVOID LABS</h3>
+          
           <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
             An immersive, hands-on session where you'll explore hardware synthesizers, Understand the Basics of Synthesis, Experience a Group Drone Jam Session, Insights into creative sampling, and a special Producer Roulette Challenge feat. guest Music Producers.
           </p>
+          
+          <!-- Workshop Poster -->
+          <div style="text-align: center; margin: 12px 0;">
+            <img src="public/gigs/workshop.png" alt="OMNIVOID Workshop" style="
+              max-width: 100%;
+              height: auto;
+              border: 1px solid #333;
+              border-radius: 4px;
+            ">
+          </div>
+          
+          <!-- Registration Button -->
+          <div style="text-align: center; margin: 12px 0;">
+            <a href="https://forms.gle/your-registration-link-here" 
+               target="_blank" 
+               style="
+                 display: inline-block;
+                 padding: 12px 24px;
+                 background: #99ccff;
+                 color: #000;
+                 text-decoration: none;
+                 border-radius: 4px;
+                 font-weight: bold;
+                 font-size: 11px;
+                 font-family: 'Space Mono', monospace;
+                 transition: all 0.2s;
+                 border: 1px solid #99ccff;
+               "
+               onmouseover="this.style.background='#66aaff'; this.style.borderColor='#66aaff'"
+               onmouseout="this.style.background='#99ccff'; this.style.borderColor='#99ccff'">
+              🎛️ REGISTER FOR WORKSHOP
+            </a>
+          </div>
         </div>
         
         <!-- Workshop Details -->
@@ -2978,28 +3010,28 @@ export class App {
           </div>
           
           <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
-            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🎵 Synthesis Fundamentals</div>
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">Synthesis Fundamentals</div>
             <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
               Understanding oscillators, filters, envelopes, and modulation - the building blocks of electronic sound creation.
             </div>
           </div>
           
           <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
-            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🌊 Group Drone Jam Session</div>
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">Group Drone Jam Session</div>
             <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
               Collaborative creation of ambient soundscapes through collective improvisation and experimental techniques.
             </div>
           </div>
           
           <div style="margin-bottom: 12px; padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
-            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🎧 Creative Sampling</div>
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">Creative Sampling</div>
             <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
               Techniques for capturing, manipulating, and transforming audio samples into unique musical elements.
             </div>
           </div>
           
           <div style="padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px;">
-            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">🎲 Producer Roulette Challenge</div>
+            <div style="font-size: 10px; color: #66aaff; font-weight: bold; margin-bottom: 4px;">Producer Roulette Challenge</div>
             <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
               A special collaborative challenge featuring guest music producers, where participants work together to create tracks in real-time.
             </div>
@@ -3016,7 +3048,7 @@ export class App {
     return `
       <div id="gigs-container" style="background: #0a0a0a;">
         <div style="border: 1px inset #333333; padding: 8px; margin-bottom: 8px; background: #0a0a0a; color: #99ccff;">
-          <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">OMNIVOID EVENTS</h3>
+          
           <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
             Experience OMNIVOID live - from electrifying performances to immersive workshops. Join us in the digital consciousness.
           </p>
@@ -3170,156 +3202,16 @@ export class App {
           " onclick="window.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
+            <img src="public/logo.svg" 
                  style="
                    width: 32px;
                    height: 32px;
                    margin-right: 12px;
                    filter: brightness(0) invert(1);
                  " 
-                 alt="WORM">
+                 alt="OMNIVOID">
             <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid.labs</div>
-              <div style="font-size: 9px; color: #66aaff;">Main Laboratory</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Partners Section -->
-        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">PARTNERS</h4>
-          
-          <!-- Royville Media -->
-          <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
-             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
-             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
-                 style="
-                   width: 32px;
-                   height: 32px;
-                   margin-right: 12px;
-                   filter: brightness(0) invert(1);
-                 " 
-                 alt="WORM">
-            <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@royvillemedia.film</div>
-            </div>
-          </div>
-          
-          <!-- Quantum Climb -->
-          <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/quantum.climb/', '_blank')" 
-             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
-             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
-                 style="
-                   width: 32px;
-                   height: 32px;
-                   margin-right: 12px;
-                   filter: brightness(0) invert(1);
-                 " 
-                 alt="WORM">
-            <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@quantum.climb</div>
-            </div>
-          </div>
-          
-          <!-- The Inventory -->
-          <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/theinventory.in/', '_blank')" 
-             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
-             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
-                 style="
-                   width: 32px;
-                   height: 32px;
-                   margin-right: 12px;
-                   filter: brightness(0) invert(1);
-                 " 
-                 alt="WORM">
-            <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@theinventory.in</div>
-            </div>
-          </div>
-          
-          <!-- Pro Musicals -->
-          <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/promusicals/', '_blank')" 
-             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
-             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
-                 style="
-                   width: 32px;
-                   height: 32px;
-                   margin-right: 12px;
-                   filter: brightness(0) invert(1);
-                 " 
-                 alt="WORM">
-            <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@promusicals</div>
-            </div>
-          </div>
-          
-          <!-- The Chennai Scene -->
-          <div style="
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
-             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
-             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
-                 style="
-                   width: 32px;
-                   height: 32px;
-                   margin-right: 12px;
-                   filter: brightness(0) invert(1);
-                 " 
-                 alt="WORM">
-            <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@thechennaiscene</div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@omnivoid.labs</div>              
             </div>
           </div>
         </div>
@@ -3328,33 +3220,7 @@ export class App {
         <div style="border: 1px inset #333333; padding: 12px; background: #0a0a0a; color: #99ccff;">
           <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">LAB RATS</h4>
           
-          <!-- Roy Van Winkle -->
-          <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
-             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
-             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
-                 style="
-                   width: 32px;
-                   height: 32px;
-                   margin-right: 12px;
-                   filter: brightness(0) invert(1);
-                 " 
-                 alt="WORM">
-            <div>
-              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@roydvanwinkle</div>
-            </div>
-          </div>
-          
+                   
           <!-- The Juncando -->
           <div style="
             display: flex;
@@ -3459,6 +3325,198 @@ export class App {
                  alt="WORM">
             <div>
               <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@krishnamurthy</div>
+            </div>
+          </div>
+          <!-- Roy Van Winkle -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/ascii/WORM.svg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   filter: brightness(0) invert(1);
+                 " 
+                 alt="WORM">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@roydvanwinkle</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Partners Section -->
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">PARTNERS</h4>
+          
+          <!-- Royville Media -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/logos/royville.png" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   object-fit: contain;
+                 " 
+                 alt="Royville Media">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@royvillemedia.film</div>
+            </div>
+          </div>
+          
+          <!-- Quantum Climb -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/quantum.climb/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/logos/QuantumClimb.png" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   object-fit: contain;
+                 " 
+                 alt="Quantum Climb">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@quantum.climb</div>
+            </div>
+          </div>
+          
+          <!-- The Inventory -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/theinventory.in/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/logos/Inventory_logo.png" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   object-fit: contain;
+                 " 
+                 alt="The Inventory">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@theinventory.in</div>
+            </div>
+          </div>
+          
+          <!-- Pro Musicals -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/promusicals/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/logos/ProMusicals1.jpg" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   object-fit: contain;
+                 " 
+                 alt="Pro Musicals">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@promusicals</div>
+            </div>
+          </div>
+          
+          <!-- The Chennai Scene -->
+          <div style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/logos/Chennai_Scene_Trans.png" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   object-fit: contain;
+                 " 
+                 alt="The Chennai Scene">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@thechennaiscene</div>
+            </div>
+          </div>
+          
+          <!-- Aura Immerse -->
+          <div style="
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+          " onclick="window.open('https://www.instagram.com/auraimmerse/', '_blank')" 
+             onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
+             onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
+            <img src="public/logos/aura logo.png" 
+                 style="
+                   width: 32px;
+                   height: 32px;
+                   margin-right: 12px;
+                   object-fit: contain;
+                 " 
+                 alt="Aura Immerse">
+            <div>
+              <div style="font-size: 11px; font-weight: bold; color: #99ccff;">@auraimmerse</div>
             </div>
           </div>
         </div>
