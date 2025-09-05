@@ -70,11 +70,20 @@ npm run preview
 
 ## 🏗️ Architecture
 
+### Dual App Architecture
+
+OMNIVOID LABS uses a **device-specific architecture** that automatically loads the appropriate app based on the user's device:
+
+- **Desktop App** (`src/App.js`): Full-featured desktop experience
+- **Mobile App** (`src/AppMobile.js`): Optimized mobile experience
+- **Device Detection**: Automatic selection based on screen size and user agent
+
 ### Core Components
 
 ```
 src/
-├── AppMobile.js              # Main application controller
+├── App.js                   # Desktop application controller
+├── AppMobile.js             # Mobile application controller
 ├── components/               # Reusable UI components
 │   ├── AgentSystem.js       # Particle system and audio reactivity
 │   ├── RetroWindow.js       # Window management system
@@ -96,6 +105,29 @@ src/
     └── Agent.js             # Agent behavior algorithms
 ```
 
+### Device Detection Logic
+
+```javascript
+// Automatic device detection in index.html
+const isMobile = window.innerWidth < 768 || 
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+if (isMobile) {
+  import('./src/AppMobile.js').then(module => new module.App());
+} else {
+  import('./src/App.js').then(module => new module.App());
+}
+```
+
+### Architecture Benefits
+
+- **🚀 Performance**: Only loads code needed for each device type
+- **🔧 Maintainability**: Separate concerns for desktop vs mobile
+- **🐛 Bug Prevention**: No more dual initialization conflicts
+- **📱 Optimization**: Device-specific features and layouts
+- **⚡ Loading Speed**: Faster initial load times
+- **🎯 User Experience**: Tailored experience for each platform
+
 ### Key Technologies
 
 - **WebGL 2.0**: Hardware-accelerated graphics
@@ -103,7 +135,7 @@ src/
 - **Canvas 2D/3D**: Dynamic visual rendering
 - **CSS3 Animations**: Smooth transitions and effects
 - **ES6+ JavaScript**: Modern JavaScript features
-- **Responsive Design**: Mobile-first approach
+- **Dynamic Imports**: Runtime module loading
 
 ---
 
@@ -312,6 +344,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **v1.2.0**: Audio reactivity and particle systems
 - **v1.3.0**: Event integration and social features
 - **v1.4.0**: Performance optimizations and bug fixes
+- **v2.0.0**: **Major Architecture Update** - Separate desktop/mobile apps with device detection
 
 ---
 

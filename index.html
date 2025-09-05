@@ -108,9 +108,21 @@
   <!-- Logo will be dynamically created by the Logo component -->
 
   <script type="module">
-    import { App } from './src/AppMobile.js';
+    // Device detection
+    const isMobile = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     document.addEventListener('DOMContentLoaded', () => {
-      new App();
+      if (isMobile) {
+        console.log('📱 Loading Mobile App...');
+        import('./src/AppMobile.js').then(module => {
+          new module.App();
+        });
+      } else {
+        console.log('🖥️ Loading Desktop App...');
+        import('./src/App.js').then(module => {
+          new module.App();
+        });
+      }
     });
   </script>
 </body>

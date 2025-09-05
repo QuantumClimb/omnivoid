@@ -23,7 +23,7 @@ import { ControlPanel } from './controllers/ControlPanel.js';
  */
 export class App {
   constructor() {
-    console.log('🚀 OMNIVOID Mobile App initializing...');
+    console.log('📱 OMNIVOID Mobile App initializing...');
     
     // Make this instance globally accessible for the radio file explorer
     window.omnivoidApp = this;
@@ -36,7 +36,7 @@ export class App {
     
     // Google Drive integration
     this.googleDriveConfig = GOOGLE_DRIVE_CONFIG;
-    this.googleDriveConfig.log('AppMobile initialized with Google Drive integration');
+    this.googleDriveConfig.log('Mobile App initialized with Google Drive integration');
     
     // Mixcloud integration properties
     this.googleDriveConfig.log('Mixcloud integration ready');
@@ -130,8 +130,8 @@ export class App {
     // Add console commands for color system exploration
     this.setupConsoleCommands();
       
-      // Initialize responsive mode based on screen size
-      this.initializeResponsiveMode();
+      // Initialize mobile mode
+      this.initializeMobileMode();
       
       // Add window resize listener for responsive controls
       window.addEventListener('resize', () => this.handleWindowResize());
@@ -174,11 +174,17 @@ export class App {
    * Create minimal audio controls only
    */
   createMinimalControls() {
+    // Check if controls already exist in DOM to prevent duplicates
+    const existingControls = document.querySelector('.minimal-controls');
+    if (existingControls) {
+      console.log('📱 Minimal controls already exist in DOM, skipping creation');
+      return;
+    }
+    
     // Add mobile-responsive CSS styles
     this.addMobileStyles();
     
-    // Create Latest Gig button above minimal controls
-    this.createLatestGigButton();
+    // Latest Gig button will be created separately
     
     const controlsContainer = document.createElement('div');
     controlsContainer.className = 'minimal-controls';
@@ -563,6 +569,25 @@ export class App {
    * Create Latest Gig button above minimal controls
    */
   createLatestGigButton() {
+    console.log('🔍 DEBUG: createLatestGigButton() called');
+    console.log('🔍 DEBUG: Stack trace:', new Error().stack);
+    
+    // Check if button already exists in DOM to prevent duplicates
+    const existingButton = document.querySelector('.latest-gig-button');
+    if (existingButton) {
+      console.log('🎵 Latest Gig button already exists in DOM, skipping creation');
+      console.log('🔍 DEBUG: Existing button found:', existingButton);
+      return;
+    }
+    
+    // Additional check: if this.latestGigButton exists, don't create another
+    if (this.latestGigButton) {
+      console.log('🎵 Latest Gig button already exists in instance, skipping creation');
+      return;
+    }
+    
+    console.log('🔍 DEBUG: Creating new Latest Gig button...');
+    
     const gigButton = document.createElement('button');
     gigButton.className = 'latest-gig-button';
     gigButton.innerHTML = '<img src="./public/ascii/V.svg" style="width: 20px; height: 20px; margin-right: 8px; filter: brightness(0) invert(1);" alt="Latest Rituals"> LATEST RITUALS';
@@ -629,6 +654,10 @@ export class App {
 
     document.body.appendChild(gigButton);
     this.latestGigButton = gigButton;
+    
+    console.log('🔍 DEBUG: Latest Gig button created and added to DOM');
+    console.log('🔍 DEBUG: Button element:', gigButton);
+    console.log('🔍 DEBUG: Total buttons with class "latest-gig-button":', document.querySelectorAll('.latest-gig-button').length);
   }
 
   /**
@@ -4312,23 +4341,14 @@ export class App {
    * Handle window resize for responsive controls
    */
   handleWindowResize() {
-    const isDesktop = window.innerWidth >= 768;
-    
-    console.log(`📱 Window resize: ${window.innerWidth}px - ${isDesktop ? 'Desktop' : 'Mobile'} mode`);
+    console.log(`📱 Mobile window resize: ${window.innerWidth}px`);
     
     // Reset modal state on resize to prevent positioning issues
     this.resetModalState();
     
-    if (isDesktop) {
-      // DESKTOP MODE - Use mobile menu for consistency
-      console.log('🖥️ Desktop mode - using unified mobile menu');
-      this.showMobileControls();
-      
-    } else {
-      // MOBILE MODE
-      console.log('📱 Mobile mode');
-      this.showMobileControls();
-    }
+    // Mobile mode - show mobile controls
+    console.log('📱 Mobile mode - showing mobile controls');
+    this.showMobileControls();
   }
 
   /**
@@ -4363,6 +4383,9 @@ export class App {
       console.log('📱 Mobile controls shown');
     }
     
+    // Create Latest Gig button separately to avoid duplication
+    this.createLatestGigButton();
+    
     if (this.qrContainer) {
       this.qrContainer.style.display = 'flex';
     }
@@ -4383,26 +4406,18 @@ export class App {
   }
 
   /**
-   * Initialize responsive behavior based on current screen size
+   * Initialize mobile mode
    */
-  initializeResponsiveMode() {
-    const isDesktop = window.innerWidth >= 768;
+  initializeMobileMode() {
+    console.log('📱 Initializing mobile mode...');
     
-    console.log(`🚀 Initializing responsive mode: ${isDesktop ? 'Desktop' : 'Mobile'}`);
-    
-    // Always create the floating menu regardless of screen size
+    // Create floating menu for mobile
     console.log('🍔 Creating floating menu...');
     this.createFloatingMenu();
     console.log('🍔 Floating menu creation completed');
     
-    // Always create mobile controls for consistency
-    console.log('📱 Creating mobile controls...');
-    this.createMinimalControls();
-    
-    if (isDesktop) {
-      // Start in desktop mode - using unified mobile menu
-      console.log('🖥️ Desktop mode - using unified mobile menu');
-    }
+    // Create mobile controls
+    this.showMobileControls();
   }
 
 
