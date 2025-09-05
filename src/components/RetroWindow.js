@@ -17,13 +17,14 @@ export class RetroWindow extends Component {
     
     // Define desktop window positions for different windows
     this.desktopPositions = {
-      'conundrum': { top: '10%', left: '10%' },
-      'releases': { top: '10%', left: '35%' },
-      'live': { top: '10%', left: '60%' },
-      'radio': { top: '50%', left: '10%' },
-      'labs': { top: '50%', left: '35%' },
-      'gallery': { top: '50%', left: '60%' },
-      'contact': { top: '50%', left: '75%' }
+      'conundrum-window': { top: '10%', left: '10%' },
+      'releases-window': { top: '10%', left: '35%' },
+      'live-window': { top: '10%', left: '60%' },
+      'radio-window': { top: '50%', left: '10%' },
+      'labs-window': { top: '50%', left: '35%' },
+      'gallery-window': { top: '50%', left: '60%' },
+      'contact-window': { top: '50%', left: '75%' },
+      'latest-gig': { top: '50%', left: '50%' }
     };
     
     this.createElement();
@@ -45,12 +46,12 @@ export class RetroWindow extends Component {
     
     let positionStyle = '';
     if (isDesktop && position) {
-      // Desktop: Use predefined positions
+      // Desktop: Use predefined positions but center them properly
       positionStyle = `
         position: fixed;
         top: ${position.top};
         left: ${position.left};
-        transform: none;
+        transform: translate(-50%, -50%);
       `;
     } else {
       // Mobile: Center the window
@@ -233,7 +234,7 @@ export class RetroWindow extends Component {
       const rect = this.element.getBoundingClientRect();
       this.dragOffset.x = e.clientX - rect.left;
       this.dragOffset.y = e.clientY - rect.top;
-      this.element.style.transform = 'none';
+      // Keep transform for proper centering during drag
       document.addEventListener('mousemove', this.handleDrag);
       document.addEventListener('mouseup', this.handleDragEnd);
       e.preventDefault();
@@ -269,6 +270,7 @@ export class RetroWindow extends Component {
 
     this.element.style.left = constrainedX + 'px';
     this.element.style.top = constrainedY + 'px';
+    this.element.style.transform = 'none';
   }
 
   /**
@@ -317,10 +319,10 @@ export class RetroWindow extends Component {
         if (isDesktop && position) {
           this.element.style.left = position.left;
           this.element.style.top = position.top;
-          this.element.style.transform = 'none';
+          this.element.style.transform = 'translate(-50%, -50%)';
         } else {
-          this.element.style.left = '';
-          this.element.style.top = '';
+          this.element.style.left = '50%';
+          this.element.style.top = '50%';
           this.element.style.transform = 'translate(-50%, -50%)';
         }
       }
