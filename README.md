@@ -137,6 +137,15 @@ if (isMobile) {
 - **ES6+ JavaScript**: Modern JavaScript features
 - **Dynamic Imports**: Runtime module loading
 
+### Recent Updates & Fixes
+
+- **Button Persistence Fix**: Resolved duplicate button creation issues between desktop/mobile versions
+- **Global Cleanup System**: Implemented comprehensive cleanup to prevent UI element conflicts
+- **UI Color Improvements**: Updated dropdown menu active states to use very dark grey (#1c1c1c) instead of black
+- **Component Cleanup**: Removed unused VectorGrid component and cleaned up imports
+- **Favicon Optimization**: Simplified favicon setup to use only essential favicon.ico
+- **Temporary Feature Hiding**: Disabled "LATEST RITUALS" and "REGISTER FOR WORKSHOP" buttons for debugging
+
 ---
 
 ## 🎨 Visual Features
@@ -173,6 +182,20 @@ if (isMobile) {
 - **Mobile Menu**: Collapsible navigation system
 - **Touch Feedback**: Visual feedback for touch interactions
 - **Orientation Support**: Portrait and landscape modes
+
+### Recent Mobile Improvements (v2.1.0)
+
+- **Comprehensive Mobile Detection**: Enhanced device detection across all components
+- **Performance Optimizations**: Reduced particle counts and animation complexity on mobile
+- **Component-Specific Tuning**: 
+  - AgentSystem: 100 agents (vs 120 desktop), smaller connection distances
+  - ASCIITunnel: 25 characters (vs 50 desktop)
+  - PolygonEcho: 5 polygons (vs 20 desktop), adjusted sizes and speeds
+  - Starfield: 50 stars (vs 100 desktop)
+  - SolarSystem: Slower animation speed for better performance
+- **Responsive UI Elements**: Mobile-optimized button sizes, fonts, and spacing
+- **Touch-Friendly Controls**: Larger touch targets and improved mobile interactions
+- **Memory Management**: Better cleanup and resource management for mobile devices
 
 ---
 
@@ -345,6 +368,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **v1.3.0**: Event integration and social features
 - **v1.4.0**: Performance optimizations and bug fixes
 - **v2.0.0**: **Major Architecture Update** - Separate desktop/mobile apps with device detection
+- **v2.1.0**: **Mobile Optimization Update** - Enhanced mobile performance and UI improvements
 
 ---
 
