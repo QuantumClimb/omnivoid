@@ -6,17 +6,12 @@ import { Component } from './Base.js';
 export class Logo extends Component {
   /**
    * Create a new Logo instance
-   * @param {AudioManager} audioManager Optional audio manager for visualization
    */
-  constructor(audioManager = null) {
+  constructor() {
     super();
-    this.audioManager = audioManager;
-    this.audioScale = 1.0;
-    this.baseScale = 1.0;
-    this.maxScale = 1.2;
+    this.baseScale = this.isMobile ? 0.8 : 1.0; // Smaller on mobile
     
     this.createElement();
-    this.setupAudioVisualization();
   }
 
   /**
@@ -85,11 +80,11 @@ export class Logo extends Component {
     this.logoElement.style.cssText = `
       color: white;
       font-family: 'Space Mono', monospace;
-      font-size: 24px;
+      font-size: ${this.isMobile ? '18px' : '24px'};
       font-weight: bold;
       text-align: center;
       border: 2px solid white;
-      padding: 20px;
+      padding: ${this.isMobile ? '15px' : '20px'};
       border-radius: 8px;
       background: rgba(0,0,0,0.3);
     `;
@@ -102,25 +97,15 @@ export class Logo extends Component {
   }
 
   /**
-   * Set up audio visualization if audio manager is available
+   * Audio visualization removed - Logo no longer responds to audio
    */
-  setupAudioVisualization() {
-    if (this.audioManager) {
-      this.audioManager.addVisualizer((normalizedData) => {
-        // Calculate overall audio intensity
-        const audioIntensity = (normalizedData.bass + normalizedData.mid + normalizedData.treble) / 3;
-        this.audioScale = this.baseScale + audioIntensity * (this.maxScale - this.baseScale);
-        this.updateScale();
-      });
-    }
-  }
 
   /**
-   * Update the logo scale based on audio
+   * Update the logo scale (no audio reactivity)
    */
   updateScale() {
     if (this.logoElement) {
-      this.logoElement.style.transform = `translate(-50%, -50%) scale(${this.audioScale})`;
+      this.logoElement.style.transform = `translate(-50%, -50%) scale(${this.baseScale})`;
     }
   }
 

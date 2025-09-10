@@ -20,10 +20,10 @@ export class SplashScreen extends Component {
     logoElement.src = 'public/logo.svg';
     logoElement.alt = 'OMNIVOID';
     logoElement.style.cssText = `
-      max-width: 180px;
-      width: 36vw;
+      max-width: ${this.isMobile ? '140px' : '180px'};
+      width: ${this.isMobile ? '28vw' : '36vw'};
       height: auto;
-      margin-bottom: 40px;
+      margin-bottom: ${this.isMobile ? '30px' : '40px'};
       filter: brightness(1.2);
     `;
     
@@ -37,11 +37,11 @@ export class SplashScreen extends Component {
         const textFallback = document.createElement('h1');
         textFallback.textContent = 'OMNIVOID 0.1';
         textFallback.style.cssText = `
-          font-size: 48px;
+          font-size: ${this.isMobile ? '36px' : '48px'};
           font-weight: bold;
-          margin: 0 0 40px 0;
+          margin: 0 0 ${this.isMobile ? '30px' : '40px'} 0;
           color: var(--fg-color);
-          letter-spacing: 4px;
+          letter-spacing: ${this.isMobile ? '2px' : '4px'};
           text-transform: uppercase;
         `;
         this.element.replaceChild(textFallback, logoElement);

@@ -7,13 +7,9 @@ import { RetroWindow } from './components/RetroWindow.js';
 import { GOOGLE_DRIVE_CONFIG, readPublicFile, fetchGoogleDriveTextFile } from './config/googleDrive.js';
 
 // Import all other components but keep them hidden initially
-import { Grid } from './components/Grid.js';
 import { SolarSystem } from './components/SolarSystem.js';
 import { Starfield } from './components/Starfield.js';
-import { VectorGrid } from './components/VectorGrid.js';
 import { ASCIITunnel } from './components/ASCIITunnel.js';
-import { Cylinder3D } from './components/Cylinder3D.js';
-import { Headline } from './components/Headline.js';
 import { PolygonEcho } from './components/PolygonEcho.js';
 import { AnimationController } from './controllers/AnimationController.js';
 import { ControlPanel } from './controllers/ControlPanel.js';
@@ -25,14 +21,17 @@ export class App {
   constructor() {
     console.log('🖥️ OMNIVOID Desktop App initializing...');
     
+    // Global cleanup to remove any existing buttons from other app versions
+    this.globalCleanup();
+    
     // Make this instance globally accessible for the radio file explorer
     window.omnivoidApp = this;
     
     // Initialize theme manager first
     this.themeManager = new ThemeManager();
     
-    // Initialize audio manager
-    this.audioManager = new AudioManager();
+    // Initialize audio manager (singleton)
+    this.audioManager = AudioManager.getInstance();
     
     // Google Drive integration
     this.googleDriveConfig = GOOGLE_DRIVE_CONFIG;
@@ -50,6 +49,11 @@ export class App {
     this.initializeComponents();
 
     console.log('🖥️ Desktop App initialized');
+    
+    // Add keyboard controls
+    document.addEventListener('keydown', (event) => {
+      this.handleKeyPress(event);
+    });
   }
 
   /**
@@ -97,19 +101,36 @@ export class App {
 
       // Initialize visible components (AgentSystem, Logo only)
       this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading visual elements...', 55);
-      this.agentSystem = new AgentSystem(this.audioManager);
-      this.logo = new Logo(this.audioManager);
+      this.agentSystem = AgentSystem.getInstance();
+      this.logo = new Logo();
+      
+      // Initialize music player
+      this.currentMusic = null;
+      this.currentMusicIndex = 0;
+      this.isMusicPlaying = false;
+      this.musicFiles = [
+        'public/audio/Cinematic Nightscape.mp3',
+        'public/audio/Dive into this Dreamscape.mp3',
+        'public/audio/Echo Trails.mp3',
+        'public/audio/Echoes in the Groove.mp3',
+        'public/audio/Echoes of Tomorrow.mp3',
+        'public/audio/Electric Shadows.mp3',
+        'public/audio/Glitch in the Groove.mp3',
+        'public/audio/Hypnotic Groove.mp3',
+        'public/audio/Late Night Echoes.mp3',
+        'public/audio/Melodic Echoes.mp3',
+        'public/audio/Neon Echoes.mp3',
+        'public/audio/Saturated Reverie.mp3',
+        'public/audio/Shimmering Trails.mp3',
+        'public/audio/Tension in the Air.mp3'
+      ];
       
       // Initialize all other components but keep them hidden (for future use)
       this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading components...', 65);
       this.controlPanel = new ControlPanel('control-panels');
       this.starfield = new Starfield();
-      this.vectorGrid = new VectorGrid();
       this.asciiTunnel = new ASCIITunnel();
-      this.cylinder3D = new Cylinder3D();
-      this.grid = new Grid();
       this.solarSystem = new SolarSystem();
-      this.headline = new Headline(this.audioManager);
       this.polygonEcho = new PolygonEcho();
       
       // Connect ThemeManager with visual components for dynamic color updates
@@ -155,12 +176,8 @@ export class App {
     this.starfield.setVisibility(true);
     
     // Hide other advanced layers
-    this.vectorGrid.setVisibility(false);
     this.asciiTunnel.setVisibility(false);
-    this.cylinder3D.setVisibility(false);
-    this.grid.setVisibility(false);
     this.solarSystem.setVisibility(false);
-    this.headline.setVisibility(false);
     this.polygonEcho.setVisibility(false);
     
     // Hide the control panel
@@ -190,11 +207,11 @@ export class App {
     controlsContainer.className = 'minimal-controls';
     controlsContainer.style.cssText = `
       position: fixed;
-      bottom: 45px;
+      bottom: 245px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
       gap: 9px;
@@ -553,6 +570,61 @@ export class App {
     
 
     controlsContainer.appendChild(starfieldBtn);
+    
+    // Agent System toggle button
+    const agentToggleBtn = document.createElement('button');
+    agentToggleBtn.className = 'minimal-control-btn';
+    agentToggleBtn.title = 'Toggle Agent System';
+    agentToggleBtn.style.cssText = `
+      background: transparent;
+      border: 1px solid #99ccff;
+      color: #99ccff;
+      width: 41px;
+      height: 41px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+      font-family: 'Space Mono', monospace;
+      flex-shrink: 0;
+    `;
+    
+    // Load and set A.svg as button content
+    fetch('public/ascii/A.svg')
+      .then(response => response.text())
+      .then(svgText => {
+        agentToggleBtn.innerHTML = svgText;
+        // Style the SVG to match the button theme
+        const svg = agentToggleBtn.querySelector('svg');
+        if (svg) {
+          svg.style.width = '20px';
+          svg.style.height = '20px';
+          svg.style.fill = 'none';
+          svg.style.stroke = '#99ccff';
+          svg.style.strokeWidth = '2px';
+        }
+      })
+      .catch(error => {
+        console.warn('Failed to load A.svg, using fallback text');
+        agentToggleBtn.innerHTML = 'A';
+      });
+    
+    agentToggleBtn.addEventListener('click', () => {
+      const isVisible = this.agentSystem.toggleVisibility();
+      agentToggleBtn.style.background = isVisible ? '#99ccff' : 'transparent';
+      agentToggleBtn.style.color = isVisible ? '#000000' : '#99ccff';
+      
+      // Update SVG stroke color
+      const svg = agentToggleBtn.querySelector('svg');
+      if (svg) {
+        svg.style.stroke = isVisible ? '#000000' : '#99ccff';
+      }
+    });
+    
+    controlsContainer.appendChild(agentToggleBtn);
     controlsContainer.appendChild(asciiBtn);
     controlsContainer.appendChild(solarBtn);
     controlsContainer.appendChild(polygonBtn);
@@ -563,6 +635,33 @@ export class App {
     
     // Create separate containers for QR code and agent controls
     this.createAgentControlsContainer();
+  }
+
+  /**
+   * Global cleanup to remove buttons from any app version
+   */
+  globalCleanup() {
+    console.log('🌍 Global cleanup: Removing all latest gig buttons...');
+    
+    // Remove all latest gig buttons from DOM regardless of which app created them
+    const allButtons = document.querySelectorAll('.latest-gig-button');
+    console.log(`🗑️ Found ${allButtons.length} buttons to remove globally`);
+    
+    allButtons.forEach((button, index) => {
+      console.log(`🗑️ Globally removing button ${index + 1}:`, button);
+      if (button.parentNode) {
+        button.parentNode.removeChild(button);
+      }
+    });
+    
+    // Clear any global references
+    if (window.omnivoidApp) {
+      window.omnivoidApp.latestGigButton = null;
+    }
+    
+    // Verify global cleanup
+    const remainingButtons = document.querySelectorAll('.latest-gig-button');
+    console.log(`✅ Global cleanup completed. Remaining buttons: ${remainingButtons.length}`);
   }
 
   /**
@@ -930,12 +1029,12 @@ export class App {
         /* Minimal controls mobile layout */
         .minimal-controls {
           flex-direction: row !important;
-          flex-wrap: wrap !important;
+          flex-wrap: nowrap !important;
           justify-content: center !important;
           gap: 6px !important;
           padding: 6px 8px !important;
-          bottom: 10px !important;
-          max-width: 60vw !important;
+          bottom: 245px !important;
+          max-width: 90vw !important;
         }
         
         .minimal-control-btn {
@@ -1189,7 +1288,7 @@ export class App {
         .minimal-controls {
           gap: 4px !important;
           padding: 4px 6px !important;
-          max-width: 50vw !important;
+          max-width: 95vw !important;
         }
         
         .minimal-control-btn {
@@ -2266,10 +2365,6 @@ export class App {
 
       case 'radio':
         console.log('🎵 Radio case hit - calling createRadioFileExplorer');
-        // Initialize Mixcloud widget after a short delay to ensure DOM is ready
-        setTimeout(() => {
-          this.initializeMixcloudWidget();
-        }, 100);
         return this.createRadioFileExplorer();
 
       case 'labs':
@@ -2319,7 +2414,7 @@ export class App {
    * Create radio file explorer content
    */
   createRadioFileExplorer() {
-    console.log('🎵 Creating radio file explorer with full Mixcloud widget...');
+    console.log('🎵 Creating radio file explorer with lazy-loaded Mixcloud widget...');
 
     const content = `
       <!-- Full Mixcloud Widget Container -->
@@ -2333,21 +2428,22 @@ export class App {
           align-items: center;
           justify-content: center;
         ">
-          <iframe 
-            width="100%" 
-            height="100%" 
-            src="https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1" 
-            frameborder="0"
-            id="mixcloud-player"
-            style="border: none;"
-            allow="autoplay"
-            title="Mixcloud Player"
-          ></iframe>
+          <div id="mixcloud-placeholder" style="
+            color: #999;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+          ">
+            <div style="margin-bottom: 10px;">🎵</div>
+            <div>Click to load Mixcloud player</div>
+            <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">Loading will start when window opens</div>
+          </div>
         </div>
       </div>
     `;
 
-    console.log('🎵 Radio file explorer with Mixcloud integration generated');
+    console.log('🎵 Radio file explorer with lazy-loaded Mixcloud integration generated');
     return content;
   }
 
@@ -2360,29 +2456,58 @@ export class App {
     // Initialize Mixcloud event tracking
     this.mixcloudEventsReceived = false;
     
-    // Wait for the iframe to load
-    setTimeout(() => {
-      const mixcloudPlayer = document.getElementById('mixcloud-player');
-      if (mixcloudPlayer) {
-        console.log('✅ Mixcloud player iframe found');
-        
-        // Set up Mixcloud widget event listeners
-        this.setupMixcloudWidgetEvents();
-        
-        // Set up audio reactivity monitoring
-        this.setupMixcloudAudioReactivity();
-        
-        // Initial debug info
-        setTimeout(() => {
-          this.refreshDebugInfo();
-        }, 2000);
-        
-      } else {
-        console.log('⚠️ Mixcloud player iframe not found, retrying...');
-        // Retry after a short delay
-        setTimeout(() => this.initializeMixcloudWidget(), 1000);
-      }
-    }, 500);
+    // Create the iframe dynamically
+    const container = document.getElementById('mixcloud-widget-container');
+    const placeholder = document.getElementById('mixcloud-placeholder');
+    
+    if (container && placeholder) {
+      console.log('✅ Mixcloud container found, creating iframe...');
+      
+      // Remove placeholder
+      placeholder.remove();
+      
+      // Create iframe
+      const iframe = document.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '100%';
+      iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
+      iframe.frameBorder = '0';
+      iframe.id = 'mixcloud-player';
+      iframe.style.border = 'none';
+      iframe.allow = 'autoplay';
+      iframe.title = 'Mixcloud Player';
+      
+      // Add iframe to container
+      container.appendChild(iframe);
+      
+      // Wait for the iframe to load
+      setTimeout(() => {
+        const mixcloudPlayer = document.getElementById('mixcloud-player');
+        if (mixcloudPlayer) {
+          console.log('✅ Mixcloud player iframe created and loaded');
+          
+          // Set up Mixcloud widget event listeners
+          this.setupMixcloudWidgetEvents();
+          
+          // Note: Audio reactivity removed - Mixcloud no longer connects to visual effects
+          
+          // Initial debug info
+          setTimeout(() => {
+            this.refreshDebugInfo();
+          }, 2000);
+          
+        } else {
+          console.log('⚠️ Mixcloud player iframe not found after creation, retrying...');
+          // Retry after a short delay
+          setTimeout(() => this.initializeMixcloudWidget(), 1000);
+        }
+      }, 500);
+      
+    } else {
+      console.log('⚠️ Mixcloud container not found, retrying...');
+      // Retry after a short delay
+      setTimeout(() => this.initializeMixcloudWidget(), 1000);
+    }
   }
 
   /**
@@ -2609,37 +2734,29 @@ export class App {
 
   /**
    * Set up audio reactivity for Mixcloud audio
+   * DISABLED: Audio reactivity removed from Mixcloud component
    */
   setupMixcloudAudioReactivity() {
-    console.log('🎵 Setting up Mixcloud-only audio reactivity...');
+    console.log('🎵 Mixcloud audio reactivity disabled - no visual effects connection');
     
-    // Update status
+    // Update status to reflect no reactivity
     const reactivityStatus = document.getElementById('reactivity-status');
     if (reactivityStatus) {
-      reactivityStatus.textContent = 'Mixcloud-only mode - Visual effects respond to stream only';
+      reactivityStatus.textContent = 'Mixcloud mode - No visual effects connection';
     }
     
-    console.log('✅ Mixcloud-only audio reactivity configured');
+    console.log('✅ Mixcloud audio reactivity disabled');
   }
 
   /**
    * Capture audio from Mixcloud iframe for reactivity
+   * DISABLED: Audio reactivity removed from Mixcloud component
    */
   async captureMixcloudAudio() {
-    console.log('🎵 Starting Mixcloud audio through proxy...');
+    console.log('🎵 Mixcloud audio capture disabled - no visual effects connection');
     
-    try {
-      // Initialize and start audio proxy
-      this.initializeAudioProxy();
-      this.startAudioProxy();
-      
-      console.log('✅ Mixcloud audio proxy started');
-      this.updateReactivityStatus('Audio proxy active - Mixcloud stream connected');
-      
-    } catch (error) {
-      console.log('❌ Error starting Mixcloud audio proxy:', error);
-      this.updateReactivityStatus('Audio proxy failed - ' + error.message);
-    }
+    // Update status to reflect no reactivity
+    this.updateReactivityStatus('Mixcloud mode - No visual effects connection');
   }
 
   /**
@@ -3003,8 +3120,8 @@ export class App {
             ">
           </div>
           
-          <!-- Registration Button -->
-          <div style="text-align: center; margin: 12px 0;">
+          <!-- Registration Button - TEMPORARILY HIDDEN -->
+          <div style="text-align: center; margin: 12px 0; display: none;">
             <a href="https://hostlink.site/ip4LhY" 
                target="_blank" 
                style="
@@ -4383,8 +4500,11 @@ export class App {
       console.log('📱 Mobile controls shown');
     }
     
-    // Create Latest Gig button separately to avoid duplication
-    this.createLatestGigButton();
+    // Create Latest Gig button only if it doesn't exist
+    // TEMPORARILY DISABLED - Button creation hidden for debugging
+    // if (!this.latestGigButton) {
+    //   this.createLatestGigButton();
+    // }
     
     if (this.qrContainer) {
       this.qrContainer.style.display = 'flex';
@@ -5122,32 +5242,8 @@ Let's create something extraordinary together.`
    * Recreate Mixcloud iframe when radio window is opened
    */
   recreateMixcloudIframe() {
-    console.log('🎵 Recreating Mixcloud iframe...');
-    const container = document.getElementById('mixcloud-widget-container');
-    if (container) {
-      // Check if iframe already exists
-      const existingIframe = document.getElementById('mixcloud-player');
-      if (existingIframe) {
-        console.log('🎵 Mixcloud iframe already exists');
-        return;
-      }
-
-      // Create new iframe
-      const iframe = document.createElement('iframe');
-      iframe.width = '100%';
-      iframe.height = '100%';
-      iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
-      iframe.frameBorder = '0';
-      iframe.id = 'mixcloud-player';
-      iframe.style.border = 'none';
-      iframe.allow = 'autoplay';
-      iframe.title = 'Mixcloud Player';
-
-      container.appendChild(iframe);
-      console.log('🎵 Mixcloud iframe recreated');
-    } else {
-      console.log('🎵 Mixcloud container not found');
-    }
+    console.log('🎵 Initializing Mixcloud when radio window opened...');
+    this.initializeMixcloudWidget();
   }
 
   /**
@@ -5336,5 +5432,109 @@ Let's create something extraordinary together.`
 🎨 OMNIVOID Color System loaded!
 Type 'omnivoidColors.help()' to see available commands.
     `);
+  }
+
+  /**
+   * Start music playback
+   */
+  async startMusic() {
+    try {
+      console.log('🎵 Starting music...');
+      
+      if (this.musicFiles.length === 0) {
+        console.log('🎵 No music files found');
+        return;
+      }
+      
+      // Create audio element if not exists
+      if (!this.currentMusic) {
+        this.currentMusic = new Audio();
+        this.currentMusic.loop = true;
+        this.currentMusic.volume = 0.7;
+        
+        // Connect to audio manager for reactivity
+        if (this.audioManager) {
+          this.audioManager.setAudioElement(this.currentMusic);
+          console.log('🎵 Connected to audio manager for reactivity');
+        }
+      }
+      
+      // Set source and play
+      this.currentMusic.src = this.musicFiles[this.currentMusicIndex];
+      await this.currentMusic.play();
+      this.isMusicPlaying = true;
+      
+      // Force start audio analysis for reactivity
+      if (this.audioManager && this.audioManager.forceStartAnalysis) {
+        this.audioManager.forceStartAnalysis();
+      }
+      
+      console.log(`🎵 Playing: ${this.musicFiles[this.currentMusicIndex]}`);
+      
+    } catch (error) {
+      console.error('🎵 Failed to start music:', error);
+    }
+  }
+
+  /**
+   * Stop music playback
+   */
+  stopMusic() {
+    if (this.currentMusic) {
+      this.currentMusic.pause();
+      this.currentMusic.currentTime = 0;
+      this.isMusicPlaying = false;
+      console.log('🎵 Music stopped');
+    }
+  }
+
+  /**
+   * Next track
+   */
+  nextTrack() {
+    if (this.musicFiles.length > 0) {
+      this.currentMusicIndex = (this.currentMusicIndex + 1) % this.musicFiles.length;
+      if (this.isMusicPlaying) {
+        this.stopMusic();
+        this.startMusic();
+      }
+    }
+  }
+
+  /**
+   * Previous track
+   */
+  previousTrack() {
+    if (this.musicFiles.length > 0) {
+      this.currentMusicIndex = (this.currentMusicIndex - 1 + this.musicFiles.length) % this.musicFiles.length;
+      if (this.isMusicPlaying) {
+        this.stopMusic();
+        this.startMusic();
+      }
+    }
+  }
+
+  /**
+   * Handle keyboard controls
+   */
+  handleKeyPress(event) {
+    if (!this.isInitialized) return;
+    
+    switch(event.key) {
+      case ' ':
+        event.preventDefault();
+        if (this.isMusicPlaying) {
+          this.stopMusic();
+        } else {
+          this.startMusic();
+        }
+        break;
+      case 'ArrowRight':
+        this.nextTrack();
+        break;
+      case 'ArrowLeft':
+        this.previousTrack();
+        break;
+    }
   }
 }

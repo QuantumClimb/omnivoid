@@ -29,7 +29,7 @@
   
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://omnivoidlabs.com/">
+  <meta property="twitter:url" content="https://omnivoidlabs.vercel.app/">
   <meta property="twitter:title" content="OMNIVOID LABS - Experimental Sound & Visual Art Platform">
   <meta property="twitter:description" content="Explore the intersection of sound science, technology, and consciousness through immersive audio-visual experiences.">
   <meta property="twitter:image" content="./public/share-image.png">
@@ -42,12 +42,6 @@
   
   <!-- Favicons -->
   <link rel="icon" type="image/x-icon" href="./public/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="./public/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./public/favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="./public/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="./public/android-chrome-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="./public/android-chrome-512x512.png">
-  <link rel="manifest" href="./public/site.webmanifest">
   
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,10 +102,38 @@
   <!-- Logo will be dynamically created by the Logo component -->
 
   <script type="module">
+    // Global cleanup function to remove any existing buttons before app loads
+    function globalButtonCleanup() {
+      console.log('🧹 Pre-app cleanup: Removing all latest gig buttons...');
+      const allButtons = document.querySelectorAll('.latest-gig-button');
+      console.log(`🗑️ Found ${allButtons.length} buttons to remove before app load`);
+      
+      allButtons.forEach((button, index) => {
+        console.log(`🗑️ Pre-removing button ${index + 1}:`, button);
+        if (button.parentNode) {
+          button.parentNode.removeChild(button);
+        }
+      });
+      
+      // Clear any global references
+      if (window.omnivoidApp) {
+        window.omnivoidApp.latestGigButton = null;
+      }
+      
+      const remainingButtons = document.querySelectorAll('.latest-gig-button');
+      console.log(`✅ Pre-app cleanup completed. Remaining buttons: ${remainingButtons.length}`);
+    }
+    
+    // Immediate cleanup on script load (before DOMContentLoaded)
+    globalButtonCleanup();
+    
     // Device detection
     const isMobile = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     document.addEventListener('DOMContentLoaded', () => {
+      // Always clean up first, regardless of which app will load
+      globalButtonCleanup();
+      
       if (isMobile) {
         console.log('📱 Loading Mobile App...');
         import('./src/AppMobile.js').then(module => {

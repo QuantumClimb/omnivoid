@@ -1,32 +1,4 @@
-/* Grid Component */
-.grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(20, 1fr);
-  grid-template-rows: repeat(20, 1fr);
-  perspective: 800px;
-  pointer-events: none;
-}
-
-.grid div {
-  border: 1px solid rgba(255,255,255,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-}
-
-.grid div div {
-  width: 50%;
-  height: 50%;
-  border: 1px solid rgba(255,255,255,0.3);
-  transform: rotateX(45deg) rotateY(45deg);
-  animation: cubeScale var(--cube-duration, 3s) infinite ease-in-out alternate;
-}
+/* Grid Component - REMOVED */
 
 /* Solar System Component */
 .solar-system {
@@ -103,23 +75,7 @@
   pointer-events: none;
 }
 
-/* Headline Component */
-.headline-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transform-origin: center center;
-  font-family: 'Space Mono', monospace;
-  font-size: 120px;
-  font-weight: bold;
-  color: var(--fg-color);
-  text-align: center;
-  pointer-events: none;
-  z-index: 5;
-  will-change: transform;
-  backface-visibility: hidden;
-}
+/* Headline Component - REMOVED */
 
 /* Logo Component */
 .logo-container {
@@ -224,6 +180,7 @@
   width: 100px;
   height: 4px;
   -webkit-appearance: none;
+  appearance: none;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
   outline: none;

@@ -3,9 +3,16 @@ import { GOOGLE_DRIVE_CONFIG } from '../config/googleDrive.js';
 /**
  * AudioManager handles audio playback and FFT analysis with optimized performance
  * Now integrated with Google Drive for audio content
+ * Uses singleton pattern to ensure both mobile and desktop versions use the same instance
  */
 export class AudioManager {
+  static instance = null;
+
   constructor() {
+    if (AudioManager.instance) {
+      console.log('🎵 AudioManager: Returning existing singleton instance');
+      return AudioManager.instance;
+    }
     console.log('🎵 AudioManager: Initializing...');
     
     // Google Drive integration
@@ -33,6 +40,7 @@ export class AudioManager {
     this.lastFrameTime = 0;
     this.minFrameInterval = 1000 / 60; // 60 FPS
     this.visualizerCallbacks = new Set();
+    this.addStopCallback = new Set();
     
     // Audio analysis parameters
     this.fftSize = 1024;
@@ -53,7 +61,21 @@ export class AudioManager {
     // Add click listener for initial context resume
     document.addEventListener('click', () => this.handleFirstInteraction(), { once: true });
     
-    console.log('🎵 AudioManager: Constructor completed');
+    // Set the singleton instance
+    AudioManager.instance = this;
+    
+    console.log('🎵 AudioManager: Constructor completed - Singleton instance created');
+  }
+
+  /**
+   * Get the singleton instance of AudioManager
+   * @returns {AudioManager} The singleton AudioManager instance
+   */
+  static getInstance() {
+    if (!AudioManager.instance) {
+      AudioManager.instance = new AudioManager();
+    }
+    return AudioManager.instance;
   }
 
   /**
@@ -390,5 +412,74 @@ export class AudioManager {
    */
   removeVisualizer(callback) {
     this.visualizerCallbacks.delete(callback);
+  }
+
+  /**
+   * Set audio element and connect for analysis (for HTML audio elements)
+   */
+  setAudioElement(audioElement) {
+    if (!this.audioContext || !this.analyser) {
+      console.warn('⚠️ AudioManager not initialized');
+      return;
+    }
+
+    console.log('🎵 Setting audio element:', audioElement);
+    this.connectedAudioElement = audioElement;
+    
+    // Create media element source
+    if (this.mediaElementSource) {
+      this.mediaElementSource.disconnect();
+    }
+    
+    this.mediaElementSource = this.audioContext.createMediaElementSource(audioElement);
+    this.mediaElementSource.connect(this.gainNode);
+    
+    // Add event listeners
+    audioElement.addEventListener('play', () => {
+      console.log('🎵 Audio play event - starting analysis');
+      this.isPlaying = true;
+      this.startVisualization();
+    });
+    
+    audioElement.addEventListener('pause', () => {
+      console.log('🎵 Audio pause event - stopping analysis');
+      this.isPlaying = false;
+      this.stopVisualization();
+      
+      // Call stop callbacks
+      this.addStopCallback.forEach(callback => {
+        try {
+          callback();
+        } catch (error) {
+          console.error('❌ Stop callback error:', error);
+        }
+      });
+    });
+    
+    audioElement.addEventListener('ended', () => {
+      console.log('🎵 Audio ended event - stopping analysis');
+      this.isPlaying = false;
+      this.stopVisualization();
+      
+      // Call stop callbacks
+      this.addStopCallback.forEach(callback => {
+        try {
+          callback();
+        } catch (error) {
+          console.error('❌ Stop callback error:', error);
+        }
+      });
+    });
+    
+    console.log('🎵 Audio element connected for amplitude analysis');
+  }
+
+  /**
+   * Force start analysis (for debugging)
+   */
+  forceStartAnalysis() {
+    console.log('🎵 Force starting analysis...');
+    this.isPlaying = true;
+    this.startVisualization();
   }
 } 

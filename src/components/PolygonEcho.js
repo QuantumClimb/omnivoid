@@ -7,10 +7,17 @@ export class PolygonEcho {
     this.element = null;
     this.animationId = null;
     this.polygons = [];
-    this.maxPolygons = 20;
-    this.baseSize = 50;
-    this.scaleFactor = 1.15;
-    this.rotationSpeed = 0.5;
+    
+    // Mobile detection and performance optimization
+    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                    (window.innerWidth <= 768) ||
+                    ('ontouchstart' in window) ||
+                    (navigator.maxTouchPoints > 0);
+    
+    this.maxPolygons = this.isMobile ? 5 : 20; // Reduced polygons on mobile for better performance
+    this.baseSize = this.isMobile ? 40 : 50;
+    this.scaleFactor = this.isMobile ? 2 : 1.15;
+    this.rotationSpeed = this.isMobile ? 1.0 : 0.5;
     this.opacityDecay = 0.08;
     this.color = '#ffffff';
     this.isVisible = false;
@@ -76,6 +83,33 @@ export class PolygonEcho {
     }
   }
 
+  addNewPolygon() {
+    // Generate random polygon properties for a single new polygon
+    const sides = Math.floor(Math.random() * 3) + 4; // 4-6 sides for more tunnel-like effect
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const baseRotation = Math.random() * Math.PI * 2;
+    
+    // Create a new polygon at the beginning of the tunnel
+    const scale = 0.1; // Start small
+    const size = this.baseSize * scale;
+    const opacity = 1.0; // Start fully visible
+    const rotation = baseRotation;
+    
+    const polygon = this.createPolygon(
+      centerX, 
+      centerY, 
+      size, 
+      sides, 
+      rotation, 
+      opacity,
+      0 // Start at index 0
+    );
+    
+    this.polygons.push(polygon);
+    this.element.appendChild(polygon);
+  }
+
   createPolygon(x, y, size, sides, rotation, opacity, index) {
     const polygon = document.createElement('div');
     polygon.className = 'polygon-echo';
@@ -133,6 +167,9 @@ export class PolygonEcho {
     
     this.time += this.tunnelSpeed;
     
+    // Filter out polygons that are no longer visible and clean them up
+    const validPolygons = [];
+    
     this.polygons.forEach((polygon, index) => {
       // Create tunnel effect by moving polygons outward and scaling them
       const tunnelProgress = (this.time + index * 50) % 2000; // Cycle every 2000ms
@@ -146,8 +183,27 @@ export class PolygonEcho {
       const tunnelOpacity = Math.max(0, 1 - normalizedProgress);
       polygon.style.opacity = tunnelOpacity;
       
-      polygon.style.transform = `translate(-50%, -50%) rotate(${rotation}rad) scale(${tunnelScale})`;
+      // Check if polygon is still visible (opacity > 0.01 and scale is reasonable)
+      const isVisible = tunnelOpacity > 0.01 && tunnelScale < 10;
+      
+      if (isVisible) {
+        polygon.style.transform = `translate(-50%, -50%) rotate(${rotation}rad) scale(${tunnelScale})`;
+        validPolygons.push(polygon);
+      } else {
+        // Remove polygon from DOM and clean up
+        if (polygon.parentNode) {
+          polygon.parentNode.removeChild(polygon);
+        }
+      }
     });
+    
+    // Update polygons array with only visible ones
+    this.polygons = validPolygons;
+    
+    // Add new polygons if we're below the maximum count
+    if (this.polygons.length < this.maxPolygons) {
+      this.addNewPolygon();
+    }
     
     this.animationId = requestAnimationFrame(() => this.animate());
   }

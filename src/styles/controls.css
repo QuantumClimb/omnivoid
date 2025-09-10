@@ -100,6 +100,11 @@ select.animation-select {
   font-size: 10px;
 }
 
+/* Hide agent controls */
+.agent-controls-container {
+  display: none !important;
+}
+
 /* Desktop Advanced Control Panel */
 .desktop-control-panel {
   /* Base styles are set inline for better control */

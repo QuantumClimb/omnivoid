@@ -23,6 +23,23 @@ export class AudioPlayer extends Component {
     this.element = document.createElement('div');
     this.element.className = 'audio-player';
     
+    // Mobile-specific styling
+    if (this.isMobile) {
+      this.element.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90vw;
+        max-width: 400px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        z-index: 1000;
+      `;
+    }
+    
     // Progress bar
     this.progressContainer = document.createElement('div');
     this.progressContainer.className = 'progress-container';
@@ -45,6 +62,24 @@ export class AudioPlayer extends Component {
     this.playButton.innerHTML = '▶';
     this.playButton.disabled = true;
     
+    // Mobile-specific button styling
+    if (this.isMobile) {
+      this.playButton.style.cssText = `
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        border-radius: 50%;
+        background: #99ccff;
+        color: #000;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+      `;
+    }
+    
     this.timeDisplay = document.createElement('div');
     this.timeDisplay.className = 'time-display';
     this.timeDisplay.textContent = '0:00 / 0:00';
@@ -56,6 +91,18 @@ export class AudioPlayer extends Component {
     this.volumeControl.max = 1;
     this.volumeControl.step = 0.1;
     this.volumeControl.value = 1;
+    
+    // Mobile-specific volume control styling
+    if (this.isMobile) {
+      this.volumeControl.style.cssText = `
+        width: 100px;
+        height: 6px;
+        background: #333;
+        outline: none;
+        border-radius: 3px;
+        -webkit-appearance: none;
+      `;
+    }
     
     this.controls.appendChild(this.playButton);
     this.controls.appendChild(this.timeDisplay);

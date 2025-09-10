@@ -65,9 +65,9 @@ export class RetroWindow extends Component {
     
     this.element.style.cssText = `
       ${positionStyle}
-      width: 480px;
+      width: ${isDesktop ? '480px' : '95vw'};
       max-width: 90vw;
-      height: 360px;
+      height: ${isDesktop ? '360px' : '70vh'};
       max-height: 80vh;
       background-color: #111111;
       border: 1px solid #333333;
@@ -75,7 +75,7 @@ export class RetroWindow extends Component {
         0 0 20px rgba(153, 204, 255, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
       font-family: 'Space Mono', monospace;
-      font-size: 12px;
+      font-size: ${isDesktop ? '12px' : '14px'};
       z-index: 9999;
       display: none;
       opacity: 0;

@@ -18,6 +18,13 @@ export class SolarSystem extends Component {
     
     this.planets = Array.from(this.element.querySelectorAll('.planet'));
     
+    // Mobile optimization: Reduce animation complexity on mobile
+    if (this.isMobile) {
+      this.setOrbitSpeed(8); // Slower animation on mobile for better performance
+    } else {
+      this.setOrbitSpeed(4); // Normal speed on desktop
+    }
+    
     // Store default pink theme colors
     this.defaultColors = [
       '#ff6b9d', // Mercury - darker pink

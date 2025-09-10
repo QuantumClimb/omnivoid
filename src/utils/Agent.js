@@ -30,12 +30,26 @@ export class Agent {
    * @param {number} width Canvas width
    * @param {number} height Canvas height
    * @param {number} speedMultiplier Speed multiplier for audio reactivity (default: 1)
+   * @returns {boolean} True if agent is still within bounds, false if it should be removed
    */
   update(width, height, speedMultiplier = 1) {
     this.x += this.vx * speedMultiplier;
     this.y += this.vy * speedMultiplier;
+    
+    // Check if agent is completely out of bounds (with margin for cleanup)
+    const margin = 50; // Extra margin to ensure clean removal
+    const isOutOfBounds = this.x < -margin || this.x > width + margin || 
+                         this.y < -margin || this.y > height + margin;
+    
+    if (isOutOfBounds) {
+      return false; // Signal that this agent should be removed
+    }
+    
+    // Bounce off edges if still within bounds
     if (this.x < 0 || this.x > width) this.vx *= -1;
     if (this.y < 0 || this.y > height) this.vy *= -1;
+    
+    return true; // Agent is still valid
   }
 
   /**

@@ -4,6 +4,18 @@
 export class Component {
   constructor() {
     this.isVisible = true;
+    this.isMobile = this.detectMobile();
+  }
+
+  /**
+   * Detect if the device is mobile for performance optimization
+   * @returns {boolean} True if mobile device, false otherwise
+   */
+  detectMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768) ||
+           ('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0);
   }
 
   /**

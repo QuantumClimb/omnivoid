@@ -61,7 +61,14 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
 
   const ctx = canvas.getContext("2d");
   const svgPaths = ['O.svg','WORM.svg', 'I.svg', 'V.svg', 'D.svg' , 'L.svg', 'A.svg', 'B.svg', 'S.svg'];
-  const numChars = 50;
+  
+  // Mobile detection and performance optimization
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (window.innerWidth <= 768) ||
+                   ('ontouchstart' in window) ||
+                   (navigator.maxTouchPoints > 0);
+  
+  const numChars = isMobile ? 5 : 25; // Reduced characters on mobile for better performance
   
   // Store loaded SVG images
   const svgImages = new Map();
@@ -88,7 +95,8 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
     y: Math.random() * canvas.height,
     z: Math.random() * canvas.width,
     rotation: Math.random() * 360,
-    rotationSpeed: (Math.random() - 0.5) * 2
+    rotationSpeed: (Math.random() - 0.5) * 2,
+    isActive: true // Track if character is still active
   }));
 
   let animationFrame;
@@ -107,17 +115,25 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
       return;
     }
 
+    // Filter out inactive symbols and update active ones
+    const activeSymbols = [];
+    
     tunnel.forEach((symbol) => {
+      if (!symbol.isActive) return; // Skip inactive symbols
+      
       symbol.z -= 8;
       symbol.rotation += symbol.rotationSpeed;
       
+      // Check if symbol has moved too far back (beyond screen bounds)
       if (symbol.z <= 0) {
+        // Reset symbol to front of tunnel instead of recycling
         symbol.z = canvas.width;
         symbol.x = Math.random() * canvas.width;
         symbol.y = Math.random() * canvas.height;
         symbol.svg = svgPaths[Math.floor(Math.random() * svgPaths.length)];
         symbol.rotation = Math.random() * 360;
         symbol.rotationSpeed = (Math.random() - 0.5) * 2;
+        symbol.isActive = true;
       }
 
       const distance = canvas.width / symbol.z;
@@ -125,35 +141,70 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
       const sy = (symbol.y - canvas.height / 2) * distance + canvas.height / 2;
       const size = 40 * distance;
 
-      // Get the SVG image
-      const svgImage = svgImages.get(symbol.svg);
-      if (svgImage && size > 1) {
-        ctx.save();
+      // Check if symbol is within screen bounds and visible
+      const isWithinBounds = sx >= -size && sx <= canvas.width + size && 
+                            sy >= -size && sy <= canvas.height + size;
+      const isVisible = size > 0.5 && distance > 0.1; // Minimum size and distance thresholds
+      
+      if (isWithinBounds && isVisible) {
+        // Get the SVG image
+        const svgImage = svgImages.get(symbol.svg);
+        if (svgImage) {
+          ctx.save();
+          
+          // Set green tint for the Matrix effect
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.filter = 'hue-rotate(90deg) brightness(1.2) contrast(1.5)';
+          
+          // Calculate opacity based on distance (fade out distant objects)
+          const opacity = Math.min(1, distance * 2);
+          ctx.globalAlpha = opacity;
+          
+          // Move to position and rotate
+          ctx.translate(sx, sy);
+          ctx.rotate((symbol.rotation * Math.PI) / 180);
+          
+          // Draw the SVG with size based on distance
+          ctx.drawImage(
+            svgImage,
+            -size / 2,
+            -size / 2,
+            size,
+            size
+          );
+          
+          ctx.restore();
+        }
         
-        // Set green tint for the Matrix effect
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.filter = 'hue-rotate(90deg) brightness(1.2) contrast(1.5)';
-        
-        // Calculate opacity based on distance (fade out distant objects)
-        const opacity = Math.min(1, distance * 2);
-        ctx.globalAlpha = opacity;
-        
-        // Move to position and rotate
-        ctx.translate(sx, sy);
-        ctx.rotate((symbol.rotation * Math.PI) / 180);
-        
-        // Draw the SVG with size based on distance
-        ctx.drawImage(
-          svgImage,
-          -size / 2,
-          -size / 2,
-          size,
-          size
-        );
-        
-        ctx.restore();
+        activeSymbols.push(symbol);
+      } else {
+        // Mark symbol as inactive if it's out of bounds or too small
+        symbol.isActive = false;
       }
     });
+    
+    // Update tunnel array to only include active symbols
+    // This helps with memory management and performance
+    if (activeSymbols.length < tunnel.length) {
+      // Remove inactive symbols and add new ones to maintain count
+      const inactiveCount = tunnel.length - activeSymbols.length;
+      for (let i = 0; i < inactiveCount; i++) {
+        const newSymbol = {
+          svg: svgPaths[Math.floor(Math.random() * svgPaths.length)],
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          z: canvas.width + Math.random() * canvas.width, // Start further back
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 2,
+          isActive: true
+        };
+        activeSymbols.push(newSymbol);
+      }
+      
+      // Update the tunnel array
+      tunnel.length = 0;
+      tunnel.push(...activeSymbols);
+    }
 
     animationFrame = requestAnimationFrame(draw);
   }

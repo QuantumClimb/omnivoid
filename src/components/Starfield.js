@@ -60,7 +60,14 @@ function createStarfieldLayer(id = "starfield") {
   document.body.appendChild(canvas);
 
   const ctx = canvas.getContext("2d");
-  const numStars = 100;
+  
+  // Mobile detection and performance optimization
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (window.innerWidth <= 768) ||
+                   ('ontouchstart' in window) ||
+                   (navigator.maxTouchPoints > 0);
+  
+  const numStars = isMobile ? 50 : 100; // Reduced stars on mobile for better performance
   const stars = Array.from({ length: numStars }, () => ({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,

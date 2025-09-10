@@ -94,7 +94,7 @@
 /* Active menu item state */
 .dropdown-menu-item.active {
   background-color: #99ccff;
-  color: #000000;
+  color: #1c1c1c;
   box-shadow: 0 0 25px rgba(153, 204, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.5);
   transform: scale(1.1);
 }
@@ -112,7 +112,7 @@
 }
 
 .dropdown-menu-item.active img {
-  filter: brightness(0) saturate(100%);
+  filter: brightness(0.2) saturate(100%);
 }
 
 /* Custom tooltip styling */
@@ -291,6 +291,7 @@
   width: 80px;
   height: 4px;
   -webkit-appearance: none;
+  appearance: none;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
   outline: none;
@@ -384,12 +385,9 @@
     font-size: 11px;
   }
   
-  /* Agent controls mobile - shorter box */
+  /* Agent controls mobile - hidden */
   .agent-controls-container {
-    padding: 4px 4px !important;
-    gap: 2px !important;
-    height: 225px !important;
-    min-height: 225px !important;
+    display: none !important;
   }
   
   .agent-controls-container .dial-container {
@@ -423,11 +421,18 @@
   }
 }
 
+/* Mobile-specific minimal controls positioning */
+@media (max-width: 767px) {
+  .minimal-controls {
+    bottom: 90px !important;
+  }
+}
+
 /* Desktop enhancements for mobile menu */
 @media (min-width: 768px) {
   /* Make mobile controls larger and more accessible on desktop */
   .minimal-controls {
-    bottom: 30px !important;
+    bottom: 245px !important;
     padding: 12px 20px !important;
     gap: 12px !important;
     border-radius: 25px !important;
