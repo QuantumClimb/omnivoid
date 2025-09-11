@@ -160,12 +160,110 @@ export class App {
       // Hide splash screen
       setTimeout(() => {
         this.splashScreen.hide();
+        // Add permanent footer after splash screen is hidden
+        this.addPermanentFooter();
       }, 2000);
       
     } catch (error) {
       this.splashScreen.log(`<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Error: ${error.message}`, 100);
       console.error('Initialization error:', error);
     }
+  }
+
+  /**
+   * Add permanent footer with debug message and copyright info
+   */
+  addPermanentFooter() {
+    // Footer with copyright and powered by
+    const footer = document.createElement('div');
+    footer.className = 'permanent-footer';
+    footer.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 10px;
+      color: #99ccff;
+      font-family: 'Space Mono', monospace;
+      opacity: 0.8;
+      z-index: 1001;
+    `;
+    
+    // Copyright text
+    const copyright = document.createElement('div');
+    copyright.textContent = '© 2025 OMNIVOID LABS';
+    copyright.style.cssText = `
+      font-size: 10px;
+      color: #99ccff;
+    `;
+    
+    // Powered by QC logo
+    const poweredBy = document.createElement('div');
+    poweredBy.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    `;
+    
+    const poweredByText = document.createElement('span');
+    poweredByText.textContent = 'Powered by';
+    poweredByText.style.cssText = `
+      font-size: 10px;
+      color: #99ccff;
+    `;
+    
+    const qcLogo = document.createElement('img');
+    qcLogo.src = 'public/qc.png';
+    qcLogo.alt = 'Quantum Climb';
+    qcLogo.style.cssText = `
+      width: 107px;
+      height: 107px;
+      object-fit: contain;
+      cursor: pointer;
+    `;
+    
+    // Add click handler to open Quantum Climb website
+    qcLogo.addEventListener('click', () => {
+      window.open('https://www.quantum-climb.com/', '_blank');
+    });
+    
+    // Fallback if logo fails to load
+    qcLogo.onerror = () => {
+      qcLogo.style.display = 'none';
+      poweredByText.textContent = 'Powered by Quantum Climb';
+    };
+    
+    poweredBy.appendChild(poweredByText);
+    poweredBy.appendChild(qcLogo);
+    
+    // Mobile: stack vertically
+    if (this.detectMobile()) {
+      footer.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        color: #99ccff;
+        font-family: 'Space Mono', monospace;
+        opacity: 0.8;
+        z-index: 1001;
+        pointer-events: none;
+        text-align: center;
+      `;
+    }
+    
+    footer.appendChild(copyright);
+    footer.appendChild(poweredBy);
+    document.body.appendChild(footer);
   }
 
   /**

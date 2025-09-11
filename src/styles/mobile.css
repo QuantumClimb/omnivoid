@@ -424,7 +424,7 @@
 /* Mobile-specific minimal controls positioning */
 @media (max-width: 767px) {
   .minimal-controls {
-    bottom: 90px !important;
+    bottom: 150px !important;
   }
 }
 
