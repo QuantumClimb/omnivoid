@@ -3260,19 +3260,21 @@ export class App {
               <div><strong>Visuals:</strong> Real-time audio-reactive art</div>
             </div>
           </div>
-          <a href="https://events.fanpit.live/events/9aBdBr4U" target="_blank" style="
+          <a href="javascript:void(0)" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
-            background: #99ccff;
-            color: #000;
+            background: #666666;
+            color: #999999;
             text-decoration: none;
             border-radius: 4px;
             font-size: 10px;
             font-weight: bold;
             font-family: 'Space Mono', monospace;
             transition: all 0.2s;
-          " onmouseover="this.style.background='#66aaff'" onmouseout="this.style.background='#99ccff'">
+            cursor: not-allowed;
+            opacity: 0.6;
+          " title="Button temporarily disabled">
             🎫 GET TICKETS - FANPIT
           </a>
         </div>
@@ -3303,19 +3305,21 @@ export class App {
               <div><strong>Level:</strong> Intermediate to Advanced</div>
             </div>
           </div>
-          <a href="https://hostlink.site/ip4LhY" target="_blank" style="
+          <a href="javascript:void(0)" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
-            background: #99ccff;
-            color: #000;
+            background: #666666;
+            color: #999999;
             text-decoration: none;
             border-radius: 4px;
             font-size: 10px;
             font-weight: bold;
             font-family: 'Space Mono', monospace;
             transition: all 0.2s;
-          " onmouseover="this.style.background='#66aaff'" onmouseout="this.style.background='#99ccff'">
+            cursor: not-allowed;
+            opacity: 0.6;
+          " title="Button temporarily disabled">
             📝 REGISTER - GOOGLE FORM
           </a>
         </div>
@@ -4501,10 +4505,9 @@ export class App {
     }
     
     // Create Latest Gig button only if it doesn't exist
-    // TEMPORARILY DISABLED - Button creation hidden for debugging
-    // if (!this.latestGigButton) {
-    //   this.createLatestGigButton();
-    // }
+    if (!this.latestGigButton) {
+      this.createLatestGigButton();
+    }
     
     if (this.qrContainer) {
       this.qrContainer.style.display = 'flex';
