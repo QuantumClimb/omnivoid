@@ -1865,7 +1865,7 @@ export class App {
       console.log('📡 Loading live transmissions from public folder...');
       
       // Read the live_transmissions.txt file from the public/links folder
-      const fileContent = await readPublicFile('./public/links/live_transmissions.txt');
+      const fileContent = await readPublicFile('./public/links/live_transmissions.txt?t=' + Date.now());
       
       if (!fileContent) {
         console.error('❌ Could not read live_transmissions.txt from public folder');
@@ -1965,7 +1965,14 @@ export class App {
     const container = document.getElementById('live-transmissions-container');
     if (!container) return;
 
-    const videosHtml = videos.map(video => `
+    // Sort videos by publication date (newest first)
+    const sortedVideos = videos.sort((a, b) => {
+      const dateA = new Date(a.publishedAt);
+      const dateB = new Date(b.publishedAt);
+      return dateB - dateA; // Newest first
+    });
+
+    const videosHtml = sortedVideos.map(video => `
       <div class="transmission-item" data-video-id="${video.id}" style="
         margin-bottom: 12px;
         padding: 8px;
