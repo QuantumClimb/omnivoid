@@ -168,7 +168,7 @@ export class RetroWindow extends Component {
   getDefaultContent() {
     return `
       <div class="container" style="background-color: #111111; border: 1px solid #333333; padding: 20px; margin-bottom: 15px;">
-        <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: bold; color: #99ccff;">OMNIVOID CONUNDRUM</h3>
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: bold; color: #99ccff;">CONUNDRUM</h3>
         <p style="margin: 0 0 12px 0; font-size: 14px; color: #99ccff;">
           Welcome to the OMNIVOID experience. This dark interface brings you into the depths of digital consciousness while delivering cutting-edge audio-visual artistry.
         </p>

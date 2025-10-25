@@ -305,7 +305,7 @@ export class App {
     controlsContainer.className = 'minimal-controls';
     controlsContainer.style.cssText = `
       position: fixed;
-      bottom: 245px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -1131,7 +1131,7 @@ export class App {
           justify-content: center !important;
           gap: 6px !important;
           padding: 6px 8px !important;
-          bottom: 245px !important;
+          bottom: 100px !important;
           max-width: 90vw !important;
         }
         
@@ -1589,7 +1589,7 @@ export class App {
 
       this.retroWindows[item.window] = new RetroWindow(
         `${item.window}-window`,
-        `OMNIVOID ${item.text.toUpperCase()}`,
+        `${item.text.toUpperCase()}`,
         windowContent,
         onCloseCallback
       );
@@ -1601,6 +1601,9 @@ export class App {
     menuItems.forEach((item, index) => {
       const menuItem = document.createElement('div');
       menuItem.className = 'dropdown-menu-item';
+      
+      // Check if desktop
+      const isDesktop = window.innerWidth >= 768;
       
       // Show custom icons or fallback to text
       if (item.isImage) {
@@ -1616,7 +1619,10 @@ export class App {
       } else {
         menuItem.innerHTML = `<span class="menu-icon">${item.icon}</span>`;
       }
-      menuItem.title = item.text; // Add tooltip on hover
+      
+      // Add tooltip on hover for all platforms
+      menuItem.title = item.text;
+      
       menuItem.style.cssText = `
         width: 50px;
         height: 50px;
@@ -2417,6 +2423,144 @@ export class App {
   }
 
   /**
+   * Load labs videos from the public folder and display YouTube videos
+   */
+  async loadLabsVideos() {
+    try {
+      console.log('🔬 Loading labs videos from public folder...');
+      
+      // Read the labs.txt file from the public/links folder
+      const fileContent = await readPublicFile('./public/links/labs.txt?t=' + Date.now());
+      
+      if (!fileContent) {
+        console.error('❌ Could not read labs.txt from public folder');
+        this.updateLabsVideosContainer('Error: Could not load labs file');
+        return;
+      }
+
+      console.log('🔬 File content loaded:', fileContent.substring(0, 100) + '...');
+
+      // Parse YouTube URLs from the file
+      const youtubeUrls = this.parseYouTubeUrls(fileContent);
+      console.log(`🔬 Found ${youtubeUrls.length} YouTube URLs`);
+
+      if (youtubeUrls.length === 0) {
+        this.updateLabsVideosContainer('No YouTube videos found');
+        return;
+      }
+
+      // Fetch video metadata for each URL
+      const videos = await this.fetchYouTubeMetadata(youtubeUrls);
+      
+      // Display the videos
+      this.displayLabsVideos(videos);
+      
+    } catch (error) {
+      console.error('❌ Error loading labs videos:', error);
+      this.updateLabsVideosContainer('Error loading videos');
+    }
+  }
+
+  /**
+   * Display labs videos in the container
+   */
+  displayLabsVideos(videos) {
+    const container = document.getElementById('labs-videos-container');
+    if (!container) return;
+
+    // Sort videos by publication date (newest first)
+    const sortedVideos = videos.sort((a, b) => {
+      const dateA = new Date(a.publishedAt);
+      const dateB = new Date(b.publishedAt);
+      return dateB - dateA; // Newest first
+    });
+
+    const videosHtml = sortedVideos.map(video => `
+      <div class="labs-video-item" data-video-id="${video.id}" style="
+        margin-bottom: 12px;
+        padding: 8px;
+        border: 1px solid #333333;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      ">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="${video.thumbnail}" alt="${video.title}" style="
+            width: 60px;
+            height: 45px;
+            border-radius: 4px;
+            object-fit: cover;
+          ">
+          <div style="flex: 1; min-width: 0;">
+            <div style="
+              font-size: 10px;
+              font-weight: bold;
+              color: #99ccff;
+              margin-bottom: 2px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            ">${video.title}</div>
+            <div style="
+              font-size: 8px;
+              color: #66aaff;
+            ">Click to play video</div>
+          </div>
+          <div style="
+            font-size: 16px;
+            color: #99ccff;
+          ">▶</div>
+        </div>
+      </div>
+    `).join('');
+
+    container.innerHTML = videosHtml;
+
+    // Add click handlers for video playback
+    this.addLabsVideoClickHandlers();
+  }
+
+  /**
+   * Update the labs videos container with error or status message
+   */
+  updateLabsVideosContainer(message) {
+    const container = document.getElementById('labs-videos-container');
+    if (container) {
+      container.innerHTML = `
+        <div style="text-align: center; color: #ff6666; font-size: 10px;">
+          ${message}
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Add click handlers for labs video items
+   */
+  addLabsVideoClickHandlers() {
+    const videoItems = document.querySelectorAll('.labs-video-item');
+    
+    videoItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const videoId = item.dataset.videoId;
+        this.playYouTubeVideo(videoId);
+      });
+
+      // Add hover effects
+      item.addEventListener('mouseenter', () => {
+        item.style.borderColor = '#99ccff';
+        item.style.background = 'rgba(153, 204, 255, 0.1)';
+      });
+
+      item.addEventListener('mouseleave', () => {
+        item.style.borderColor = '#333333';
+        item.style.background = 'rgba(0, 0, 0, 0.3)';
+      });
+    });
+  }
+
+  /**
    * Get content for different window types
    */
   getWindowContent(windowType) {
@@ -2473,6 +2617,10 @@ export class App {
         return this.createRadioFileExplorer();
 
       case 'labs':
+        // Load labs videos after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          this.loadLabsVideos();
+        }, 100);
         return this.createLabsContent();
 
       case 'gallery':
@@ -3217,7 +3365,7 @@ export class App {
           
           <!-- Workshop Poster -->
           <div style="text-align: center; margin: 12px 0;">
-            <img src="public/gigs/workshop.png" alt="OMNIVOID Workshop" style="
+            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3225,9 +3373,9 @@ export class App {
             ">
           </div>
           
-          <!-- Registration Button - TEMPORARILY HIDDEN -->
-          <div style="text-align: center; margin: 12px 0; display: none;">
-            <a href="https://hostlink.site/ip4LhY" 
+          <!-- Registration Button -->
+          <div style="text-align: center; margin: 12px 0;">
+            <a href="https://tinyurl.com/ayjj553x" 
                target="_blank" 
                style="
                  display: inline-block;
@@ -3286,6 +3434,20 @@ export class App {
             <div style="font-size: 9px; color: #99ccff; line-height: 1.3;">
               A special collaborative challenge featuring guest music producers, where participants work together to create tracks in real-time.
             </div>
+          </div>
+        </div>
+        
+        <!-- Labs Videos Section -->
+        <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🎬 LABS VIDEOS</h4>
+          <div id="labs-videos-container" style="
+            min-height: 50px;
+            color: #99ccff;
+            font-size: 10px;
+            text-align: center;
+            padding: 20px;
+          ">
+            Loading videos...
           </div>
         </div>
       </div>
@@ -3365,21 +3527,21 @@ export class App {
               <div><strong>Visuals:</strong> Real-time audio-reactive art</div>
             </div>
           </div>
-          <a href="javascript:void(0)" style="
+          <a href="https://outworld.fanpit.live/events/uRMP6QGV" target="_blank" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
-            background: #666666;
-            color: #999999;
+            background: #99ccff;
+            color: #000000;
             text-decoration: none;
             border-radius: 4px;
             font-size: 10px;
             font-weight: bold;
             font-family: 'Space Mono', monospace;
             transition: all 0.2s;
-            cursor: not-allowed;
-            opacity: 0.6;
-          " title="Button temporarily disabled">
+            cursor: pointer;
+            opacity: 1;
+          " title="Get tickets on Fanpit">
             🎫 GET TICKETS - FANPIT
           </a>
         </div>
@@ -3391,7 +3553,7 @@ export class App {
           display: none;
         ">
           <div style="text-align: center; margin-bottom: 12px;">
-            <img src="public/gigs/workshop.png" alt="OMNIVOID Workshop" style="
+            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3410,21 +3572,20 @@ export class App {
               <div><strong>Level:</strong> Intermediate to Advanced</div>
             </div>
           </div>
-          <a href="javascript:void(0)" style="
+          <a href="https://tinyurl.com/ayjj553x" target="_blank" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
-            background: #666666;
-            color: #999999;
+            background: #0066cc;
+            color: #ffffff;
             text-decoration: none;
             border-radius: 4px;
             font-size: 10px;
             font-weight: bold;
             font-family: 'Space Mono', monospace;
             transition: all 0.2s;
-            cursor: not-allowed;
-            opacity: 0.6;
-          " title="Button temporarily disabled">
+            cursor: pointer;
+          " title="Register for the workshop">
             📝 REGISTER - GOOGLE FORM
           </a>
         </div>
@@ -3441,7 +3602,7 @@ export class App {
         
         <!-- Social Media Section -->
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">OMNIVOID LABS</h4>
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">LABS</h4>
           
           <!-- Main Instagram Logo and Link -->
           <div style="
@@ -4781,8 +4942,8 @@ export class App {
         console.log('📝 Line 1:', lines[1]);
         console.log('📝 Line 2:', lines[2]);
         
-        const title = lines[0] || 'THE OMNIVOID CONUNDRUM';
-        const bodyContent = lines.slice(1).join('\n') || 'Content loaded from local file.';
+        const title = lines[0] || 'CONUNDRUM';
+        const bodyContent = lines.slice(1).join('\n') || '';
         
         console.log('🏷️ Final title:', title);
         console.log('📖 Final body content length:', bodyContent.length);
@@ -4792,15 +4953,13 @@ export class App {
           title: title,
           content: bodyContent
         };
-        
-        console.log('✅ Conundrum content loaded from local file');
         console.log('🎯 this.conundrumContent set to:', this.conundrumContent);
         
 
       } else {
         // Fallback to placeholder content if fetch fails
         this.conundrumContent = {
-          title: 'THE OMNIVOID CONUNDRUM',
+          title: 'CONUNDRUM',
           content: `Welcome to the OMNIVOID experience. This retro-style interface brings you back to the golden age of computing while delivering cutting-edge audio-visual artistry.
 
 Navigate through our immersive soundscapes and discover the hidden layers of digital consciousness that lie beneath the surface of reality.
@@ -4818,7 +4977,7 @@ The conundrum lies in the space between digital and analog, between past and fut
       console.log('❌ Error loading Conundrum content:', error);
       // Fallback content
       this.conundrumContent = {
-        title: 'THE OMNIVOID CONUNDRUM',
+        title: 'CONUNDRUM',
         content: 'Content loading failed. Please check your connection.'
       };
     }
@@ -4839,19 +4998,17 @@ The conundrum lies in the space between digital and analog, between past and fut
       if (content) {
         // Parse the content to extract title and body
         const lines = content.split('\n').filter(line => line.trim());
-        const title = lines[0] || 'CONTACT OMNIVOID';
-        const bodyContent = lines.slice(1).join('\n') || 'Content loaded from local file.';
+        const title = lines[0] || 'CONTACT';
+        const bodyContent = lines.slice(1).join('\n') || '';
         
         this.contactContent = {
           title: title,
           content: bodyContent
         };
-        
-        console.log('✅ Contact content loaded from local file');
       } else {
         // Fallback to placeholder content if fetch fails
         this.contactContent = {
-          title: 'CONTACT OMNIVOID',
+          title: 'CONTACT',
           content: `Connect with the OMNIVOID collective. We're always interested in collaborations and feedback.
 
 Email: contact@omnivoid.net
