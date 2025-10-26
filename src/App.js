@@ -4,6 +4,7 @@ import { AudioManager } from './controllers/AudioManager.js';
 import { ThemeManager } from './controllers/ThemeManager.js';
 import { SplashScreen } from './components/SplashScreen.js';
 import { RetroWindow } from './components/RetroWindow.js';
+import { AsciiWindow } from './components/AsciiWindow.js';
 import { GOOGLE_DRIVE_CONFIG, readPublicFile, fetchGoogleDriveTextFile } from './config/googleDrive.js';
 
 // Import all other components but keep them hidden initially
@@ -305,7 +306,7 @@ export class App {
     controlsContainer.className = 'minimal-controls';
     controlsContainer.style.cssText = `
       position: fixed;
-      bottom: 100px;
+      bottom: 50px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -1131,7 +1132,7 @@ export class App {
           justify-content: center !important;
           gap: 6px !important;
           padding: 6px 8px !important;
-          bottom: 100px !important;
+          bottom: 50px !important;
           max-width: 90vw !important;
         }
         
@@ -1492,6 +1493,114 @@ export class App {
     `;
     
     document.head.appendChild(style);
+  }
+
+  /**
+   * Create ASCIIVOID button positioned in top-left corner
+   */
+  createAsciiVoidButton() {
+    // Check if button already exists
+    if (this.asciiVoidButton) {
+      console.log('🎨 ASCIIVOID button already exists');
+      return;
+    }
+
+    console.log('🎨 Creating ASCIIVOID button...');
+
+    // Create the button element
+    this.asciiVoidButton = document.createElement('button');
+    this.asciiVoidButton.className = 'asciivoid-button';
+    this.asciiVoidButton.textContent = 'ASCIIVOID';
+    
+    // Top-left positioning - safe from all other elements
+    this.asciiVoidButton.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #00FF22;
+      color: #000000;
+      border: 2px solid #00FF22;
+      padding: 10px 18px;
+      font-size: 12px;
+      font-weight: bold;
+      font-family: 'Space Mono', monospace;
+      cursor: pointer;
+      z-index: 1002;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 
+        0 0 20px rgba(0, 255, 34, 0.3),
+        4px 4px 8px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    `;
+
+    // Add hover effects
+    this.asciiVoidButton.addEventListener('mouseenter', () => {
+      this.asciiVoidButton.style.backgroundColor = '#00CC1B';
+      this.asciiVoidButton.style.borderColor = '#00CC1B';
+      this.asciiVoidButton.style.transform = 'scale(1.05)';
+      this.asciiVoidButton.style.boxShadow = `
+        0 0 30px rgba(0, 255, 34, 0.5),
+        6px 6px 12px rgba(0, 0, 0, 0.6)
+      `;
+    });
+
+    this.asciiVoidButton.addEventListener('mouseleave', () => {
+      this.asciiVoidButton.style.backgroundColor = '#00FF22';
+      this.asciiVoidButton.style.borderColor = '#00FF22';
+      this.asciiVoidButton.style.transform = 'scale(1)';
+      this.asciiVoidButton.style.boxShadow = `
+        0 0 20px rgba(0, 255, 34, 0.3),
+        4px 4px 8px rgba(0, 0, 0, 0.5)
+      `;
+    });
+
+    // Add click handler
+    this.asciiVoidButton.addEventListener('click', () => {
+      console.log('🎨 ASCIIVOID button clicked');
+      if (!this.asciiWindow) {
+        this.asciiWindow = new AsciiWindow();
+      }
+      this.asciiWindow.toggle();
+    });
+
+    // Add to document
+    document.body.appendChild(this.asciiVoidButton);
+    
+    console.log('✅ ASCIIVOID button created in top-left corner');
+  }
+
+  /**
+   * Position ASCIIVOID button between logo bottom and minimal controls top
+   */
+  positionAsciiVoidButton() {
+    if (!this.asciiVoidButton) return;
+
+    // Wait for elements to be rendered
+    requestAnimationFrame(() => {
+      const logoContainer = document.querySelector('.logo-container');
+      const minimalControls = document.querySelector('.minimal-controls');
+      
+      if (logoContainer && minimalControls) {
+        const logoRect = logoContainer.getBoundingClientRect();
+        const controlsRect = minimalControls.getBoundingClientRect();
+        
+        // Calculate position halfway between logo bottom and controls top
+        const logoBottom = logoRect.bottom;
+        const controlsTop = controlsRect.top;
+        const buttonTop = logoBottom + ((controlsTop - logoBottom) / 2) - 20; // -20 for button height/2
+        
+        this.asciiVoidButton.style.top = `${buttonTop}px`;
+        
+        console.log(`🎨 ASCIIVOID button positioned at ${buttonTop}px (logo bottom: ${logoBottom}, controls top: ${controlsTop})`);
+      } else {
+        // Fallback positioning if elements not ready
+        this.asciiVoidButton.style.top = '60%';
+        console.log('🎨 ASCIIVOID button positioned at fallback 60%');
+      }
+    });
   }
 
   /**
@@ -4769,6 +4878,9 @@ export class App {
       this.minimalControls.style.display = 'flex';
       console.log('📱 Mobile controls shown');
     }
+    
+    // Create ASCIIVOID button
+    this.createAsciiVoidButton();
     
     // Create Latest Gig button only if it doesn't exist
     if (!this.latestGigButton) {

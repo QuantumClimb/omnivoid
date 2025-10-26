@@ -424,7 +424,7 @@
 /* Mobile-specific minimal controls positioning */
 @media (max-width: 767px) {
   .minimal-controls {
-    bottom: 150px !important;
+    bottom: 100px !important;
   }
 }
 
@@ -432,7 +432,7 @@
 @media (min-width: 768px) {
   /* Make mobile controls larger and more accessible on desktop */
   .minimal-controls {
-    bottom: 100px !important;
+    bottom: 50px !important;
     padding: 12px 20px !important;
     gap: 12px !important;
     border-radius: 25px !important;
