@@ -1202,11 +1202,11 @@ export class App {
         
         /* Hamburger button mobile */
         .hamburger-toggle {
-          width: 40px !important;
-          height: 40px !important;
+          width: 57px !important;
+          height: 57px !important;
           top: 15px !important;
           right: 20px !important;
-          font-size: 16px !important;
+          font-size: 23px !important;
         }
         
         /* Floating menu mobile */
@@ -1415,9 +1415,9 @@ export class App {
         }
         
         .hamburger-toggle {
-          width: 35px !important;
-          height: 35px !important;
-          font-size: 14px !important;
+          width: 57px !important;
+          height: 57px !important;
+          font-size: 23px !important;
         }
         
         .floating-menu-item {
@@ -1600,13 +1600,13 @@ export class App {
       position: fixed;
       top: 20px;
       right: 20px;
-      width: 50px;
-      height: 50px;
+      width: 57px;
+      height: 57px;
       background: #111111;
       border: 1px solid #99ccff;
       border-radius: 50%;
       color: #99ccff;
-      font-size: 20px;
+      font-size: 23px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -1659,11 +1659,11 @@ export class App {
     // Menu items with custom icons
     const menuItems = [
       { text: 'Conundrum', icon: './public/menuicons/conundrum.png', window: 'conundrum', isImage: true },
-              { text: 'Research', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
       { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
-      { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
       { text: 'Labs', icon: './public/ascii/WORM.svg', window: 'labs', isImage: true },
-      { text: 'Archive', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
+      { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
+      { text: 'Research Papers', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
+      { text: 'Archives', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
       { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
     ];
 
@@ -3444,43 +3444,17 @@ export class App {
   createLabsContent() {
     return `
       <div id="labs-container" style="background: #0a0a0a;">
+        <!-- Labs Videos Section -->
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          
-          <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
-            An immersive, hands-on session where you'll explore hardware synthesizers, Understand the Basics of Synthesis, Experience a Group Drone Jam Session, Insights into creative sampling, and a special Producer Roulette Challenge feat. guest Music Producers.
-          </p>
-          
-          <!-- Workshop Poster -->
-          <div style="text-align: center; margin: 12px 0;">
-            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
-              max-width: 100%;
-              height: auto;
-              border: 1px solid #333;
-              border-radius: 4px;
-            ">
-          </div>
-          
-          <!-- Registration Button -->
-          <div style="text-align: center; margin: 12px 0;">
-            <a href="https://tinyurl.com/ayjj553x" 
-               target="_blank" 
-               style="
-                 display: inline-block;
-                 padding: 12px 24px;
-                 background: #99ccff;
-                 color: #000;
-                 text-decoration: none;
-                 border-radius: 4px;
-                 font-weight: bold;
-                 font-size: 11px;
-                 font-family: 'Space Mono', monospace;
-                 transition: all 0.2s;
-                 border: 1px solid #99ccff;
-               "
-               onmouseover="this.style.background='#66aaff'; this.style.borderColor='#66aaff'"
-               onmouseout="this.style.background='#99ccff'; this.style.borderColor='#99ccff'">
-              🎛️ REGISTER FOR WORKSHOP
-            </a>
+          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🎬 LABS VIDEOS</h4>
+          <div id="labs-videos-container" style="
+            min-height: 50px;
+            color: #99ccff;
+            font-size: 10px;
+            text-align: center;
+            padding: 20px;
+          ">
+            Loading videos...
           </div>
         </div>
         
@@ -3524,17 +3498,43 @@ export class App {
           </div>
         </div>
         
-        <!-- Labs Videos Section -->
         <div style="border: 1px inset #333333; padding: 12px; margin-bottom: 12px; background: #0a0a0a; color: #99ccff;">
-          <h4 style="margin: 0 0 12px 0; font-size: 11px; font-weight: bold; color: #99ccff;">🎬 LABS VIDEOS</h4>
-          <div id="labs-videos-container" style="
-            min-height: 50px;
-            color: #99ccff;
-            font-size: 10px;
-            text-align: center;
-            padding: 20px;
-          ">
-            Loading videos...
+          
+          <p style="margin: 0 0 8px 0; font-size: 11px; color: #99ccff;">
+            An immersive, hands-on session where you'll explore hardware synthesizers, Understand the Basics of Synthesis, Experience a Group Drone Jam Session, Insights into creative sampling, and a special Producer Roulette Challenge feat. guest Music Producers.
+          </p>
+          
+          <!-- Workshop Poster -->
+          <div style="text-align: center; margin: 12px 0;">
+            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+              max-width: 100%;
+              height: auto;
+              border: 1px solid #333;
+              border-radius: 4px;
+            ">
+          </div>
+          
+          <!-- Registration Button -->
+          <div style="text-align: center; margin: 12px 0;">
+            <a href="https://tinyurl.com/ayjj553x" 
+               target="_blank" 
+               style="
+                 display: inline-block;
+                 padding: 12px 24px;
+                 background: #99ccff;
+                 color: #000;
+                 text-decoration: none;
+                 border-radius: 4px;
+                 font-weight: bold;
+                 font-size: 11px;
+                 font-family: 'Space Mono', monospace;
+                 transition: all 0.2s;
+                 border: 1px solid #99ccff;
+               "
+               onmouseover="this.style.background='#66aaff'; this.style.borderColor='#66aaff'"
+               onmouseout="this.style.background='#99ccff'; this.style.borderColor='#99ccff'">
+              🎛️ REGISTER FOR WORKSHOP
+            </a>
           </div>
         </div>
       </div>
