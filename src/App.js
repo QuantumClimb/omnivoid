@@ -3726,7 +3726,7 @@ export class App {
           " onclick="window.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logo.svg" 
+            <img src="public/logo.svg?v=${Date.now()}" 
                  style="
                    width: 32px;
                    height: 32px;

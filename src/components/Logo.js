@@ -38,7 +38,7 @@ export class Logo extends Component {
     this.logoElement.alt = 'Omnivoid';
     
     // Try the correct path for the SVG (public folder first)
-    this.logoElement.src = 'public/logo.svg';
+    this.logoElement.src = 'public/logo.svg?v=' + Date.now();
     
     console.log('🔄 Loading logo from:', this.logoElement.src);
     
@@ -53,7 +53,7 @@ export class Logo extends Component {
       console.log('🔍 Trying alternative path...');
       
       // Try without public prefix
-      this.logoElement.src = 'logo.svg';
+      this.logoElement.src = 'logo.svg?v=' + Date.now();
       
       this.logoElement.onerror = () => {
         console.error('❌ All SVG loading attempts failed');
