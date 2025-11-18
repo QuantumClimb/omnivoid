@@ -3710,7 +3710,6 @@ export class App {
                    width: 32px;
                    height: 32px;
                    margin-right: 12px;
-                   filter: brightness(0) invert(1);
                  " 
                  alt="OMNIVOID">
             <div>
