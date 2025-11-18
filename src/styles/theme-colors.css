@@ -1,0 +1,19 @@
+/**
+ * Global Theme Colors CSS
+ * Uses CSS custom properties for dynamic theme switching
+ */
+
+:root {
+  /* Primary accent color - changes per show */
+  --primary-color: #FF0000;
+  --primary-rgb: 255, 0, 0;
+  
+  /* Text colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #99ccff;
+  
+  /* Component colors */
+  --accent-color: #FF0000;
+  --border-color: #FF0000;
+  --glow-color: #FF0000;
+}

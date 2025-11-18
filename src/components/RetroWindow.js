@@ -1,8 +1,9 @@
 import { Component } from './Base.js';
+import THEME from '../config/theme.js';
 
 /**
  * RetroWindow - OMNIVOID-styled floating window component
- * Dark theme with blue aesthetic
+ * Dark theme with red accent aesthetic
  */
 export class RetroWindow extends Component {
   constructor(id, title, content = '', onClose = null) {
@@ -70,9 +71,9 @@ export class RetroWindow extends Component {
       height: ${isDesktop ? '360px' : '70vh'};
       max-height: 80vh;
       background-color: #111111;
-      border: 1px solid #333333;
+      border: 1px solid ${THEME.PRIMARY_COLOR};
       box-shadow: 
-        0 0 20px rgba(153, 204, 255, 0.2),
+        0 0 20px rgba(255, 0, 0, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
       font-family: 'Space Mono', monospace;
       font-size: ${isDesktop ? '12px' : '14px'};
@@ -80,7 +81,7 @@ export class RetroWindow extends Component {
       display: none;
       opacity: 0;
       transition: opacity 0.2s ease;
-      color: #99ccff;
+      color: #FFFFFF;
     `;
 
     // Create title bar
@@ -102,10 +103,10 @@ export class RetroWindow extends Component {
     this.titleText = document.createElement('span');
     this.titleText.textContent = this.title;
     this.titleText.style.cssText = `
-      color: #99ccff;
+      color: #FFFFFF;
       font-weight: bold;
       font-size: 14px;
-      text-shadow: 0 0 5px rgba(153, 204, 255, 0.5);
+      text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
       flex-grow: 1;
       padding-left: 4px;
       font-family: 'Space Mono', monospace;
@@ -119,8 +120,8 @@ export class RetroWindow extends Component {
       width: 24px;
       height: 24px;
       background-color: transparent;
-      color: #99ccff;
-      border: 1px solid #99ccff;
+      color: ${THEME.PRIMARY_COLOR};
+      border: 1px solid ${THEME.PRIMARY_COLOR};
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
@@ -140,11 +141,11 @@ export class RetroWindow extends Component {
     this.body.style.cssText = `
       height: calc(100% - 34px);
       background-color: #000000;
-      border: 1px solid #333333;
+      border: 1px solid ${THEME.PRIMARY_COLOR};
       margin: 1px;
       overflow: auto;
       padding: 15px;
-      color: #99ccff;
+      color: #FFFFFF;
       line-height: 1.4;
       font-family: 'Space Mono', monospace;
     `;
@@ -209,13 +210,13 @@ export class RetroWindow extends Component {
 
     // Close button hover effects - OMNIVOID style
     this.closeButton.addEventListener('mouseenter', () => {
-      this.closeButton.style.backgroundColor = '#99ccff';
+      this.closeButton.style.backgroundColor = THEME.PRIMARY_COLOR;
       this.closeButton.style.color = '#000000';
     });
 
     this.closeButton.addEventListener('mouseleave', () => {
       this.closeButton.style.backgroundColor = 'transparent';
-      this.closeButton.style.color = '#99ccff';
+      this.closeButton.style.color = THEME.PRIMARY_COLOR;
     });
 
     this.closeButton.addEventListener('mousedown', () => {

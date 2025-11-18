@@ -114,7 +114,7 @@ select.animation-select {
   margin: 0 0 20px 0;
   text-align: center;
   font-size: 18px;
-  color: #99ccff;
+  color: var(--primary-color);
   font-family: 'Space Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -123,7 +123,7 @@ select.animation-select {
 .desktop-control-panel h3 {
   margin: 15px 0 10px 0;
   font-size: 14px;
-  color: #99ccff;
+  color: var(--primary-color);
   font-family: 'Space Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -142,7 +142,7 @@ select.animation-select {
   margin-bottom: 8px;
   font-size: 12px;
   font-family: 'Space Mono', monospace;
-  color: #99ccff;
+  color: var(--primary-color);
 }
 
 .desktop-control-panel input[type=range] {
@@ -163,7 +163,7 @@ select.animation-select {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #99ccff;
+  background: var(--primary-color);
   cursor: pointer;
   margin-top: -6px;
   box-shadow: 0 0 10px rgba(153, 204, 255, 0.5);
@@ -172,7 +172,7 @@ select.animation-select {
 .desktop-control-panel input[type=checkbox] {
   width: 18px;
   height: 18px;
-  accent-color: #99ccff;
+  accent-color: var(--primary-color);
   margin-right: 10px;
 }
 

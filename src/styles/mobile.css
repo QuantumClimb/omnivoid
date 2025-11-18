@@ -19,9 +19,9 @@
   width: 57px;
   height: 57px;
   background: #111111;
-  border: 1px solid #99ccff;
+  border: 1px solid var(--primary-color);
   border-radius: 50%;
-  color: #99ccff;
+  color: var(--primary-color);
   font-size: 23px;
   cursor: pointer;
   display: flex;
@@ -36,8 +36,8 @@
     2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.hamburger-toggle:hover {
-  background-color: #99ccff;
+.icon-button:hover {
+  background-color: var(--primary-color);
   color: #000000;
   box-shadow: 0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -68,9 +68,9 @@
   width: 57px;
   height: 57px;
   background: #111111;
-  border: 1px solid #99ccff;
+  border: 1px solid var(--primary-color);
   border-radius: 50%;
-  color: #99ccff;
+  color: var(--primary-color);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -86,14 +86,14 @@
 }
 
 .dropdown-menu-item:hover {
-  background-color: #99ccff;
+  background-color: var(--primary-color);
   color: #000000;
   box-shadow: 0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Active menu item state */
 .dropdown-menu-item.active {
-  background-color: #99ccff;
+  background-color: var(--primary-color);
   color: #1c1c1c;
   box-shadow: 0 0 25px rgba(153, 204, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.5);
   transform: scale(1.1);
@@ -119,7 +119,7 @@
 .custom-tooltip {
   position: absolute;
   background: rgba(0, 0, 0, 0.9);
-  color: #99ccff;
+  color: var(--primary-color);
   padding: 8px 12px;
   border-radius: 6px;
   font-family: 'Space Mono', monospace;
@@ -130,7 +130,7 @@
   opacity: 0;
   transform: translateY(10px);
   transition: all 0.2s ease;
-  border: 1px solid #99ccff;
+  border: 1px solid var(--primary-color);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
 }
@@ -143,7 +143,7 @@
   transform: translateY(-50%);
   width: 0;
   height: 0;
-  border-left: 5px solid #99ccff;
+  border-left: 5px solid var(--primary-color);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
 }
@@ -569,7 +569,7 @@
 }
 
 .transmission-item:hover {
-  border-color: #99ccff;
+  border-color: var(--primary-color);
   background: rgba(153, 204, 255, 0.1);
   transform: translateX(2px);
 }
@@ -638,8 +638,8 @@
   width: 30px !important;
   height: 30px !important;
   background: rgba(0, 0, 0, 0.8) !important;
-  border: 1px solid #99ccff !important;
-  color: #99ccff !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
   border-radius: 50% !important;
   cursor: pointer !important;
   z-index: 10001 !important;
@@ -652,7 +652,7 @@
 
 .youtube-close-btn:hover {
   background: rgba(153, 204, 255, 0.2) !important;
-  border-color: #99ccff !important;
+  border-color: var(--primary-color) !important;
   transform: scale(1.1) !important;
 }
 
@@ -682,7 +682,7 @@
 
 .pdf-viewer-content {
   background: #111111 !important;
-  border: 2px solid #99ccff !important;
+  border: 2px solid var(--primary-color) !important;
   border-radius: 8px !important;
   width: 95vw !important;
   max-width: 1200px !important;
@@ -716,7 +716,7 @@
 .pdf-thumbnail:hover {
   border-style: inset;
   transform: scale(1.05);
-  border-color: #99ccff;
+  border-color: var(--primary-color);
 }
 
 /* PDF Viewer Animations */
