@@ -6,14 +6,12 @@ import { SplashScreen } from './components/SplashScreen.js';
 import { RetroWindow } from './components/RetroWindow.js';
 import { AsciiWindow } from './components/AsciiWindow.js';
 import { GOOGLE_DRIVE_CONFIG, readPublicFile, fetchGoogleDriveTextFile } from './config/googleDrive.js';
-import THEME from './config/theme.js';
 
 // Import all other components but keep them hidden initially
 import { SolarSystem } from './components/SolarSystem.js';
 import { Starfield } from './components/Starfield.js';
 import { ASCIITunnel } from './components/ASCIITunnel.js';
 import { PolygonEcho } from './components/PolygonEcho.js';
-import { TeslaCoil } from './components/TeslaCoil.js';
 import { AnimationController } from './controllers/AnimationController.js';
 import { ControlPanel } from './controllers/ControlPanel.js';
 
@@ -127,7 +125,6 @@ export class App {
       this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading components...', 65);
       this.controlPanel = new ControlPanel('control-panels');
       this.starfield = new Starfield();
-      this.teslaCoil = new TeslaCoil();
       this.asciiTunnel = new ASCIITunnel();
       this.solarSystem = new SolarSystem();
       this.polygonEcho = new PolygonEcho();
