@@ -1680,7 +1680,7 @@ export class App {
 
     // Create retro windows for each menu item
     this.retroWindows = {};
-    menuItems.forEach(item => {
+    for (const item of menuItems) {
       console.log(`🪟 Creating RetroWindow for: ${item.text} (${item.window})`);
       const windowContent = this.getWindowContent(item.window);
       console.log(`📄 Content length for ${item.window}: ${windowContent.length}`);
@@ -1699,10 +1699,10 @@ export class App {
       );
       
       console.log(`✅ RetroWindow created for: ${item.window}`);
-    });
+    }
 
     // Create dropdown menu items
-    menuItems.forEach((item, index) => {
+    for (const item of menuItems) {
       const menuItem = document.createElement('div');
       menuItem.className = 'dropdown-menu-item';
       
@@ -1754,11 +1754,11 @@ export class App {
           this.resetModalState();
           
           // Remove active state from all menu items
-          document.querySelectorAll('.dropdown-menu-item').forEach(menuItemEl => {
+          for (const menuItemEl of document.querySelectorAll('.dropdown-menu-item')) {
             menuItemEl.classList.remove('active');
             menuItemEl.style.backgroundColor = '#111111';
             menuItemEl.style.color = '#99ccff';
-          });
+          }
           
           // Add active state to clicked menu item
           menuItem.classList.add('active');
@@ -1908,7 +1908,7 @@ export class App {
       hamburgerBtnInDOM: document.body.contains(hamburgerBtn),
       dropdownMenuInDOM: document.body.contains(dropdownMenu),
       hamburgerBtnVisible: hamburgerBtn.offsetParent !== null,
-      hamburgerBtnStyle: window.getComputedStyle(hamburgerBtn).display
+      hamburgerBtnStyle: globalThis.getComputedStyle(hamburgerBtn).display
     });
   }
 
@@ -2151,7 +2151,7 @@ export class App {
   addTransmissionClickHandlers() {
     const transmissionItems = document.querySelectorAll('.transmission-item');
     
-    transmissionItems.forEach(item => {
+    for (const item of transmissionItems) {
       item.addEventListener('click', () => {
         const videoId = item.dataset.videoId;
         this.playYouTubeVideo(videoId);
@@ -2167,7 +2167,7 @@ export class App {
         item.style.borderColor = '#333333';
         item.style.background = 'rgba(0, 0, 0, 0.3)';
       });
-    });
+    }
   }
 
   /**
@@ -2178,7 +2178,9 @@ export class App {
     
     // Remove any existing modals first
     const existingModals = document.querySelectorAll('.youtube-modal');
-    existingModals.forEach(modal => modal.remove());
+    for (const modal of existingModals) {
+      modal.remove();
+    }
     
     // CRITICAL: On desktop, we need to bypass RetroWindow positioning
     // Check if we're in a RetroWindow context and force body positioning
@@ -2301,7 +2303,7 @@ export class App {
     
     // Double-check positioning after a brief delay
     setTimeout(() => {
-      if (modal && modal.parentNode) {
+      if (modal?.parentNode) {
         // Re-enforce independence
         this.forceModalIndependence(modal);
         
@@ -2351,12 +2353,12 @@ export class App {
     document.body.style.overflow = 'hidden';
     
     // Add global close function for debugging
-    window.closeYouTubeModal = () => {
+    globalThis.closeYouTubeModal = () => {
       console.log('🌐 Global close function called');
       this.closeModal(modal);
     };
     
-    console.log('🎬 YouTube modal created successfully. Use close button, click background, press Escape, or call window.closeYouTubeModal() to close.');
+    console.log('🎬 YouTube modal created successfully. Use close button, click background, press Escape, or call globalThis.closeYouTubeModal() to close.');
   }
 
   /**
@@ -2374,10 +2376,10 @@ export class App {
     setTimeout(() => {
       try {
         // Remove the modal
-        if (modal && modal.parentNode) {
-          modal.parentNode.removeChild(modal);
+        if (modal?.parentNode) {
+          modal.remove();
           console.log('✅ Modal removed from DOM');
-        } else if (modal && modal.remove) {
+        } else if (modal?.remove) {
           modal.remove();
           console.log('✅ Modal removed using remove() method');
         }
@@ -2399,8 +2401,8 @@ export class App {
       } catch (error) {
         console.error('❌ Error closing modal:', error);
         // Fallback: force remove if normal removal fails
-        if (modal && modal.parentNode) {
-          modal.parentNode.removeChild(modal);
+        if (modal?.parentNode) {
+          modal.remove();
         }
         document.body.style.overflow = '';
       }
@@ -2412,9 +2414,9 @@ export class App {
    */
   closeAllYouTubeModals() {
     const modals = document.querySelectorAll('.youtube-modal');
-    modals.forEach(modal => {
+    for (const modal of modals) {
       this.closeModal(modal);
-    });
+    }
     
     // Restore body scroll
     document.body.style.overflow = '';
@@ -2429,24 +2431,24 @@ export class App {
     
     // Remove any stray modal elements that might have incorrect positioning
     const strayModals = document.querySelectorAll('[class*="modal"], [class*="player"]');
-    strayModals.forEach(element => {
+    for (const element of strayModals) {
       if (element.classList.contains('youtube-modal') || 
           element.classList.contains('youtube-player-container')) {
         element.remove();
       }
-    });
+    }
     
     // Ensure body scroll is restored
     document.body.style.overflow = '';
     
     // Reset any parent transforms that might be affecting positioning
     const retroWindows = document.querySelectorAll('.retro-window');
-    retroWindows.forEach(window => {
+    for (const window of retroWindows) {
       if (window.style.transform && window.style.transform !== 'none') {
         console.log('🔄 Resetting RetroWindow transform:', window.style.transform);
         window.style.transform = 'none';
       }
-    });
+    }
     
     console.log('🧹 Modal state reset completed');
   }
@@ -2639,7 +2641,7 @@ export class App {
   addLabsVideoClickHandlers() {
     const videoItems = document.querySelectorAll('.labs-video-item');
     
-    videoItems.forEach(item => {
+    for (const item of videoItems) {
       item.addEventListener('click', () => {
         const videoId = item.dataset.videoId;
         this.playYouTubeVideo(videoId);
@@ -2655,7 +2657,7 @@ export class App {
         item.style.borderColor = '#333333';
         item.style.background = 'rgba(0, 0, 0, 0.3)';
       });
-    });
+    }
   }
 
   /**
@@ -2822,7 +2824,7 @@ export class App {
       iframe.width = '100%';
       iframe.height = '100%';
       iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
-      iframe.frameBorder = '0';
+      iframe.setAttribute('frameborder', '0');
       iframe.id = 'mixcloud-player';
       iframe.style.border = 'none';
       iframe.allow = 'autoplay';
@@ -4043,16 +4045,16 @@ export class App {
   switchGigTab(tabName) {
     // Hide all tab contents
     const tabContents = document.querySelectorAll('.gig-tab-content');
-    tabContents.forEach(content => {
+    for (const content of tabContents) {
       content.style.display = 'none';
-    });
+    }
     
     // Reset all tab button styles
     const tabButtons = document.querySelectorAll('#gig-tab, #workshop-tab');
-    tabButtons.forEach(button => {
+    for (const button of tabButtons) {
       button.style.background = '#333';
       button.style.color = '#99ccff';
-    });
+    }
     
     // Show selected tab content
     const selectedContent = document.getElementById(tabName + '-content');
@@ -4701,9 +4703,9 @@ export class App {
     console.log('🔗 Master Folder URL:', this.googleDriveConfig.getFolderUrl());
     
     // Test folder URLs
-    Object.entries(this.googleDriveConfig.FOLDERS).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(this.googleDriveConfig.FOLDERS)) {
       console.log(`📂 ${key}: ${value}`);
-    });
+    }
     
           // Test Mixcloud integration
       console.log('🎵 Mixcloud integration ready for audio streaming');
@@ -4921,17 +4923,17 @@ export class App {
     
     // Force remove any remaining modal elements
     const allModals = document.querySelectorAll('.youtube-modal, .youtube-player-container');
-    allModals.forEach(modal => {
+    for (const modal of allModals) {
       try {
-        if (modal && modal.parentNode) {
-          modal.parentNode.removeChild(modal);
-        } else if (modal && modal.remove) {
+        if (modal?.parentNode) {
+          modal.remove();
+        } else if (modal?.remove) {
           modal.remove();
         }
       } catch (error) {
         console.error('Error removing modal:', error);
       }
-    });
+    }
     
     // Restore body scroll
     document.body.style.overflow = '';
@@ -5143,7 +5145,7 @@ Let's create something extraordinary together.`
     thumbnailsContainer.innerHTML = '';
     
     // Add PDF thumbnails
-    this.pdfResearchPapers.forEach((paper, index) => {
+    for (const [index, paper] of this.pdfResearchPapers.entries()) {
       const thumbnail = document.createElement('div');
       thumbnail.className = 'pdf-thumbnail';
       thumbnail.style.cssText = `
@@ -5228,7 +5230,7 @@ Let's create something extraordinary together.`
       
       thumbnail.title = `Click to view: ${paper.title}`;
       thumbnailsContainer.appendChild(thumbnail);
-    });
+    }
   }
 
   /**
