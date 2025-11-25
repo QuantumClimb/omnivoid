@@ -3651,7 +3651,7 @@ export class App {
           display: none;
         ">
           <div style="text-align: center; margin-bottom: 12px;">
-            <img src="public/gigs/workshop.jpg?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
