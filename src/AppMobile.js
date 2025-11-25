@@ -5,7 +5,7 @@ import { ThemeManager } from './controllers/ThemeManager.js';
 import { SplashScreen } from './components/SplashScreen.js';
 import { RetroWindow } from './components/RetroWindow.js';
 import { AsciiWindow } from './components/AsciiWindow.js';
-import { GOOGLE_DRIVE_CONFIG, readPublicFile, fetchGoogleDriveTextFile } from './config/googleDrive.js';
+import { GOOGLE_DRIVE_CONFIG, readPublicFile } from './config/googleDrive.js';
 
 // Import all other components but keep them hidden initially
 import { SolarSystem } from './components/SolarSystem.js';
@@ -23,7 +23,7 @@ export class App {
     console.log('📱 OMNIVOID Mobile App initializing...');
     
     // Check if app is already initialized to prevent duplicates
-    if (window.omnivoidAppInitialized) {
+    if (globalThis.omnivoidAppInitialized) {
       console.log('⚠️ Mobile App already initialized, skipping...');
       return;
     }
@@ -35,8 +35,8 @@ export class App {
     this.cleanupUIElements();
     
     // Make this instance globally accessible for the radio file explorer
-    window.omnivoidApp = this;
-    window.omnivoidAppInitialized = true;
+    globalThis.omnivoidApp = this;
+    globalThis.omnivoidAppInitialized = true;
     
     // Initialize theme manager first
     this.themeManager = new ThemeManager();
@@ -69,7 +69,7 @@ export class App {
   detectMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
            (window.innerWidth <= 768) ||
-           ('ontouchstart' in window) ||
+           ('ontouchstart' in globalThis) ||
            (navigator.maxTouchPoints > 0);
   }
 
@@ -367,16 +367,16 @@ export class App {
     starfieldBtn.addEventListener('click', () => {
       const isVisible = this.starfield.isVisible;
       this.starfield.setVisibility(!isVisible);
-      if (!isVisible) {
-        starfieldBtn.classList.add('active');
-        starfieldBtn.innerHTML = '✦';
-        starfieldBtn.style.backgroundColor = '#99ccff';
-        starfieldBtn.style.color = '#000000';
-      } else {
+      if (isVisible) {
         starfieldBtn.classList.remove('active');
         starfieldBtn.innerHTML = '☆';
         starfieldBtn.style.backgroundColor = 'transparent';
         starfieldBtn.style.color = '#99ccff';
+      } else {
+        starfieldBtn.classList.add('active');
+        starfieldBtn.innerHTML = '✦';
+        starfieldBtn.style.backgroundColor = '#99ccff';
+        starfieldBtn.style.color = '#000000';
       }
     });
 
@@ -425,16 +425,16 @@ export class App {
     asciiBtn.addEventListener('click', () => {
       const isVisible = this.asciiTunnel.isVisible;
       this.asciiTunnel.setVisibility(!isVisible);
-      if (!isVisible) {
-        asciiBtn.classList.add('active');
-        asciiBtn.innerHTML = 'Ω';
-        asciiBtn.style.backgroundColor = '#99ccff';
-        asciiBtn.style.color = '#000000';
-      } else {
+      if (isVisible) {
         asciiBtn.classList.remove('active');
         asciiBtn.innerHTML = 'Ω';
         asciiBtn.style.backgroundColor = 'transparent';
         asciiBtn.style.color = '#99ccff';
+      } else {
+        asciiBtn.classList.add('active');
+        asciiBtn.innerHTML = 'Ω';
+        asciiBtn.style.backgroundColor = '#99ccff';
+        asciiBtn.style.color = '#000000';
       }
     });
 
@@ -483,16 +483,16 @@ export class App {
     solarBtn.addEventListener('click', () => {
       const isVisible = this.solarSystem.element.style.display !== 'none';
       this.solarSystem.onVisibilityChange(!isVisible);
-      if (!isVisible) {
-        solarBtn.classList.add('active');
-        solarBtn.innerHTML = '☉';
-        solarBtn.style.backgroundColor = '#99ccff';
-        solarBtn.style.color = '#000000';
-      } else {
+      if (isVisible) {
         solarBtn.classList.remove('active');
         solarBtn.innerHTML = '☉';
         solarBtn.style.backgroundColor = 'transparent';
         solarBtn.style.color = '#99ccff';
+      } else {
+        solarBtn.classList.add('active');
+        solarBtn.innerHTML = '☉';
+        solarBtn.style.backgroundColor = '#99ccff';
+        solarBtn.style.color = '#000000';
       }
     });
     
@@ -541,16 +541,16 @@ export class App {
     polygonBtn.addEventListener('click', () => {
       const isVisible = this.polygonEcho.isVisible;
       this.polygonEcho.setVisibility(!isVisible);
-      if (!isVisible) {
-        polygonBtn.classList.add('active');
-        polygonBtn.innerHTML = '⬟';
-        polygonBtn.style.backgroundColor = '#99ccff';
-        polygonBtn.style.color = '#000000';
-      } else {
+      if (isVisible) {
         polygonBtn.classList.remove('active');
         polygonBtn.innerHTML = '⬟';
         polygonBtn.style.backgroundColor = 'transparent';
         polygonBtn.style.color = '#99ccff';
+      } else {
+        polygonBtn.classList.add('active');
+        polygonBtn.innerHTML = '⬟';
+        polygonBtn.style.backgroundColor = '#99ccff';
+        polygonBtn.style.color = '#000000';
       }
     });
 
