@@ -2673,7 +2673,7 @@ export class App {
         item.style.borderColor = '#333333';
         item.style.background = 'rgba(0, 0, 0, 0.3)';
       });
-    });
+    }
   }
 
   /**
