@@ -349,18 +349,18 @@ export class App {
         starfieldBtn.style.backgroundColor = '#336699';
         starfieldBtn.style.color = '#ffffff';
       } else {
-        starfieldBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        starfieldBtn.style.backgroundColor = \"#99ccff\";
         starfieldBtn.style.color = '#000000';
       }
     });
     
     starfieldBtn.addEventListener('mouseleave', () => {
       if (starfieldBtn.classList.contains('active')) {
-        starfieldBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        starfieldBtn.style.backgroundColor = \"#99ccff\";
         starfieldBtn.style.color = '#000000';
       } else {
         starfieldBtn.style.backgroundColor = 'transparent';
-        starfieldBtn.style.color = THEME.PRIMARY_COLOR;
+        starfieldBtn.style.color = \"#99ccff\";
       }
     });
     
@@ -370,13 +370,13 @@ export class App {
       if (!isVisible) {
         starfieldBtn.classList.add('active');
         starfieldBtn.innerHTML = '✦';
-        starfieldBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        starfieldBtn.style.backgroundColor = \"#99ccff\";
         starfieldBtn.style.color = '#000000';
       } else {
         starfieldBtn.classList.remove('active');
         starfieldBtn.innerHTML = '☆';
         starfieldBtn.style.backgroundColor = 'transparent';
-        starfieldBtn.style.color = THEME.PRIMARY_COLOR;
+        starfieldBtn.style.color = \"#99ccff\";
       }
     });
 
@@ -407,18 +407,18 @@ export class App {
         asciiBtn.style.backgroundColor = '#336699';
         asciiBtn.style.color = '#ffffff';
       } else {
-        asciiBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        asciiBtn.style.backgroundColor = \"#99ccff\";
         asciiBtn.style.color = '#000000';
       }
     });
     
     asciiBtn.addEventListener('mouseleave', () => {
       if (asciiBtn.classList.contains('active')) {
-        asciiBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        asciiBtn.style.backgroundColor = \"#99ccff\";
         asciiBtn.style.color = '#000000';
       } else {
         asciiBtn.style.backgroundColor = 'transparent';
-        asciiBtn.style.color = THEME.PRIMARY_COLOR;
+        asciiBtn.style.color = \"#99ccff\";
       }
     });
     
@@ -428,13 +428,13 @@ export class App {
       if (!isVisible) {
         asciiBtn.classList.add('active');
         asciiBtn.innerHTML = 'Ω';
-        asciiBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        asciiBtn.style.backgroundColor = \"#99ccff\";
         asciiBtn.style.color = '#000000';
       } else {
         asciiBtn.classList.remove('active');
         asciiBtn.innerHTML = 'Ω';
         asciiBtn.style.backgroundColor = 'transparent';
-        asciiBtn.style.color = THEME.PRIMARY_COLOR;
+        asciiBtn.style.color = \"#99ccff\";
       }
     });
 
@@ -465,18 +465,18 @@ export class App {
         solarBtn.style.backgroundColor = '#336699';
         solarBtn.style.color = '#ffffff';
       } else {
-        solarBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        solarBtn.style.backgroundColor = \"#99ccff\";
         solarBtn.style.color = '#000000';
       }
     });
     
     solarBtn.addEventListener('mouseleave', () => {
       if (solarBtn.classList.contains('active')) {
-        solarBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        solarBtn.style.backgroundColor = \"#99ccff\";
         solarBtn.style.color = '#000000';
       } else {
         solarBtn.style.backgroundColor = 'transparent';
-        solarBtn.style.color = THEME.PRIMARY_COLOR;
+        solarBtn.style.color = \"#99ccff\";
       }
     });
     
@@ -486,13 +486,13 @@ export class App {
       if (!isVisible) {
         solarBtn.classList.add('active');
         solarBtn.innerHTML = '☉';
-        solarBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        solarBtn.style.backgroundColor = \"#99ccff\";
         solarBtn.style.color = '#000000';
       } else {
         solarBtn.classList.remove('active');
         solarBtn.innerHTML = '☉';
         solarBtn.style.backgroundColor = 'transparent';
-        solarBtn.style.color = THEME.PRIMARY_COLOR;
+        solarBtn.style.color = \"#99ccff\";
       }
     });
     
@@ -523,18 +523,18 @@ export class App {
         polygonBtn.style.backgroundColor = '#336699';
         polygonBtn.style.color = '#ffffff';
       } else {
-        polygonBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        polygonBtn.style.backgroundColor = \"#99ccff\";
         polygonBtn.style.color = '#000000';
       }
     });
     
     polygonBtn.addEventListener('mouseleave', () => {
       if (polygonBtn.classList.contains('active')) {
-        polygonBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        polygonBtn.style.backgroundColor = \"#99ccff\";
         polygonBtn.style.color = '#000000';
       } else {
         polygonBtn.style.backgroundColor = 'transparent';
-        polygonBtn.style.color = THEME.PRIMARY_COLOR;
+        polygonBtn.style.color = \"#99ccff\";
       }
     });
     
@@ -544,13 +544,13 @@ export class App {
       if (!isVisible) {
         polygonBtn.classList.add('active');
         polygonBtn.innerHTML = '⬟';
-        polygonBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        polygonBtn.style.backgroundColor = \"#99ccff\";
         polygonBtn.style.color = '#000000';
       } else {
         polygonBtn.classList.remove('active');
         polygonBtn.innerHTML = '⬟';
         polygonBtn.style.backgroundColor = 'transparent';
-        polygonBtn.style.color = THEME.PRIMARY_COLOR;
+        polygonBtn.style.color = \"#99ccff\";
       }
     });
 
@@ -577,7 +577,7 @@ export class App {
       } else {
         // Default dark theme appearance
         themeBtn.style.background = 'transparent';
-        themeBtn.style.color = THEME.PRIMARY_COLOR;
+        themeBtn.style.color = \"#99ccff\";
         themeBtn.style.border = '1px solid #99ccff';
         themeBtn.title = 'Dark Theme - Click for random colors';
         // Update image filter for better contrast
@@ -612,7 +612,7 @@ export class App {
         const img = themeBtn.querySelector('img');
         if (img) img.style.filter = 'brightness(0) invert(1)';
       } else {
-        themeBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        themeBtn.style.backgroundColor = \"#99ccff\";
         themeBtn.style.color = '#000000';
         // Update image filter for better contrast
         const img = themeBtn.querySelector('img');
@@ -696,7 +696,7 @@ export class App {
           svg.style.width = '20px';
           svg.style.height = '20px';
           svg.style.fill = 'none';
-          svg.style.stroke = THEME.PRIMARY_COLOR;
+          svg.style.stroke = \"#99ccff\";
           svg.style.strokeWidth = '2px';
         }
       })
@@ -707,13 +707,13 @@ export class App {
     
     agentToggleBtn.addEventListener('click', () => {
       const isVisible = this.agentSystem.toggleVisibility();
-      agentToggleBtn.style.background = isVisible ? THEME.PRIMARY_COLOR : 'transparent';
-      agentToggleBtn.style.color = isVisible ? '#000000' : THEME.PRIMARY_COLOR;
+      agentToggleBtn.style.background = isVisible ? \"#99ccff\" : 'transparent';
+      agentToggleBtn.style.color = isVisible ? '#000000' : \"#99ccff\";
       
       // Update SVG stroke color
       const svg = agentToggleBtn.querySelector('svg');
       if (svg) {
-        svg.style.stroke = isVisible ? '#000000' : THEME.PRIMARY_COLOR;
+        svg.style.stroke = isVisible ? '#000000' : \"#99ccff\";
       }
     });
     
@@ -847,7 +847,7 @@ export class App {
 
     // Hover effects
     gigButton.addEventListener('mouseenter', () => {
-      gigButton.style.backgroundColor = THEME.PRIMARY_COLOR;
+      gigButton.style.backgroundColor = \"#99ccff\";
       gigButton.style.color = '#000000';
       gigButton.style.transform = 'translate(-50%, -50%) scale(1.05)';
       // Update image filter for better contrast on hover
@@ -857,7 +857,7 @@ export class App {
 
     gigButton.addEventListener('mouseleave', () => {
       gigButton.style.backgroundColor = '#111111';
-      gigButton.style.color = THEME.PRIMARY_COLOR;
+      gigButton.style.color = \"#99ccff\";
       gigButton.style.transform = 'translate(-50%, -50%) scale(1)';
       // Restore image filter for normal state
       const img = gigButton.querySelector('img');
@@ -993,13 +993,13 @@ export class App {
     // Agent count button hover effects
     [agentCountUpBtn, agentCountDownBtn].forEach(btn => {
       btn.addEventListener('mouseenter', () => {
-        btn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        btn.style.backgroundColor = \"#99ccff\";
         btn.style.color = '#000000';
       });
       
       btn.addEventListener('mouseleave', () => {
         btn.style.backgroundColor = 'transparent';
-        btn.style.color = THEME.PRIMARY_COLOR;
+        btn.style.color = \"#99ccff\";
       });
     });
     
@@ -1103,13 +1103,13 @@ export class App {
     // Connection distance button hover effects
     [connectionUpBtn, connectionDownBtn].forEach(btn => {
       btn.addEventListener('mouseenter', () => {
-        btn.style.backgroundColor = THEME.PRIMARY_COLOR;
+        btn.style.backgroundColor = \"#99ccff\";
         btn.style.color = '#000000';
       });
       
       btn.addEventListener('mouseleave', () => {
         btn.style.backgroundColor = 'transparent';
-        btn.style.color = THEME.PRIMARY_COLOR;
+        btn.style.color = \"#99ccff\";
       });
     });
     
@@ -1633,14 +1633,14 @@ export class App {
 
     // Add hover effects for hamburger button
     hamburgerBtn.addEventListener('mouseenter', () => {
-      hamburgerBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+      hamburgerBtn.style.backgroundColor = \"#99ccff\";
       hamburgerBtn.style.color = '#000000';
       hamburgerBtn.style.boxShadow = '0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5)';
     });
 
     hamburgerBtn.addEventListener('mouseleave', () => {
       hamburgerBtn.style.backgroundColor = '#111111';
-      hamburgerBtn.style.color = THEME.PRIMARY_COLOR;
+      hamburgerBtn.style.color = \"#99ccff\";
       hamburgerBtn.style.boxShadow = '0 0 15px rgba(153, 204, 255, 0.2), 2px 2px 4px rgba(0, 0, 0, 0.5)';
     });
 
@@ -1757,12 +1757,12 @@ export class App {
           document.querySelectorAll('.dropdown-menu-item').forEach(menuItemEl => {
             menuItemEl.classList.remove('active');
             menuItemEl.style.backgroundColor = '#111111';
-            menuItemEl.style.color = THEME.PRIMARY_COLOR;
+            menuItemEl.style.color = \"#99ccff\";
           });
           
           // Add active state to clicked menu item
           menuItem.classList.add('active');
-          menuItem.style.backgroundColor = THEME.PRIMARY_COLOR;
+          menuItem.style.backgroundColor = \"#99ccff\";
           menuItem.style.color = '#000000';
           
           // For radio window, update content dynamically
@@ -1810,7 +1810,7 @@ export class App {
 
       // Add hover effects matching hamburger button
       menuItem.addEventListener('mouseenter', () => {
-        menuItem.style.backgroundColor = THEME.PRIMARY_COLOR;
+        menuItem.style.backgroundColor = \"#99ccff\";
         menuItem.style.color = '#000000';
         menuItem.style.boxShadow = '0 0 25px rgba(153, 204, 255, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.5)';
         
@@ -1820,7 +1820,7 @@ export class App {
 
       menuItem.addEventListener('mouseleave', () => {
         menuItem.style.backgroundColor = '#111111';
-        menuItem.style.color = THEME.PRIMARY_COLOR;
+        menuItem.style.color = \"#99ccff\";
         menuItem.style.boxShadow = '0 0 15px rgba(153, 204, 255, 0.2), 2px 2px 4px rgba(0, 0, 0, 0.5)';
         
         // Hide custom tooltip
@@ -2159,7 +2159,7 @@ export class App {
 
       // Add hover effects
       item.addEventListener('mouseenter', () => {
-        item.style.borderColor = THEME.PRIMARY_COLOR;
+        item.style.borderColor = \"#99ccff\";
         item.style.background = 'rgba(153, 204, 255, 0.1)';
       });
 
@@ -2237,13 +2237,13 @@ export class App {
     // Close button hover effect
     closeBtn.addEventListener('mouseenter', () => {
       closeBtn.style.background = 'rgba(153, 204, 255, 0.2)';
-      closeBtn.style.borderColor = THEME.PRIMARY_COLOR;
+      closeBtn.style.borderColor = \"#99ccff\";
       closeBtn.style.transform = 'scale(1.1)';
     });
 
     closeBtn.addEventListener('mouseleave', () => {
       closeBtn.style.background = 'rgba(0, 0, 0, 0.8)';
-      closeBtn.style.borderColor = THEME.PRIMARY_COLOR;
+      closeBtn.style.borderColor = \"#99ccff\";
       closeBtn.style.transform = 'scale(1)';
     });
     
@@ -2647,7 +2647,7 @@ export class App {
 
       // Add hover effects
       item.addEventListener('mouseenter', () => {
-        item.style.borderColor = THEME.PRIMARY_COLOR;
+        item.style.borderColor = \"#99ccff\";
         item.style.background = 'rgba(153, 204, 255, 0.1)';
       });
 
@@ -3543,7 +3543,7 @@ export class App {
                  border: 1px solid #99ccff;
                "
                onmouseover="this.style.background='#66aaff'; this.style.borderColor='#66aaff'"
-               onmouseout="this.style.background=THEME.PRIMARY_COLOR; this.style.borderColor=THEME.PRIMARY_COLOR">
+               onmouseout="this.style.background=\"#99ccff\"; this.style.borderColor=\"#99ccff\"">
               🎛️ REGISTER FOR WORKSHOP
             </a>
           </div>
@@ -3714,7 +3714,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logo.svg?v=${Date.now()}" 
                  style="
@@ -3746,7 +3746,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/the_juncando/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
                  style="
@@ -3773,7 +3773,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/designst3in/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
                  style="
@@ -3800,7 +3800,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/television_dust/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
                  style="
@@ -3826,7 +3826,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/krishnamurthy/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
                  style="
@@ -3852,7 +3852,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
                  style="
@@ -3884,7 +3884,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/royville.png" 
                  style="
@@ -3911,7 +3911,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/quantum.climb/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/QuantumClimb.png" 
                  style="
@@ -3938,7 +3938,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/theinventory.in/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/Inventory_logo.png" 
                  style="
@@ -3965,7 +3965,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/promusicals/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/ProMusicals1.jpg" 
                  style="
@@ -3992,7 +3992,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/Chennai_Scene_Trans.png" 
                  style="
@@ -4018,7 +4018,7 @@ export class App {
             transition: all 0.2s;
             cursor: pointer;
           " onclick="window.open('https://www.instagram.com/auraimmerse/', '_blank')" 
-             onmouseover="this.style.borderColor=THEME.PRIMARY_COLOR; this.style.background='#2a2a2a'" 
+             onmouseover="this.style.borderColor=\"#99ccff\"; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/aura logo.png" 
                  style="
@@ -4051,7 +4051,7 @@ export class App {
     const tabButtons = document.querySelectorAll('#gig-tab, #workshop-tab');
     tabButtons.forEach(button => {
       button.style.background = '#333';
-      button.style.color = THEME.PRIMARY_COLOR;
+      button.style.color = \"#99ccff\";
     });
     
     // Show selected tab content
@@ -4063,7 +4063,7 @@ export class App {
     // Update selected tab button style
     const selectedButton = document.getElementById(tabName + '-tab');
     if (selectedButton) {
-      selectedButton.style.background = THEME.PRIMARY_COLOR;
+      selectedButton.style.background = \"#99ccff\";
       selectedButton.style.color = '#000';
     }
   }
@@ -4154,13 +4154,13 @@ export class App {
 
     // Close button hover effects
     closeButton.addEventListener('mouseenter', () => {
-      closeButton.style.backgroundColor = THEME.PRIMARY_COLOR;
+      closeButton.style.backgroundColor = \"#99ccff\";
       closeButton.style.color = '#000000';
     });
 
     closeButton.addEventListener('mouseleave', () => {
       closeButton.style.backgroundColor = 'transparent';
-      closeButton.style.color = THEME.PRIMARY_COLOR;
+      closeButton.style.color = \"#99ccff\";
     });
 
     // Close functionality
@@ -4375,7 +4375,7 @@ export class App {
                margin: 4px;
                box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
              "
-             onmouseover="this.style.borderStyle='inset'; this.style.transform='scale(1.05)'; this.style.borderColor=THEME.PRIMARY_COLOR;"
+             onmouseover="this.style.borderStyle='inset'; this.style.transform='scale(1.05)'; this.style.borderColor=\"#99ccff\";"
              onmouseout="this.style.borderStyle='outset'; this.style.transform='scale(1)'; this.style.borderColor='#555555';"
              onclick="window.omnivoidApp.openDocument('${article.filename}', '${article.title.replace(/'/g, '\\\'')}')"
              title="Click to read: ${article.title}">
@@ -4568,13 +4568,13 @@ export class App {
 
     // Close button hover effects
     closeButton.addEventListener('mouseenter', () => {
-      closeButton.style.backgroundColor = THEME.PRIMARY_COLOR;
+      closeButton.style.backgroundColor = \"#99ccff\";
       closeButton.style.color = '#000000';
     });
 
     closeButton.addEventListener('mouseleave', () => {
       closeButton.style.backgroundColor = 'transparent';
-      closeButton.style.color = THEME.PRIMARY_COLOR;
+      closeButton.style.color = \"#99ccff\";
     });
 
     // Close functionality
@@ -5212,7 +5212,7 @@ Let's create something extraordinary together.`
       thumbnail.addEventListener('mouseenter', () => {
         thumbnail.style.borderStyle = 'inset';
         thumbnail.style.transform = 'scale(1.05)';
-        thumbnail.style.borderColor = THEME.PRIMARY_COLOR;
+        thumbnail.style.borderColor = \"#99ccff\";
       });
       
       thumbnail.addEventListener('mouseleave', () => {
@@ -5320,13 +5320,13 @@ Let's create something extraordinary together.`
     `;
 
     closeBtn.addEventListener('mouseenter', () => {
-      closeBtn.style.backgroundColor = THEME.PRIMARY_COLOR;
+      closeBtn.style.backgroundColor = \"#99ccff\";
       closeBtn.style.color = '#000000';
     });
 
     closeBtn.addEventListener('mouseleave', () => {
       closeBtn.style.backgroundColor = '#333333';
-      closeBtn.style.color = THEME.PRIMARY_COLOR;
+      closeBtn.style.color = \"#99ccff\";
     });
 
     closeBtn.addEventListener('click', () => {
