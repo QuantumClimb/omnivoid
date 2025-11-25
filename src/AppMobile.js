@@ -2767,11 +2767,49 @@ export class App {
    * Create radio file explorer content
    */
   createRadioFileExplorer() {
-    console.log('🎵 Creating radio file explorer with lazy-loaded Mixcloud widget...');
+    console.log('🎵 Creating radio file explorer with Mixcloud playlist selector...');
+
+    // List of available Mixcloud playlists/shows
+    const mixcloudPlaylists = [
+      { name: 'All Shows', feed: '%2Fomnivoidlabs%2F', isProfile: true },
+      { name: 'Latest Mix', feed: '%2Fomnivoidlabs%2Flatest%2F', isProfile: false },
+      // Add more specific playlists here as they become available
+    ];
+
+    const playlistButtons = mixcloudPlaylists.map(playlist => `
+      <button 
+        class="mixcloud-playlist-btn" 
+        data-feed="${playlist.feed}"
+        style="
+          background: #111111;
+          border: 1px solid #99ccff;
+          color: #99ccff;
+          padding: 12px 20px;
+          margin: 5px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-family: 'Space Mono', monospace;
+          font-size: 12px;
+          transition: all 0.3s ease;
+          font-weight: bold;
+          letter-spacing: 0.5px;
+        "
+        ontouchstart="this.style.background='#99ccff'; this.style.color='#000000';"
+        ontouchend="this.style.background='#111111'; this.style.color='#99ccff';"
+      >
+        📻 ${playlist.name}
+      </button>
+    `).join('');
 
     const content = `
-      <!-- Full Mixcloud Widget Container -->
-      <div style="border: 1px inset #333333; padding: 8px; background: #0a0a0a; margin-bottom: 8px;">
+      <!-- Mixcloud Playlist Selector -->
+      <div style="border: 1px inset #333333; padding: 15px; background: #0a0a0a; margin-bottom: 8px;">
+        <div style="color: #99ccff; font-family: 'Space Mono', monospace; font-size: 14px; margin-bottom: 15px; font-weight: bold;">
+          🎵 SELECT TRANSMISSION
+        </div>
+        <div style="margin-bottom: 15px;">
+          ${playlistButtons}
+        </div>
         <div id="mixcloud-widget-container" style="
           width: 100%;
           height: 400px;
@@ -2789,22 +2827,22 @@ export class App {
             padding: 20px;
           ">
             <div style="margin-bottom: 10px;">🎵</div>
-            <div>Click to load Mixcloud player</div>
-            <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">Loading will start when window opens</div>
+            <div>Select a transmission above to start</div>
+            <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">Player will load when you click a button</div>
           </div>
         </div>
       </div>
     `;
 
-    console.log('🎵 Radio file explorer with lazy-loaded Mixcloud integration generated');
+    console.log('🎵 Radio file explorer with Mixcloud playlist selector generated');
     return content;
   }
 
   /**
    * Initialize Mixcloud widget and audio reactivity
    */
-  initializeMixcloudWidget() {
-    console.log('🎵 Initializing Mixcloud widget...');
+  initializeMixcloudWidget(feedUrl = '%2Fomnivoidlabs%2F') {
+    console.log(`🎵 Initializing Mixcloud widget with feed: ${feedUrl}`);
     
     // Initialize Mixcloud event tracking
     this.mixcloudEventsReceived = false;
@@ -2813,17 +2851,25 @@ export class App {
     const container = document.getElementById('mixcloud-widget-container');
     const placeholder = document.getElementById('mixcloud-placeholder');
     
-    if (container && placeholder) {
+    if (container) {
       console.log('✅ Mixcloud container found, creating iframe...');
       
-      // Remove placeholder
-      placeholder.remove();
+      // Remove placeholder if it exists
+      if (placeholder) {
+        placeholder.remove();
+      }
+      
+      // Remove existing iframe if present
+      const existingIframe = document.getElementById('mixcloud-player');
+      if (existingIframe) {
+        existingIframe.remove();
+      }
       
       // Create iframe
       const iframe = document.createElement('iframe');
       iframe.width = '100%';
       iframe.height = '100%';
-      iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
+      iframe.src = `https://www.mixcloud.com/widget/iframe/?feed=${feedUrl}&light=1&autoplay=0&classic=1`;
       iframe.setAttribute('frameborder', '0');
       iframe.id = 'mixcloud-player';
       iframe.style.border = 'none';
@@ -2852,14 +2898,41 @@ export class App {
         } else {
           console.log('⚠️ Mixcloud player iframe not found after creation, retrying...');
           // Retry after a short delay
-          setTimeout(() => this.initializeMixcloudWidget(), 1000);
+          setTimeout(() => this.initializeMixcloudWidget(feedUrl), 1000);
         }
       }, 500);
       
     } else {
       console.log('⚠️ Mixcloud container not found, retrying...');
       // Retry after a short delay
-      setTimeout(() => this.initializeMixcloudWidget(), 1000);
+      setTimeout(() => this.initializeMixcloudWidget(feedUrl), 1000);
+    }
+    
+    // Set up playlist button event listeners
+    this.setupPlaylistButtons();
+  }
+
+  /**
+   * Set up event listeners for playlist selection buttons
+   */
+  setupPlaylistButtons() {
+    const buttons = document.querySelectorAll('.mixcloud-playlist-btn');
+    for (const button of buttons) {
+      button.addEventListener('click', (e) => {
+        const feed = e.target.getAttribute('data-feed');
+        console.log(`🎵 Loading Mixcloud feed: ${feed}`);
+        
+        // Highlight selected button
+        for (const btn of buttons) {
+          btn.style.fontWeight = 'normal';
+          btn.style.boxShadow = 'none';
+        }
+        button.style.fontWeight = 'bold';
+        button.style.boxShadow = '0 0 10px rgba(153, 204, 255, 0.5)';
+        
+        // Load the selected feed
+        this.initializeMixcloudWidget(feed);
+      });
     }
   }
 
