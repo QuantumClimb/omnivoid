@@ -1717,7 +1717,7 @@ export class App {
     }
 
     // Create dropdown menu items
-    for (const [index, item] of menuItems.entries()) {
+    for (const item of menuItems) {
       const menuItem = document.createElement('div');
       menuItem.className = 'dropdown-menu-item';
       
@@ -2304,7 +2304,7 @@ export class App {
     document.body.appendChild(modal);
     
     // Force recalculation of positioning to ensure it's centered
-    modal.offsetHeight; // Trigger reflow
+    void modal.offsetHeight; // Trigger reflow
     
     // Verify the modal is properly positioned
     console.log('🎯 Modal positioning verification:', {
@@ -2319,7 +2319,7 @@ export class App {
     
     // Double-check positioning after a brief delay
     setTimeout(() => {
-      if (modal && modal.parentNode) {
+      if (modal?.parentNode) {
         // Re-enforce independence
         this.forceModalIndependence(modal);
         
@@ -2369,7 +2369,7 @@ export class App {
     document.body.style.overflow = 'hidden';
     
     // Add global close function for debugging
-    window.closeYouTubeModal = () => {
+    globalThis.closeYouTubeModal = () => {
       console.log('🌐 Global close function called');
       this.closeModal(modal);
     };
@@ -2392,8 +2392,8 @@ export class App {
     setTimeout(() => {
       try {
         // Remove the modal
-        if (modal && modal.parentNode) {
-          modal.parentNode.removeChild(modal);
+        if (modal?.parentNode) {
+          modal.remove();
           console.log('✅ Modal removed from DOM');
         } else if (modal && modal.remove) {
           modal.remove();
@@ -2412,13 +2412,13 @@ export class App {
         }
         
         // Force a reflow to ensure cleanup
-        document.body.offsetHeight;
+        void document.body.offsetHeight;
         
       } catch (error) {
         console.error('❌ Error closing modal:', error);
         // Fallback: force remove if normal removal fails
-        if (modal && modal.parentNode) {
-          modal.parentNode.removeChild(modal);
+        if (modal?.parentNode) {
+          modal.remove();
         }
         document.body.style.overflow = '';
       }
@@ -2430,9 +2430,9 @@ export class App {
    */
   closeAllYouTubeModals() {
     const modals = document.querySelectorAll('.youtube-modal');
-    modals.forEach(modal => {
+    for (const modal of modals) {
       this.closeModal(modal);
-    });
+    }
     
     // Restore body scroll
     document.body.style.overflow = '';
@@ -2447,24 +2447,24 @@ export class App {
     
     // Remove any stray modal elements that might have incorrect positioning
     const strayModals = document.querySelectorAll('[class*="modal"], [class*="player"]');
-    strayModals.forEach(element => {
+    for (const element of strayModals) {
       if (element.classList.contains('youtube-modal') || 
           element.classList.contains('youtube-player-container')) {
         element.remove();
       }
-    });
+    }
     
     // Ensure body scroll is restored
     document.body.style.overflow = '';
     
     // Reset any parent transforms that might be affecting positioning
     const retroWindows = document.querySelectorAll('.retro-window');
-    retroWindows.forEach(window => {
+    for (const window of retroWindows) {
       if (window.style.transform && window.style.transform !== 'none') {
         console.log('🔄 Resetting RetroWindow transform:', window.style.transform);
         window.style.transform = 'none';
       }
-    });
+    }
     
     console.log('🧹 Modal state reset completed');
   }
@@ -2657,7 +2657,7 @@ export class App {
   addLabsVideoClickHandlers() {
     const videoItems = document.querySelectorAll('.labs-video-item');
     
-    videoItems.forEach(item => {
+    for (const item of videoItems) {
       item.addEventListener('click', () => {
         const videoId = item.dataset.videoId;
         this.playYouTubeVideo(videoId);
@@ -2840,7 +2840,6 @@ export class App {
       iframe.width = '100%';
       iframe.height = '100%';
       iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
-      iframe.frameBorder = '0';
       iframe.id = 'mixcloud-player';
       iframe.style.border = 'none';
       iframe.allow = 'autoplay';
@@ -3145,7 +3144,7 @@ export class App {
     console.log('🎵 Creating test oscillator for visual effects...');
     
     try {
-      if (this.audioManager && this.audioManager.audioContext) {
+      if (this.audioManager?.audioContext) {
         // Create a simple oscillator
         const oscillator = this.audioManager.audioContext.createOscillator();
         const gainNode = this.audioManager.audioContext.createGain();
@@ -3203,7 +3202,7 @@ export class App {
     try {
       console.log('🔗 Connecting iframe audio to our audio context...');
       
-      if (this.audioManager && this.audioManager.audioContext) {
+      if (this.audioManager?.audioContext) {
         // Create a media stream source from the audio element
         const stream = audioElement.captureStream();
         const source = this.audioManager.audioContext.createMediaStreamSource(stream);
@@ -3291,7 +3290,7 @@ export class App {
     }
     
     // Frequency Data Test
-    if (this.audioManager && this.audioManager.analyser) {
+    if (this.audioManager?.analyser) {
       try {
         const dataArray = new Float32Array(this.audioManager.analyser.frequencyBinCount);
         this.audioManager.analyser.getFloatFrequencyData(dataArray);
@@ -3324,14 +3323,14 @@ export class App {
     debugText += `🎵 Audio Source: ${this.audioProxy.source ? 'Connected' : 'Not Connected'}<br>`;
     debugText += `🎵 Iframe Source: ${this.audioProxy.iframeSource ? 'Connected' : 'Not Connected'}<br>`;
     debugText += `🎵 Test Oscillator: ${this.audioProxy.testOscillator ? 'Active' : 'Not Active'}<br>`;
-    debugText += `🎵 Main Analyser: ${this.audioManager && this.audioManager.analyser ? 'Available' : 'Not Available'}<br>`;
+    debugText += `🎵 Main Analyser: ${this.audioManager?.analyser ? 'Available' : 'Not Available'}<br>`;
     
     // Mixcloud Widget Status
     debugText += `🎵 Mixcloud Events: ${this.mixcloudEventsReceived ? 'Received' : 'Not Received'}<br>`;
     debugText += `🎵 Widget Status: ${this.mixcloudEventsReceived ? 'Working' : 'May have issues'}<br>`;
     
     // Browser Capabilities
-    debugText += `🎵 Web Audio API: ${window.AudioContext ? 'Supported' : 'Not Supported'}<br>`;
+    debugText += `🎵 Web Audio API: ${globalThis.AudioContext ? 'Supported' : 'Not Supported'}<br>`;
     debugText += `🎵 Mixcloud Only: No microphone access<br>`;
     
     debugInfo.innerHTML = debugText;
@@ -3371,7 +3370,7 @@ export class App {
    * Update radio window content
    */
   updateRadioWindow() {
-    if (this.retroWindows && this.retroWindows.radio) {
+    if (this.retroWindows?.radio) {
       const newContent = this.createRadioFileExplorer();
       this.retroWindows.radio.setContent(newContent);
     }
@@ -3393,7 +3392,7 @@ export class App {
     // Generate image descriptions (you can customize these)
     const getImageDescription = (filename) => {
       const imageNum = filename.replace('IMG', '').replace('.png', '');
-      return `OMNIVOID Visual ${parseInt(imageNum) + 1} - Digital art piece exploring the intersection of technology and consciousness through abstract visual elements.`;
+      return `OMNIVOID Visual ${Number.parseInt(imageNum) + 1} - Digital art piece exploring the intersection of technology and consciousness through abstract visual elements.`;
     };
 
     // Create thumbnail grid HTML
@@ -3415,7 +3414,7 @@ export class App {
              "
              onmouseover="this.style.border='2px solid #99ccff'; this.style.padding='1px';"
              onmouseout="this.style.border='1px solid #333333'; this.style.padding='2px';"
-             onclick="window.omnivoidApp.expandGalleryImage('${filename}', '${getImageDescription(filename).replace(/'/g, '\\\'')}')"
+             onclick="globalThis.omnivoidApp.expandGalleryImage('${filename}', '${getImageDescription(filename).replaceAll("'", '\\\'')}')"
              title="Click to view full image">
           <img src="public/gallery/${filename}" 
                alt="${filename}"
@@ -4061,16 +4060,16 @@ export class App {
   switchGigTab(tabName) {
     // Hide all tab contents
     const tabContents = document.querySelectorAll('.gig-tab-content');
-    tabContents.forEach(content => {
+    for (const content of tabContents) {
       content.style.display = 'none';
-    });
+    }
     
     // Reset all tab button styles
     const tabButtons = document.querySelectorAll('#gig-tab, #workshop-tab');
-    tabButtons.forEach(button => {
+    for (const button of tabButtons) {
       button.style.background = '#333';
       button.style.color = "#99ccff";
-    });
+    }
     
     // Show selected tab content
     const selectedContent = document.getElementById(tabName + '-content');
@@ -4093,7 +4092,7 @@ export class App {
     // Close any existing popup first
     const existingPopup = document.querySelector('.gallery-popup-overlay');
     if (existingPopup) {
-      document.body.removeChild(existingPopup);
+      existingPopup.remove();
     }
 
     // Create popup overlay
@@ -4186,7 +4185,7 @@ export class App {
       popup.style.animation = 'fadeOut 0.3s ease';
       setTimeout(() => {
         if (document.body.contains(popup)) {
-          document.body.removeChild(popup);
+          popup.remove();
         }
       }, 300);
     };
@@ -4395,7 +4394,7 @@ export class App {
              "
              onmouseover="this.style.borderStyle='inset'; this.style.transform='scale(1.05)'; this.style.borderColor='#99ccff';"
              onmouseout="this.style.borderStyle='outset'; this.style.transform='scale(1)'; this.style.borderColor='#555555';"
-             onclick="window.omnivoidApp.openDocument('${article.filename}', '${article.title.replace(/'/g, '\\\'')}')"
+             onclick="globalThis.omnivoidApp.openDocument('${article.filename}', '${article.title.replaceAll("'", '\\\'')}')"
              title="Click to read: ${article.title}">
           
           <!-- Notepad header lines -->
@@ -4490,7 +4489,7 @@ export class App {
     // Close any existing document popup first
     const existingPopup = document.querySelector('.document-popup-overlay');
     if (existingPopup) {
-      document.body.removeChild(existingPopup);
+      existingPopup.remove();
     }
 
     // Fetch document content
@@ -4600,7 +4599,7 @@ export class App {
       popup.style.animation = 'fadeOut 0.3s ease';
       setTimeout(() => {
         if (document.body.contains(popup)) {
-          document.body.removeChild(popup);
+          popup.remove();
         }
       }, 300);
     };
@@ -4719,9 +4718,9 @@ export class App {
     console.log('🔗 Master Folder URL:', this.googleDriveConfig.getFolderUrl());
     
     // Test folder URLs
-    Object.entries(this.googleDriveConfig.FOLDERS).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(this.googleDriveConfig.FOLDERS)) {
       console.log(`📂 ${key}: ${value}`);
-    });
+    }
     
           // Test Mixcloud integration
       console.log('🎵 Mixcloud integration ready for audio streaming');
@@ -4877,7 +4876,7 @@ export class App {
    */
   showMobileControls() {
     // Create mobile controls if they don't exist
-    if (!this.minimalControls) {
+    if (this.minimalControls) {
       this.createMinimalControls();
     } else {
       // Show existing mobile controls
@@ -4939,17 +4938,17 @@ export class App {
     
     // Force remove any remaining modal elements
     const allModals = document.querySelectorAll('.youtube-modal, .youtube-player-container');
-    allModals.forEach(modal => {
+    for (const modal of allModals) {
       try {
-        if (modal && modal.parentNode) {
-          modal.parentNode.removeChild(modal);
-        } else if (modal && modal.remove) {
+        if (modal?.parentNode) {
+          modal.remove();
+        } else if (modal?.remove) {
           modal.remove();
         }
       } catch (error) {
         console.error('Error removing modal:', error);
       }
-    });
+    }
     
     // Restore body scroll
     document.body.style.overflow = '';
@@ -5161,7 +5160,7 @@ Let's create something extraordinary together.`
     thumbnailsContainer.innerHTML = '';
     
     // Add PDF thumbnails
-    this.pdfResearchPapers.forEach((paper, index) => {
+    for (const [index, paper] of this.pdfResearchPapers.entries()) {
       const thumbnail = document.createElement('div');
       thumbnail.className = 'pdf-thumbnail';
       thumbnail.style.cssText = `
@@ -5246,7 +5245,7 @@ Let's create something extraordinary together.`
       
       thumbnail.title = `Click to view: ${paper.title}`;
       thumbnailsContainer.appendChild(thumbnail);
-    });
+    }
   }
 
   /**
@@ -5258,7 +5257,7 @@ Let's create something extraordinary together.`
     // Close any existing popup first
     const existingPopup = document.querySelector('.pdf-viewer-overlay');
     if (existingPopup) {
-      document.body.removeChild(existingPopup);
+      existingPopup.remove();
     }
 
     // Create PDF viewer overlay
@@ -5348,7 +5347,7 @@ Let's create something extraordinary together.`
     });
 
     closeBtn.addEventListener('click', () => {
-      document.body.removeChild(popup);
+      popup.remove();
     });
 
     header.appendChild(titleElement);
@@ -5438,14 +5437,14 @@ Let's create something extraordinary together.`
     // Close on background click
     popup.addEventListener('click', (e) => {
       if (e.target === popup) {
-        document.body.removeChild(popup);
+        popup.remove();
       }
     });
 
     // Close on Escape key
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
-        document.body.removeChild(popup);
+        popup.remove();
         document.removeEventListener('keydown', handleEscape);
       }
     };
