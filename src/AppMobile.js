@@ -2827,7 +2827,7 @@ export class App {
       iframe.setAttribute('frameborder', '0');
       iframe.id = 'mixcloud-player';
       iframe.style.border = 'none';
-      iframe.allow = 'autoplay';
+      iframe.allow = 'autoplay; encrypted-media';
       iframe.title = 'Mixcloud Player';
       
       // Add iframe to container

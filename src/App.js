@@ -2842,7 +2842,7 @@ export class App {
       iframe.src = 'https://www.mixcloud.com/widget/iframe/?feed=%2Froydipankar8%2F&light=1&autoplay=0&classic=1';
       iframe.id = 'mixcloud-player';
       iframe.style.border = 'none';
-      iframe.allow = 'autoplay';
+      iframe.allow = 'autoplay; encrypted-media';
       iframe.title = 'Mixcloud Player';
       
       // Add iframe to container
