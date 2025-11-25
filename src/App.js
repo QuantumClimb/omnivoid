@@ -1714,7 +1714,7 @@ export class App {
       );
       
       console.log(`✅ RetroWindow created for: ${item.window}`);
-    });
+    }
 
     // Create dropdown menu items
     for (const [index, item] of menuItems.entries()) {
