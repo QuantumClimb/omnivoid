@@ -707,13 +707,13 @@ export class App {
     
     agentToggleBtn.addEventListener('click', () => {
       const isVisible = this.agentSystem.toggleVisibility();
-      agentToggleBtn.style.background = isVisible ? \"#99ccff\" : 'transparent';
-      agentToggleBtn.style.color = isVisible ? '#000000' : \"#99ccff\";
+      agentToggleBtn.style.background = isVisible ? '#99ccff' : 'transparent';
+      agentToggleBtn.style.color = isVisible ? '#000000' : '#99ccff';
       
       // Update SVG stroke color
       const svg = agentToggleBtn.querySelector('svg');
       if (svg) {
-        svg.style.stroke = isVisible ? '#000000' : \"#99ccff\";
+        svg.style.stroke = isVisible ? '#000000' : '#99ccff';
       }
     });
     
