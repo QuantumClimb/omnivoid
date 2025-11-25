@@ -2805,22 +2805,39 @@ export class App {
     if (container) {
       console.log('✅ Mixcloud container found, creating mini widgets...');
       
-      // Create mini widget iframe for the full feed (all shows)
-      const iframe = document.createElement('iframe');
-      iframe.width = '100%';
-      iframe.height = '60';
-      iframe.src = 'https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=%2Fomnivoidlabs%2F';
-      iframe.frameBorder = '0';
-      iframe.allow = 'encrypted-media; fullscreen; autoplay; idle-detection; speaker-selection; web-share;';
-      iframe.style.cssText = 'border: none; margin-bottom: 10px;';
+      // List of all Mixcloud show URLs
+      const mixcloudShows = [
+        'https://www.mixcloud.com/omnivoidlabs/rajkanwar-sodhi-full-set-omnivoid-specials-la-nuit-blanche/',
+        'https://www.mixcloud.com/omnivoidlabs/sinhwave-full-set-omnivoid-specials-la-nuit-blanche/',
+        'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-omnivoid-specials-1-la-nuit-blanche/',
+        'https://www.mixcloud.com/omnivoidlabs/the-broadway-addicts-full-set-live-at-omnivoid-ed-002/',
+        'https://www.mixcloud.com/omnivoidlabs/dakta-dub-vinyl-only-full-set-live-at-omnivoid-ed-002/',
+        'https://www.mixcloud.com/omnivoidlabs/gooth-full-set-live-at-omnivoid-ed-001/',
+        'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-live-at-omnivoid-ed001/',
+        'https://www.mixcloud.com/omnivoidlabs/47k-sp-404-set-live-at-omnivoid-ed001-13072025/'
+      ];
       
       // Clear loading message
       container.innerHTML = '';
       
-      // Add widget to container
-      container.appendChild(iframe);
+      // Create a mini widget for each show
+      for (const showUrl of mixcloudShows) {
+        // Extract the feed path from the full URL
+        // Format: /omnivoidlabs/show-name/ -> %2Fomnivoidlabs%2Fshow-name%2F
+        const feedPath = showUrl.replace('https://www.mixcloud.com', '').replace(/\//g, '%2F');
+        
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%';
+        iframe.height = '60';
+        iframe.src = `https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=${feedPath}`;
+        iframe.frameBorder = '0';
+        iframe.allow = 'encrypted-media; fullscreen; autoplay; idle-detection; speaker-selection; web-share;';
+        iframe.style.cssText = 'border: none; margin-bottom: 10px;';
+        
+        container.appendChild(iframe);
+      }
       
-      console.log('✅ Mixcloud mini widget loaded');
+      console.log(`✅ ${mixcloudShows.length} Mixcloud mini widgets loaded`);
       
     } else {
       console.log('⚠️ Mixcloud container not found, retrying...');
