@@ -82,6 +82,17 @@ export class App {
   }
 
   /**
+   * Escape HTML characters to prevent XSS and display special characters correctly
+   * @param {string} text - Text to escape
+   * @returns {string} Escaped text
+   */
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
    * Initialize the OMNIVOID application
    */
   async initializeComponents() {
@@ -2684,8 +2695,8 @@ export class App {
             <h3 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #99ccff;">
               ${this.conundrumContent.title}
             </h3>
-            <div style="font-size: 11px; color: #99ccff; line-height: 1.4;">
-              ${this.conundrumContent.content.replace(/\n/g, '<br>')}
+            <div style="font-size: 11px; color: #99ccff; line-height: 1.4; white-space: pre-wrap;">
+              ${this.escapeHtml(this.conundrumContent.content)}
             </div>
           </div>`;
 
@@ -3506,7 +3517,7 @@ export class App {
           
           <!-- Workshop Poster -->
           <div style="text-align: center; margin: 12px 0;">
-            <img src="public/gigs/workshop.jpg?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3595,7 +3606,7 @@ export class App {
           display: block;
         ">
           <div style="text-align: center; margin-bottom: 12px;">
-            <img src="public/gigs/gig.png" alt="OMNIVOID Live Gig" style="
+            <img src="public/gigs/gig.png?v=${Date.now()}" alt="OMNIVOID Live Gig" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -5017,7 +5028,7 @@ export class App {
       console.log('📁 File path: ./public/links/conundrum.txt');
       
       // Read the conundrum.txt file from the public/links folder
-      const content = await readPublicFile('./public/links/conundrum.txt');
+      const content = await readPublicFile('./public/links/conundrum.txt?t=' + Date.now());
       
       console.log('📄 Raw content received:', content ? 'YES' : 'NO');
       console.log('📄 Content length:', content ? content.length : 0);
