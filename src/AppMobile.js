@@ -269,7 +269,6 @@ export class App {
     this.starfield.setVisibility(true);
     
     // Hide other advanced layers
-    this.teslaCoil.setVisibility(false);
     this.asciiTunnel.setVisibility(false);
     this.solarSystem.setVisibility(false);
     this.polygonEcho.setVisibility(false);
