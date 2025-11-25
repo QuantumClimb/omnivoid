@@ -634,7 +634,7 @@ export class App {
         console.log('🎨 New random colors generated');
         
         // Also randomize polygon echo if it's visible
-        if (this.polygonEcho && this.polygonEcho.isVisible) {
+        if (this.polygonEcho?.isVisible) {
           this.polygonEcho.randomize();
           console.log('⬟ Polygon echo also randomized!');
         }
@@ -741,16 +741,16 @@ export class App {
     const allButtons = document.querySelectorAll('.latest-gig-button');
     console.log(`🗑️ Found ${allButtons.length} buttons to remove globally`);
     
-    allButtons.forEach((button, index) => {
+    for (const [index, button] of Array.from(allButtons).entries()) {
       console.log(`🗑️ Globally removing button ${index + 1}:`, button);
       if (button.parentNode) {
-        button.parentNode.removeChild(button);
+        button.remove();
       }
-    });
+    }
     
     // Clear any global references
-    if (window.omnivoidApp) {
-      window.omnivoidApp.latestGigButton = null;
+    if (globalThis.omnivoidApp) {
+      globalThis.omnivoidApp.latestGigButton = null;
     }
     
     // Verify global cleanup
@@ -767,19 +767,19 @@ export class App {
     // Remove all existing latest gig buttons (only these were causing duplicates)
     const existingButtons = document.querySelectorAll('.latest-gig-button');
     console.log(`🗑️ Found ${existingButtons.length} existing latest gig buttons to remove`);
-    existingButtons.forEach((button, index) => {
+    for (const [index, button] of Array.from(existingButtons).entries()) {
       console.log(`🗑️ Removing latest gig button ${index + 1}:`, button);
       if (button.parentNode) {
-        button.parentNode.removeChild(button);
+        button.remove();
       }
-    });
+    }
     
     // Reset the latest gig button reference
     this.latestGigButton = null;
     
     // Also clean up any global references
-    if (window.omnivoidApp && window.omnivoidApp.latestGigButton) {
-      window.omnivoidApp.latestGigButton = null;
+    if (globalThis.omnivoidApp?.latestGigButton) {
+      globalThis.omnivoidApp.latestGigButton = null;
     }
     
     // Verify cleanup
@@ -792,7 +792,7 @@ export class App {
    */
   createLatestGigButton() {
     console.log('🔍 DEBUG: createLatestGigButton() called');
-    console.log('🔍 DEBUG: Stack trace:', new Error().stack);
+    console.log('🔍 DEBUG: Stack trace:', new Error('Stack trace for createLatestGigButton').stack);
     
     // Clean up any existing buttons first
     this.cleanupUIElements();
@@ -991,7 +991,7 @@ export class App {
     agentCountDisplay.textContent = currentAgentCount;
     
     // Agent count button hover effects
-    [agentCountUpBtn, agentCountDownBtn].forEach(btn => {
+    for (const btn of [agentCountUpBtn, agentCountDownBtn]) {
       btn.addEventListener('mouseenter', () => {
         btn.style.backgroundColor = '#99ccff';
         btn.style.color = '#000000';
@@ -1001,7 +1001,7 @@ export class App {
         btn.style.backgroundColor = 'transparent';
         btn.style.color = '#99ccff';
       });
-    });
+    }
     
     // Agent count control logic
     agentCountUpBtn.addEventListener('click', () => {
@@ -1101,7 +1101,7 @@ export class App {
     connectionDisplay.textContent = currentConnectionDistance;
     
     // Connection distance button hover effects
-    [connectionUpBtn, connectionDownBtn].forEach(btn => {
+    for (const btn of [connectionUpBtn, connectionDownBtn]) {
       btn.addEventListener('mouseenter', () => {
         btn.style.backgroundColor = '#99ccff';
         btn.style.color = '#000000';
@@ -1111,7 +1111,7 @@ export class App {
         btn.style.backgroundColor = 'transparent';
         btn.style.color = '#99ccff';
       });
-    });
+    }
     
     // Connection distance control logic
     connectionUpBtn.addEventListener('click', () => {
