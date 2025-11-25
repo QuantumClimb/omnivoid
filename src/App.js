@@ -651,7 +651,7 @@ export class App {
         console.log('🎨 New random colors generated');
         
         // Also randomize polygon echo if it's visible
-        if (this.polygonEcho && this.polygonEcho.isVisible) {
+        if (this.polygonEcho?.isVisible) {
           this.polygonEcho.randomize();
           console.log('⬟ Polygon echo also randomized!');
         }
@@ -975,7 +975,7 @@ export class App {
     agentCountDisplay.textContent = currentAgentCount;
     
     // Agent count button hover effects
-    [agentCountUpBtn, agentCountDownBtn].forEach(btn => {
+    for (const btn of [agentCountUpBtn, agentCountDownBtn]) {
       btn.addEventListener('mouseenter', () => {
         btn.style.backgroundColor = "#99ccff";
         btn.style.color = '#000000';
@@ -985,7 +985,7 @@ export class App {
         btn.style.backgroundColor = 'transparent';
         btn.style.color = "#99ccff";
       });
-    });
+    }
     
     // Agent count control logic
     agentCountUpBtn.addEventListener('click', () => {
@@ -1085,7 +1085,7 @@ export class App {
     connectionDisplay.textContent = currentConnectionDistance;
     
     // Connection distance button hover effects
-    [connectionUpBtn, connectionDownBtn].forEach(btn => {
+    for (const btn of [connectionUpBtn, connectionDownBtn]) {
       btn.addEventListener('mouseenter', () => {
         btn.style.backgroundColor = "#99ccff";
         btn.style.color = '#000000';
@@ -1095,7 +1095,7 @@ export class App {
         btn.style.backgroundColor = 'transparent';
         btn.style.color = "#99ccff";
       });
-    });
+    }
     
     // Connection distance control logic
     connectionUpBtn.addEventListener('click', () => {
@@ -1695,7 +1695,7 @@ export class App {
 
     // Create retro windows for each menu item
     this.retroWindows = {};
-    menuItems.forEach(item => {
+    for (const item of menuItems) {
       console.log(`🪟 Creating RetroWindow for: ${item.text} (${item.window})`);
       const windowContent = this.getWindowContent(item.window);
       console.log(`📄 Content length for ${item.window}: ${windowContent.length}`);
@@ -1717,12 +1717,9 @@ export class App {
     });
 
     // Create dropdown menu items
-    menuItems.forEach((item, index) => {
+    for (const [index, item] of menuItems.entries()) {
       const menuItem = document.createElement('div');
       menuItem.className = 'dropdown-menu-item';
-      
-      // Check if desktop
-      const isDesktop = window.innerWidth >= 768;
       
       // Show custom icons or fallback to text
       if (item.isImage) {
@@ -1775,11 +1772,11 @@ export class App {
           this.resetModalState();
           
           // Remove active state from all menu items
-          document.querySelectorAll('.dropdown-menu-item').forEach(menuItemEl => {
+          for (const menuItemEl of document.querySelectorAll('.dropdown-menu-item')) {
             menuItemEl.classList.remove('active');
             menuItemEl.style.backgroundColor = '#111111';
             menuItemEl.style.color = "#99ccff";
-          });
+          }
           
           // Add active state to clicked menu item
           menuItem.classList.add('active');
@@ -1929,7 +1926,7 @@ export class App {
       hamburgerBtnInDOM: document.body.contains(hamburgerBtn),
       dropdownMenuInDOM: document.body.contains(dropdownMenu),
       hamburgerBtnVisible: hamburgerBtn.offsetParent !== null,
-      hamburgerBtnStyle: window.getComputedStyle(hamburgerBtn).display
+      hamburgerBtnStyle: globalThis.getComputedStyle(hamburgerBtn).display
     });
   }
 
@@ -2172,7 +2169,7 @@ export class App {
   addTransmissionClickHandlers() {
     const transmissionItems = document.querySelectorAll('.transmission-item');
     
-    transmissionItems.forEach(item => {
+    for (const item of transmissionItems) {
       item.addEventListener('click', () => {
         const videoId = item.dataset.videoId;
         this.playYouTubeVideo(videoId);
@@ -2199,7 +2196,7 @@ export class App {
     
     // Remove any existing modals first
     const existingModals = document.querySelectorAll('.youtube-modal');
-    existingModals.forEach(modal => modal.remove());
+    for (const modal of existingModals) modal.remove();
     
     // CRITICAL: On desktop, we need to bypass RetroWindow positioning
     // Check if we're in a RetroWindow context and force body positioning
