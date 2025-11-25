@@ -1828,7 +1828,7 @@ export class App {
       });
 
       dropdownMenu.appendChild(menuItem);
-    });
+    }
 
     // Dropdown toggle functions
     const showDropdown = () => {
