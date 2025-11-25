@@ -738,7 +738,6 @@ export class App {
     controlsContainer.appendChild(asciiBtn);
     controlsContainer.appendChild(solarBtn);
     controlsContainer.appendChild(polygonBtn);
-    controlsContainer.appendChild(teslaBtn);
     controlsContainer.appendChild(themeBtn);
     
     document.body.appendChild(controlsContainer);
