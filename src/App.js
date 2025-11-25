@@ -4876,7 +4876,7 @@ export class App {
    */
   showMobileControls() {
     // Create mobile controls if they don't exist
-    if (this.minimalControls) {
+    if (!this.minimalControls) {
       this.createMinimalControls();
     } else {
       // Show existing mobile controls
