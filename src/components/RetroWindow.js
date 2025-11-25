@@ -1,9 +1,8 @@
 import { Component } from './Base.js';
-import THEME from '../config/theme.js';
 
 /**
  * RetroWindow - OMNIVOID-styled floating window component
- * Dark theme with red accent aesthetic
+ * Dark theme with light blue accent aesthetic
  */
 export class RetroWindow extends Component {
   constructor(id, title, content = '', onClose = null) {
@@ -71,9 +70,9 @@ export class RetroWindow extends Component {
       height: ${isDesktop ? '360px' : '70vh'};
       max-height: 80vh;
       background-color: #111111;
-      border: 1px solid ${THEME.PRIMARY_COLOR};
+      border: 1px solid #99ccff;
       box-shadow: 
-        0 0 20px rgba(255, 0, 0, 0.2),
+        0 0 20px rgba(153, 204, 255, 0.2),
         4px 4px 8px rgba(0, 0, 0, 0.5);
       font-family: 'Space Mono', monospace;
       font-size: ${isDesktop ? '12px' : '14px'};
@@ -120,8 +119,8 @@ export class RetroWindow extends Component {
       width: 24px;
       height: 24px;
       background-color: transparent;
-      color: ${THEME.PRIMARY_COLOR};
-      border: 1px solid ${THEME.PRIMARY_COLOR};
+      color: #99ccff;
+      border: 1px solid #99ccff;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
@@ -141,7 +140,7 @@ export class RetroWindow extends Component {
     this.body.style.cssText = `
       height: calc(100% - 34px);
       background-color: #000000;
-      border: 1px solid ${THEME.PRIMARY_COLOR};
+      border: 1px solid #99ccff;
       margin: 1px;
       overflow: auto;
       padding: 15px;
@@ -210,13 +209,13 @@ export class RetroWindow extends Component {
 
     // Close button hover effects - OMNIVOID style
     this.closeButton.addEventListener('mouseenter', () => {
-      this.closeButton.style.backgroundColor = THEME.PRIMARY_COLOR;
+      this.closeButton.style.backgroundColor = '#99ccff';
       this.closeButton.style.color = '#000000';
     });
 
     this.closeButton.addEventListener('mouseleave', () => {
       this.closeButton.style.backgroundColor = 'transparent';
-      this.closeButton.style.color = THEME.PRIMARY_COLOR;
+      this.closeButton.style.color = '#99ccff';
     });
 
     this.closeButton.addEventListener('mousedown', () => {
