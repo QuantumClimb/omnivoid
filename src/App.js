@@ -2783,82 +2783,165 @@ export class App {
    * Create radio file explorer content
    */
   createRadioFileExplorer() {
-    console.log('🎵 Creating radio file explorer with Mixcloud mini widgets...');
+    console.log('🎵 Creating radio file explorer with navigation controls...');
 
     const content = `
-      <!-- Mixcloud Mini Widgets List -->
+      <!-- Mixcloud Player with Navigation -->
       <div style="border: 1px inset #333333; padding: 15px; background: #0a0a0a; margin-bottom: 8px;">
         <div style="color: #99ccff; font-family: 'Space Mono', monospace; font-size: 14px; margin-bottom: 15px; font-weight: bold;">
           🎵 OMNIVOID LABS TRANSMISSIONS
         </div>
-        <div id="mixcloud-widgets-container" style="
+        
+        <!-- Navigation Controls -->
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+          <button id="mixcloud-prev-btn" style="
+            background: #111111;
+            border: 1px solid #99ccff;
+            color: #99ccff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+          "
+          onmouseover="this.style.background='#99ccff'; this.style.color='#000000';"
+          onmouseout="this.style.background='#111111'; this.style.color='#99ccff';">
+            ◀ PREVIOUS
+          </button>
+          
+          <div id="mixcloud-track-info" style="
+            flex: 1;
+            color: #99ccff;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            text-align: center;
+            padding: 5px;
+          ">
+            Track 1 of 8
+          </div>
+          
+          <button id="mixcloud-next-btn" style="
+            background: #111111;
+            border: 1px solid #99ccff;
+            color: #99ccff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+          "
+          onmouseover="this.style.background='#99ccff'; this.style.color='#000000';"
+          onmouseout="this.style.background='#111111'; this.style.color='#99ccff';">
+            NEXT ▶
+          </button>
+        </div>
+        
+        <!-- Player Container -->
+        <div id="mixcloud-player-container" style="
           width: 100%;
           background: #1a1a1a;
           border: 1px solid #333;
-          padding: 10px;
-          max-height: 600px;
-          overflow-y: auto;
         ">
           <div style="color: #999; font-family: 'Space Mono', monospace; font-size: 12px; text-align: center; padding: 20px;">
-            Loading playlists...
+            Loading player...
           </div>
         </div>
       </div>
     `;
 
-    console.log('🎵 Radio file explorer with Mixcloud mini widgets generated');
+    console.log('🎵 Radio file explorer with navigation controls generated');
     return content;
   }
 
   /**
-   * Initialize Mixcloud widget - load all playlists as mini widgets
+   * Initialize Mixcloud widget with navigation controls
    */
   initializeMixcloudWidget() {
-    console.log('🎵 Initializing Mixcloud mini widgets...');
+    console.log('🎵 Initializing Mixcloud player with navigation...');
     
-    const container = document.getElementById('mixcloud-widgets-container');
+    // List of all Mixcloud show URLs
+    this.mixcloudShows = [
+      { url: 'https://www.mixcloud.com/omnivoidlabs/rajkanwar-sodhi-full-set-omnivoid-specials-la-nuit-blanche/', name: 'Rajkanwar Sodhi - La Nuit Blanche' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/sinhwave-full-set-omnivoid-specials-la-nuit-blanche/', name: 'Sinhwave - La Nuit Blanche' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-omnivoid-specials-1-la-nuit-blanche/', name: 'The Öbjektz - La Nuit Blanche' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/the-broadway-addicts-full-set-live-at-omnivoid-ed-002/', name: 'The Broadway Addicts - Ed 002' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/dakta-dub-vinyl-only-full-set-live-at-omnivoid-ed-002/', name: 'Dakta Dub - Vinyl Only Ed 002' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/gooth-full-set-live-at-omnivoid-ed-001/', name: 'Gooth - Ed 001' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-live-at-omnivoid-ed001/', name: 'The Öbjektz - Ed 001' },
+      { url: 'https://www.mixcloud.com/omnivoidlabs/47k-sp-404-set-live-at-omnivoid-ed001-13072025/', name: '47K - SP-404 Ed 001' }
+    ];
     
-    if (container) {
-      console.log('✅ Mixcloud container found, creating mini widgets...');
-      
-      // List of all Mixcloud show URLs
-      const mixcloudShows = [
-        'https://www.mixcloud.com/omnivoidlabs/rajkanwar-sodhi-full-set-omnivoid-specials-la-nuit-blanche/',
-        'https://www.mixcloud.com/omnivoidlabs/sinhwave-full-set-omnivoid-specials-la-nuit-blanche/',
-        'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-omnivoid-specials-1-la-nuit-blanche/',
-        'https://www.mixcloud.com/omnivoidlabs/the-broadway-addicts-full-set-live-at-omnivoid-ed-002/',
-        'https://www.mixcloud.com/omnivoidlabs/dakta-dub-vinyl-only-full-set-live-at-omnivoid-ed-002/',
-        'https://www.mixcloud.com/omnivoidlabs/gooth-full-set-live-at-omnivoid-ed-001/',
-        'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-live-at-omnivoid-ed001/',
-        'https://www.mixcloud.com/omnivoidlabs/47k-sp-404-set-live-at-omnivoid-ed001-13072025/'
-      ];
-      
-      // Clear loading message
-      container.innerHTML = '';
-      
-      // Create a mini widget for each show
-      for (const showUrl of mixcloudShows) {
-        // Extract the feed path from the full URL
-        // Format: /omnivoidlabs/show-name/ -> %2Fomnivoidlabs%2Fshow-name%2F
-        const feedPath = showUrl.replace('https://www.mixcloud.com', '').replace(/\//g, '%2F');
-        
-        const iframe = document.createElement('iframe');
-        iframe.width = '100%';
-        iframe.height = '60';
-        iframe.src = `https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=${feedPath}`;
-        iframe.frameBorder = '0';
-        iframe.allow = 'encrypted-media; fullscreen; autoplay; idle-detection; speaker-selection; web-share;';
-        iframe.style.cssText = 'border: none; margin-bottom: 10px;';
-        
-        container.appendChild(iframe);
-      }
-      
-      console.log(`✅ ${mixcloudShows.length} Mixcloud mini widgets loaded`);
-      
-    } else {
-      console.log('⚠️ Mixcloud container not found, retrying...');
-      setTimeout(() => this.initializeMixcloudWidget(), 1000);
+    this.currentMixcloudIndex = 0;
+    
+    // Load first track
+    this.loadMixcloudTrack(this.currentMixcloudIndex);
+    
+    // Set up navigation button event listeners
+    const prevBtn = document.getElementById('mixcloud-prev-btn');
+    const nextBtn = document.getElementById('mixcloud-next-btn');
+    
+    if (prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', () => this.navigateMixcloud(-1));
+      nextBtn.addEventListener('click', () => this.navigateMixcloud(1));
+      console.log('✅ Navigation buttons initialized');
     }
+  }
+
+  /**
+   * Load a specific Mixcloud track
+   */
+  loadMixcloudTrack(index) {
+    const container = document.getElementById('mixcloud-player-container');
+    const trackInfo = document.getElementById('mixcloud-track-info');
+    
+    if (!container) {
+      console.log('⚠️ Player container not found, retrying...');
+      setTimeout(() => this.initializeMixcloudWidget(), 1000);
+      return;
+    }
+    
+    const show = this.mixcloudShows[index];
+    const feedPath = show.url.replace('https://www.mixcloud.com', '').replace(/\//g, '%2F');
+    
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '120';
+    iframe.src = `https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&feed=${feedPath}`;
+    iframe.frameBorder = '0';
+    iframe.allow = 'encrypted-media; fullscreen; autoplay; idle-detection; speaker-selection; web-share;';
+    iframe.style.border = 'none';
+    
+    // Clear container and add new iframe
+    container.innerHTML = '';
+    container.appendChild(iframe);
+    
+    // Update track info
+    if (trackInfo) {
+      trackInfo.textContent = `${index + 1} of ${this.mixcloudShows.length} - ${show.name}`;
+    }
+    
+    console.log(`🎵 Loaded track ${index + 1}: ${show.name}`);
+  }
+
+  /**
+   * Navigate to previous or next track
+   */
+  navigateMixcloud(direction) {
+    this.currentMixcloudIndex += direction;
+    
+    // Loop around
+    if (this.currentMixcloudIndex < 0) {
+      this.currentMixcloudIndex = this.mixcloudShows.length - 1;
+    } else if (this.currentMixcloudIndex >= this.mixcloudShows.length) {
+      this.currentMixcloudIndex = 0;
+    }
+    
+    this.loadMixcloudTrack(this.currentMixcloudIndex);
   }
 
   /**
