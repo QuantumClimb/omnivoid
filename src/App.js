@@ -3589,7 +3589,7 @@ export class App {
           border: 1px inset #333333;
           background: #1a1a1a;
         ">
-          <button id="gig-tab" onclick="window.omnivoidApp.switchGigTab('gig')" style="
+          <button id="gig-tab" onclick="globalThis.omnivoidApp.switchGigTab('gig')" style="
             flex: 1;
             padding: 8px;
             background: #99ccff;
@@ -3601,7 +3601,7 @@ export class App {
             font-family: 'Space Mono', monospace;
             transition: all 0.2s;
           ">🎵 LIVE GIG</button>
-          <button id="workshop-tab" onclick="window.omnivoidApp.switchGigTab('workshop')" style="
+          <button id="workshop-tab" onclick="globalThis.omnivoidApp.switchGigTab('workshop')" style="
             flex: 1;
             padding: 8px;
             background: #333;
@@ -5473,7 +5473,7 @@ Let's create something extraordinary together.`
     
     try {
       // Use the main audio manager's context instead of creating a new one
-      if (this.audioManager && this.audioManager.audioContext) {
+      if (this.audioManager?.audioContext) {
         this.audioProxy.audioContext = this.audioManager.audioContext;
         this.audioProxy.analyser = this.audioManager.analyser;
         console.log('✅ Audio proxy using main audio manager context');
@@ -5699,7 +5699,7 @@ Let's create something extraordinary together.`
     try {
       console.log('🔗 Connecting iframe audio to audio context...');
       
-      if (this.audioManager && this.audioManager.audioContext) {
+      if (this.audioManager?.audioContext) {
         // Create a media stream source from the audio element
         const stream = audioElement.captureStream();
         const source = this.audioManager.audioContext.createMediaStreamSource(stream);
