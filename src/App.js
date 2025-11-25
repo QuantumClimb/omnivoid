@@ -3527,7 +3527,7 @@ export class App {
           
           <!-- Workshop Poster -->
           <div style="text-align: center; margin: 12px 0;">
-            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+            <img src="public/gigs/workshop.jpg?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3537,7 +3537,7 @@ export class App {
           
           <!-- Registration Button -->
           <div style="text-align: center; margin: 12px 0;">
-            <a href="https://tinyurl.com/ayjj553x" 
+            <a href="https://docs.google.com/forms/d/1QcCLVs58SM5lbpqahYUkllqiNIST3-7Cd1EuvJXBMxc/edit" 
                target="_blank" 
                style="
                  display: inline-block;
@@ -3635,7 +3635,7 @@ export class App {
               <div><strong>Visuals:</strong> Real-time audio-reactive art</div>
             </div>
           </div>
-          <a href="https://outworld.fanpit.live/events/uRMP6QGV" target="_blank" style="
+          <a href="https://outworld.fanpit.live/events/NYMOnzeS" target="_blank" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
@@ -3661,7 +3661,7 @@ export class App {
           display: none;
         ">
           <div style="text-align: center; margin-bottom: 12px;">
-            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+            <img src="public/gigs/workshop.jpg?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3680,7 +3680,7 @@ export class App {
               <div><strong>Level:</strong> Intermediate to Advanced</div>
             </div>
           </div>
-          <a href="https://tinyurl.com/ayjj553x" target="_blank" style="
+          <a href="https://docs.google.com/forms/d/1QcCLVs58SM5lbpqahYUkllqiNIST3-7Cd1EuvJXBMxc/edit" target="_blank" style="
             display: block;
             text-align: center;
             padding: 8px 16px;
