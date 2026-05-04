@@ -75,7 +75,7 @@ export class App {
     
     // Initialize splash screen
     this.splashScreen = new SplashScreen();
-    this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Initializing OMNIVOID...', 10);
+    this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Initializing OMNIVOID...', 10);
     
     // Initialize components in sequence
     this.initializeComponents();
@@ -136,31 +136,31 @@ export class App {
   async initializeComponents() {
     try {
       // Initialize core managers
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading core systems...', 15);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading core systems...', 15);
       this.animationController = new AnimationController();
       
       // Initialize audio system
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Initializing audio...', 25);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Initializing audio...', 25);
       await this.audioManager.initializeAudioContext();
       
       // Audio system ready for Mixcloud integration
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Audio system ready...', 35);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Audio system ready...', 35);
       this.googleDriveConfig.log('Audio system ready for Mixcloud integration');
       
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Audio ready', 45);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Audio ready', 45);
       this.googleDriveConfig.log('Audio system initialized for external audio sources');
 
       // Load conundrum content immediately at startup
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading conundrum content...', 50);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading conundrum content...', 50);
       await this.loadConundrumContent();
 
       // Initialize visible components (AgentSystem, Logo only)
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading visual elements...', 55);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading visual elements...', 55);
       this.agentSystem = AgentSystem.getInstance();
       this.logo = new Logo();
       
       // Initialize all other components but keep them hidden (for future use)
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading components...', 65);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Loading components...', 65);
       this.controlPanel = new ControlPanel('control-panels');
       this.starfield = new Starfield();
       this.asciiTunnel = new ASCIITunnel();
@@ -174,10 +174,10 @@ export class App {
       this.hideAdvancedLayers();
       
       // Set up responsive controls based on device
-      this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Setting up responsive controls...', 85);
+      this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Setting up responsive controls...', 85);
       
           // Complete initialization
-    this.splashScreen.log('<img src="public/ascii/WORM.svg" style="width: 20px; height: 20px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Welcome to the OMNIVOID LABS Repository', 100);
+    this.splashScreen.log('<img src="/ascii/WORM.svg" style="width: 20px; height: 20px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Welcome to the OMNIVOID LABS Repository', 100);
     
     // Test Google Drive integration
     this.testGoogleDriveIntegration();
@@ -199,7 +199,7 @@ export class App {
       }, 2000);
       
     } catch (error) {
-      this.splashScreen.log(`<img src="public/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Error: ${error.message}`, 100);
+      this.splashScreen.log(`<img src="/ascii/WORM.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1); vertical-align: middle; margin-right: 8px;"> Error: ${error.message}`, 100);
       console.error('Initialization error:', error);
     }
   }
@@ -252,7 +252,7 @@ export class App {
     `;
     
     const qcLogo = document.createElement('img');
-    qcLogo.src = 'public/qc.png';
+    qcLogo.src = '/qc.png';
     qcLogo.alt = 'Quantum Climb';
     qcLogo.style.cssText = `
       width: 80px;
@@ -595,7 +595,7 @@ export class App {
     // Theme toggle button
     const themeBtn = document.createElement('button');
     themeBtn.className = 'minimal-control-btn';
-    themeBtn.innerHTML = '<img src="./public/ascii/D.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1);" alt="Random Colors">';
+    themeBtn.innerHTML = '<img src="/ascii/D.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1);" alt="Random Colors">';
     themeBtn.title = 'Dark Theme - Click for random colors';
     
     // Function to update button appearance based on current theme
@@ -724,7 +724,7 @@ export class App {
     `;
     
     // Load and set A.svg as button content
-    fetch('public/ascii/A.svg')
+    fetch('/ascii/A.svg')
       .then(response => response.text())
       .then(svgText => {
         agentToggleBtn.innerHTML = svgText;
@@ -853,7 +853,7 @@ export class App {
     
     const gigButton = document.createElement('button');
     gigButton.className = 'latest-gig-button';
-    gigButton.innerHTML = '<img src="./public/ascii/V.svg" style="width: 20px; height: 20px; margin-right: 8px; filter: brightness(0) invert(1);" alt="Latest Rituals"> LATEST RITUALS';
+    gigButton.innerHTML = '<img src="/ascii/V.svg" style="width: 20px; height: 20px; margin-right: 8px; filter: brightness(0) invert(1);" alt="Latest Rituals"> LATEST RITUALS';
     gigButton.title = 'View Latest Rituals';
     gigButton.style.cssText = `
       position: fixed;
@@ -961,7 +961,7 @@ export class App {
     `;
     
     const agentCountLabel = document.createElement('label');
-    agentCountLabel.innerHTML = '<img src="./public/ascii/A.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1);" alt="Agents">';
+    agentCountLabel.innerHTML = '<img src="/ascii/A.svg" style="width: 16px; height: 16px; filter: brightness(0) invert(1);" alt="Agents">';
     agentCountLabel.title = 'Agent Count';
     agentCountLabel.style.cssText = `
       font-size: 16px;
@@ -1707,13 +1707,13 @@ export class App {
 
     // Menu items with custom icons
     const menuItems = [
-      { text: 'Conundrum', icon: './public/menuicons/conundrum.png', window: 'conundrum', isImage: true },
-      { text: 'Live Transmissions', icon: './public/menuicons/livetransmissions.png', window: 'live', isImage: true },
-      { text: 'Labs', icon: './public/ascii/WORM.svg', window: 'labs', isImage: true },
-      { text: 'Radio', icon: './public/menuicons/radio.png', window: 'radio', isImage: true },
-      { text: 'Research Papers', icon: './public/menuicons/research.png', window: 'releases', isImage: true },
-      { text: 'Archives', icon: './public/menuicons/gallery.png', window: 'gallery', isImage: true },
-      { text: 'Contact', icon: './public/menuicons/contact.png', window: 'contact', isImage: true },
+      { text: 'Conundrum', icon: '/menuicons/conundrum.png', window: 'conundrum', isImage: true },
+      { text: 'Live Transmissions', icon: '/menuicons/livetransmissions.png', window: 'live', isImage: true },
+      { text: 'Labs', icon: '/ascii/WORM.svg', window: 'labs', isImage: true },
+      { text: 'Radio', icon: '/menuicons/radio.png', window: 'radio', isImage: true },
+      { text: 'Research Papers', icon: '/menuicons/research.png', window: 'releases', isImage: true },
+      { text: 'Archives', icon: '/menuicons/gallery.png', window: 'gallery', isImage: true },
+      { text: 'Contact', icon: '/menuicons/contact.png', window: 'contact', isImage: true },
     ];
 
     // Create retro windows for each menu item
@@ -2014,7 +2014,7 @@ export class App {
       console.log('📡 Loading live transmissions from public folder...');
       
       // Read the live_transmissions.txt file from the public/links folder
-      const fileContent = await readPublicFile('./public/links/live_transmissions.txt?t=' + Date.now());
+      const fileContent = await readPublicFile('/links/live_transmissions.txt?t=' + Date.now());
       
       if (!fileContent) {
         console.error('❌ Could not read live_transmissions.txt from public folder');
@@ -2510,7 +2510,7 @@ export class App {
       console.log('🔬 Loading labs videos from public folder...');
       
       // Read the labs.txt file from the public/links folder
-      const fileContent = await readPublicFile('./public/links/labs.txt?t=' + Date.now());
+      const fileContent = await readPublicFile('/links/labs.txt?t=' + Date.now());
       
       if (!fileContent) {
         console.error('❌ Could not read labs.txt from public folder');
@@ -3332,7 +3332,7 @@ export class App {
              onmouseout="this.style.border='1px solid #333333'; this.style.padding='2px';"
              onclick="globalThis.omnivoidApp.expandGalleryImage('${filename}', '${getImageDescription(filename).replaceAll("'", String.raw`\'`)}')"
              title="Click to view full image">
-          <img src="public/gallery/${filename}" 
+          <img src="/gallery/${filename}" 
                alt="${filename}"
                style="
                  max-width: 100%;
@@ -3450,7 +3450,7 @@ export class App {
           
           <!-- Workshop Poster -->
           <div style="text-align: center; margin: 12px 0;">
-            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+            <img src="/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3539,7 +3539,7 @@ export class App {
           display: block;
         ">
           <div style="text-align: center; margin-bottom: 12px;">
-            <img src="public/gigs/gig.png?v=${Date.now()}" alt="OMNIVOID Live Gig" style="
+            <img src="/gigs/gig.png?v=${Date.now()}" alt="OMNIVOID Live Gig" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3584,7 +3584,7 @@ export class App {
           display: none;
         ">
           <div style="text-align: center; margin-bottom: 12px;">
-            <img src="public/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
+            <img src="/gigs/workshop.png?v=${Date.now()}" alt="OMNIVOID Workshop" style="
               max-width: 100%;
               height: auto;
               border: 1px solid #333;
@@ -3649,7 +3649,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logo.svg?v=${Date.now()}" 
+            <img src="/logo.svg?v=${Date.now()}" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3681,7 +3681,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/the_juncando/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
+            <img src="/ascii/WORM.svg" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3708,7 +3708,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/designst3in/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
+            <img src="/ascii/WORM.svg" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3735,7 +3735,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/television_dust/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
+            <img src="/ascii/WORM.svg" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3761,7 +3761,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/krishnamurthy/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
+            <img src="/ascii/WORM.svg" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3787,7 +3787,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/ascii/WORM.svg" 
+            <img src="/ascii/WORM.svg" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3819,7 +3819,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logos/royville.png" 
+            <img src="/logos/royville.png" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3846,7 +3846,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/quantum.climb/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logos/QuantumClimb.png" 
+            <img src="/logos/QuantumClimb.png" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3873,7 +3873,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/theinventory.in/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logos/Inventory_logo.png" 
+            <img src="/logos/Inventory_logo.png" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3900,7 +3900,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/promusicals/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logos/ProMusicals1.jpg" 
+            <img src="/logos/ProMusicals1.jpg" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3927,7 +3927,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logos/Chennai_Scene_Trans.png" 
+            <img src="/logos/Chennai_Scene_Trans.png" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -3953,7 +3953,7 @@ export class App {
           " onclick="globalThis.open('https://www.instagram.com/auraimmerse/', '_blank')" 
              onmouseover="this.style.borderColor= '#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
-            <img src="public/logos/aura logo.png" 
+            <img src="/logos/aura logo.png" 
                  style="
                    width: 32px;
                    height: 32px;
@@ -4135,7 +4135,7 @@ export class App {
     `;
 
     const image = document.createElement('img');
-    image.src = `public/gallery/${filename}`;
+    image.src = `/gallery/${filename}`;
     image.alt = filename;
     image.style.cssText = `
       max-width: 100%;
@@ -4958,10 +4958,10 @@ export class App {
   async loadConundrumContent() {
     try {
       console.log('🧩 Loading Conundrum content from local file...');
-      console.log('📁 File path: ./public/links/conundrum.txt');
+      console.log('📁 File path: /links/conundrum.txt');
       
       // Read the conundrum.txt file from the public/links folder
-      const content = await readPublicFile('./public/links/conundrum.txt?t=' + Date.now());
+      const content = await readPublicFile('/links/conundrum.txt?t=' + Date.now());
       
       console.log('📄 Raw content received:', content ? 'YES' : 'NO');
       console.log('📄 Content length:', content ? content.length : 0);
@@ -5026,7 +5026,7 @@ The conundrum lies in the space between digital and analog, between past and fut
       console.log('📧 Loading Contact content from local file...');
       
       // Read the contact.txt file from the public/links folder (same method as live_transmissions.txt)
-      const content = await readPublicFile('./public/links/contact.txt');
+      const content = await readPublicFile('/links/contact.txt');
       
       if (content) {
         // Parse the content to extract title and body
@@ -5104,7 +5104,7 @@ Let's create something extraordinary together.`
           height: 40px;
           width: 40px;
         ">
-          <img src="./public/menuicons/research.png" alt="Research" style="
+          <img src="/menuicons/research.png" alt="Research" style="
             width: 32px;
             height: 32px;
             filter: invert(1) sepia(1) saturate(5) hue-rotate(200deg);

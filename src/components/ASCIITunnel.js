@@ -84,7 +84,7 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
           resolve();
         };
         img.onerror = reject;
-        img.src = `public/ascii/${path}`;
+        img.src = `/ascii/${path}`;
       });
     }));
   };

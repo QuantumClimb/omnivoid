@@ -147,7 +147,7 @@ export class AudioManager {
       console.log('🎵 Starting audio load process...');
       
       // Google Drive integration logging
-      if (url.includes('public/audio/Music/')) {
+      if (url.includes('/audio/Music/')) {
         this.googleDriveConfig.log('Converting local audio path to Google Drive RADIO folder');
         // For now, keep using local path but log the intention
         // TODO: Implement Google Drive file loading

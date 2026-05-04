@@ -18,7 +18,7 @@ export class SplashScreen extends Component {
     // Create title
     // Create logo element instead of text
     const logoElement = document.createElement('img');
-    logoElement.src = 'public/logo.svg?v=' + Date.now();
+    logoElement.src = '/logo.svg?v=' + Date.now();
     logoElement.alt = 'OMNIVOID';
     logoElement.style.cssText = `
       max-width: ${this.isMobile ? '140px' : '180px'};
@@ -30,8 +30,8 @@ export class SplashScreen extends Component {
     
     // Fallback in case logo fails to load
     logoElement.onerror = () => {
-      console.log('🔍 Logo failed, trying alternative path...');
-      logoElement.src = 'logo.svg?v=' + Date.now();
+      console.log('🔍 Logo failed, trying stacked version...');
+      logoElement.src = '/stacked — labs.svg?v=' + Date.now();
       
       logoElement.onerror = () => {
         console.log('🔍 Logo still failed, creating text fallback...');

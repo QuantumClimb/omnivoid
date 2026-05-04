@@ -37,8 +37,8 @@ export class Logo extends Component {
     this.logoElement.className = 'logo-svg';
     this.logoElement.alt = 'Omnivoid';
     
-    // Try the correct path for the SVG (public folder first)
-    this.logoElement.src = 'public/logo.svg?v=' + Date.now();
+    // Load SVG from root path (public folder is served from root)
+    this.logoElement.src = '/logo.svg?v=' + Date.now();
     
     console.log('🔄 Loading logo from:', this.logoElement.src);
     
@@ -50,10 +50,10 @@ export class Logo extends Component {
     
     this.logoElement.onerror = (error) => {
       console.error('❌ Failed to load SVG:', error);
-      console.log('🔍 Trying alternative path...');
+      console.log('🔍 Trying stacked version...');
       
-      // Try without public prefix
-      this.logoElement.src = 'logo.svg?v=' + Date.now();
+      // Try stacked version
+      this.logoElement.src = '/stacked — labs.svg?v=' + Date.now();
       
       this.logoElement.onerror = () => {
         console.error('❌ All SVG loading attempts failed');
