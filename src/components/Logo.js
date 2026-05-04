@@ -125,4 +125,16 @@ export class Logo extends Component {
   onVisibilityChange(visible) {
     this.element.style.display = visible ? 'block' : 'none';
   }
-} 
+
+  /**
+   * Clean up the logo element and remove from DOM.
+   */
+  destroy() {
+    if (this.element?.parentNode) {
+      this.element.parentNode.removeChild(this.element);
+    }
+    if (this.logoElement?.parentNode) {
+      this.logoElement.parentNode.removeChild(this.logoElement);
+    }
+  }
+}

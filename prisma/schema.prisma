@@ -1,0 +1,105 @@
+// ============================================
+// OMNIVOID LABS - Prisma Schema
+// ============================================
+// Database: Neon PostgreSQL
+// ORM: Prisma
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// EDITIONS - Concert series editions
+// ============================================
+model Edition {
+  id          String   @id @default(cuid())
+  name        String   // "OMNIVOID 2024", "OMNIVOID 2025"
+  slug        String   @unique // "2024", "2025" - URL-friendly
+  description String?  // Edition description
+  logoUrl     String?  // Google Drive URL or local path
+  themeColors Json?    // { primary: "#99ccff", secondary: "#336699" }
+  isActive    Boolean  @default(false)
+  startDate   DateTime?
+  endDate     DateTime?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  resources   Resource[]
+  
+  @@index([slug])
+  @@index([isActive])
+}
+
+// ============================================
+// RESOURCES - Content items for editions
+// ============================================
+model Resource {
+  id          String   @id @default(cuid())
+  editionId   String
+  edition     Edition  @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  
+  type        ResourceType // AUDIO, VIDEO, POSTER, DOCUMENT, LINK, GALLERY
+  title       String
+  description String?
+  
+  // For Google Drive or external links
+  url         String?  // YouTube URL, Google Drive URL, etc.
+  
+  // For local files (relative path)
+  filePath    String?  // "public/audio/track.mp3"
+  
+  // Thumbnail preview
+  thumbnailUrl String? // Google Drive image URL
+  
+  // Type-specific metadata
+  metadata    Json?    // { duration, artist, youtubeId, mixcloudId, etc. }
+  
+  sortOrder   Int      @default(0)
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([editionId])
+  @@index([type])
+  @@index([isActive])
+}
+
+enum ResourceType {
+  AUDIO        // Music files, Mixcloud playlists
+  VIDEO        // YouTube videos
+  POSTER       // Event posters/flyers
+  DOCUMENT     // PDFs, research papers
+  LINK         // External links
+  GALLERY      // Images
+  LOGO         // Edition logos
+  TEXT_CONTENT // Text content (replaces .txt files)
+}
+
+// ============================================
+// ADMIN USER - Simple authentication
+// ============================================
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique // Admin email/username
+  password  String   // Bcrypt hash
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// SITE SETTINGS - Global configuration
+// ============================================
+model SiteSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique // "currentEdition", "siteTitle", etc.
+  value     Json     // Flexible value storage
+  updatedAt DateTime @updatedAt
+}

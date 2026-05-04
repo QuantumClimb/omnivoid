@@ -227,4 +227,14 @@ export class SolarSystem extends Component {
   hide() {
     this.setVisibility(false);
   }
-} 
+
+  /**
+   * Clean up the solar system element.
+   */
+  destroy() {
+    if (this.element?.parentNode) {
+      this.element.parentNode.removeChild(this.element);
+    }
+    this.planets = [];
+  }
+}

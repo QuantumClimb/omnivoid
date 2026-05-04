@@ -1,18 +1,18 @@
+import { Component } from './Base.js';
+
 /**
  * PolygonEcho - Creates random polygons that echo outward in scale
  * Creates multiple copies of a random polygon at different scales and positions
  */
-export class PolygonEcho {
+export class PolygonEcho extends Component {
   constructor() {
+    super();
     this.element = null;
     this.animationId = null;
     this.polygons = [];
     
     // Mobile detection and performance optimization
-    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                    (window.innerWidth <= 768) ||
-                    ('ontouchstart' in window) ||
-                    (navigator.maxTouchPoints > 0);
+    this.isMobile = this.detectMobile();
     
     this.maxPolygons = this.isMobile ? 5 : 20; // Reduced polygons on mobile for better performance
     this.baseSize = this.isMobile ? 40 : 50;
@@ -57,8 +57,8 @@ export class PolygonEcho {
     
     // Generate random polygon properties
     const sides = Math.floor(Math.random() * 3) + 4; // 4-6 sides for more tunnel-like effect
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const centerX = globalThis.innerWidth / 2;
+    const centerY = globalThis.innerHeight / 2;
     const baseRotation = Math.random() * Math.PI * 2;
     
     // Create tunnel effect with continuous scaling
@@ -86,8 +86,8 @@ export class PolygonEcho {
   addNewPolygon() {
     // Generate random polygon properties for a single new polygon
     const sides = Math.floor(Math.random() * 3) + 4; // 4-6 sides for more tunnel-like effect
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const centerX = globalThis.innerWidth / 2;
+    const centerY = globalThis.innerHeight / 2;
     const baseRotation = Math.random() * Math.PI * 2;
     
     // Create a new polygon at the beginning of the tunnel

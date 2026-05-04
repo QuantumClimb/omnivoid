@@ -82,7 +82,7 @@ export class AudioManager {
    * Handle first user interaction to resume audio context
    */
   async handleFirstInteraction() {
-    if (this.audioContext && this.audioContext.state === 'suspended') {
+    if (this.audioContext?.state === 'suspended') {
       console.log('👆 User interaction detected, resuming audio context...');
       await this.audioContext.resume();
       console.log('✅ Audio context resumed');
@@ -104,7 +104,7 @@ export class AudioManager {
 
     console.log('🎵 Creating audio context...');
     // Create audio context with optimized settings
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+    this.audioContext = new (globalThis.AudioContext || globalThis.webkitAudioContext)({
       latencyHint: 'interactive',
       sampleRate: 44100
     });
@@ -294,7 +294,9 @@ export class AudioManager {
             raw: this.dataArray
           };
           
-          this.visualizerCallbacks.forEach(callback => callback(normalizedData));
+          for (const callback of this.visualizerCallbacks) {
+            callback(normalizedData);
+          }
           this.lastFrameTime = currentTime;
         }
         
@@ -447,13 +449,13 @@ export class AudioManager {
       this.stopVisualization();
       
       // Call stop callbacks
-      this.addStopCallback.forEach(callback => {
+      for (const callback of this.addStopCallback) {
         try {
           callback();
         } catch (error) {
           console.error('❌ Stop callback error:', error);
         }
-      });
+      }
     });
     
     audioElement.addEventListener('ended', () => {
@@ -462,13 +464,13 @@ export class AudioManager {
       this.stopVisualization();
       
       // Call stop callbacks
-      this.addStopCallback.forEach(callback => {
+      for (const callback of this.addStopCallback) {
         try {
           callback();
         } catch (error) {
           console.error('❌ Stop callback error:', error);
         }
-      });
+      }
     });
     
     console.log('🎵 Audio element connected for amplitude analysis');

@@ -1,12 +1,26 @@
 {
   "name": "omnivoid",
-  "version": "0.1.0",
-  "description": "A mobile-first, interactive visual experience with audio reactivity. Immersive audio-visual web application with particle systems and 3D graphics.",
+  "version": "0.3.0",
+  "description": "A mobile-first, interactive visual experience with audio reactivity. Immersive audio-visual web application with particle systems and 3D graphics. Now with dynamic content management!",
   "main": "index.html",
+  "type": "module",
   "scripts": {
     "start": "python -m http.server 8000",
     "dev": "python -m http.server 8000",
-    "serve": "python -m http.server 8000"
+    "serve": "python -m http.server 8000",
+    "react": "python -m http.server 8000",
+    "react:dev": "python -m http.server 8000",
+    "install:react": "npm install react react-dom",
+    "check": "node --check src/App.js && node --check src/AppMobile.js",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    "db:deploy": "npx prisma migrate deploy",
+    "db:push": "npx prisma db push",
+    "db:studio": "npx prisma studio",
+    "db:seed": "npx tsx scripts/seed-admin.ts",
+    "db:migrate:content": "npx tsx scripts/migrate-content.ts",
+    "seed:admin": "npx tsx scripts/seed-admin.ts",
+    "migrate:content": "npx tsx scripts/migrate-content.ts"
   },
   "repository": {
     "type": "git",
@@ -40,8 +54,19 @@
     "not dead"
   ],
   "dependencies": {
+    "@prisma/client": "^7.8.0",
     "axios": "^1.11.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^7.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsx": "^4.21.0"
   }
 }

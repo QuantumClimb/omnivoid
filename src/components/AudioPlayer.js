@@ -12,6 +12,10 @@ export class AudioPlayer extends Component {
     super();
     this.audioManager = audioManager;
     this.isAudioLoaded = false;
+    this.progressIntervalId = null;
+    this.handlePlayClick = () => this.playAudio();
+    this.handleProgressClick = (e) => this.handleProgressBarClick(e);
+    this.handleVolumeInput = () => this.audioManager.setVolume(this.volumeControl.value);
     this.createPlayerUI();
     this.setupEventListeners();
   }
@@ -147,30 +151,34 @@ export class AudioPlayer extends Component {
    */
   setupEventListeners() {
     // Play/Pause button
-    this.playButton.addEventListener('click', () => this.playAudio());
+    this.playButton.addEventListener('click', this.handlePlayClick);
     
     // Progress bar
-    this.progressBar.addEventListener('click', (e) => {
-      if (!this.isAudioLoaded) return;
-      const rect = this.progressBar.getBoundingClientRect();
-      const pos = (e.clientX - rect.left) / rect.width;
-      this.audioManager.seek(pos * this.audioManager.duration);
-      this.updateProgress(pos);
-    });
+    this.progressBar.addEventListener('click', this.handleProgressClick);
     
     // Volume control
-    this.volumeControl.addEventListener('input', () => {
-      this.audioManager.setVolume(this.volumeControl.value);
-    });
+    this.volumeControl.addEventListener('input', this.handleVolumeInput);
     
     // Update progress
-    setInterval(() => {
+    this.progressIntervalId = setInterval(() => {
       if (this.audioManager.isPlaying) {
         const progress = this.audioManager.currentTime / this.audioManager.duration;
         this.updateProgress(progress);
         this.updateTimeDisplay();
       }
     }, 100);
+  }
+
+  /**
+   * Handle progress bar seeking
+   * @param {MouseEvent} e Click event
+   */
+  handleProgressBarClick(e) {
+    if (!this.isAudioLoaded) return;
+    const rect = this.progressBar.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    this.audioManager.seek(pos * this.audioManager.duration);
+    this.updateProgress(pos);
   }
 
   /**
@@ -194,5 +202,23 @@ export class AudioPlayer extends Component {
     const current = formatTime(this.audioManager.currentTime);
     const total = formatTime(this.audioManager.duration);
     this.timeDisplay.textContent = `${current} / ${total}`;
+  }
+
+  /**
+   * Clean up DOM listeners and progress timer.
+   */
+  destroy() {
+    this.playButton?.removeEventListener('click', this.handlePlayClick);
+    this.progressBar?.removeEventListener('click', this.handleProgressClick);
+    this.volumeControl?.removeEventListener('input', this.handleVolumeInput);
+
+    if (this.progressIntervalId) {
+      clearInterval(this.progressIntervalId);
+      this.progressIntervalId = null;
+    }
+
+    if (this.element?.parentNode) {
+      this.element.parentNode.removeChild(this.element);
+    }
   }
 } 

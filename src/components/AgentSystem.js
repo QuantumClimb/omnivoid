@@ -19,12 +19,17 @@ export class AgentSystem extends Component {
     
     super();
     this.canvas = document.getElementById('agents');
+    this.ownsCanvas = false;
+    this.animationFrameId = null;
+    this.resizeHandler = null;
+    this.isDestroyed = false;
     
     // Create canvas if it doesn't exist
     if (!this.canvas) {
       this.canvas = document.createElement('canvas');
       this.canvas.id = 'agents';
       document.body.appendChild(this.canvas);
+      this.ownsCanvas = true;
     }
     
     this.ctx = this.canvas.getContext('2d');
@@ -94,8 +99,8 @@ export class AgentSystem extends Component {
    */
   detectMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (window.innerWidth <= 768) ||
-           ('ontouchstart' in window) ||
+           (globalThis.innerWidth <= 768) ||
+           ('ontouchstart' in globalThis) ||
            (navigator.maxTouchPoints > 0);
   }
 
@@ -251,12 +256,12 @@ export class AgentSystem extends Component {
    * Set up the canvas and handle resizing
    */
   setupCanvas() {
-    const resize = () => {
-      this.width = this.canvas.width = window.innerWidth;
-      this.height = this.canvas.height = window.innerHeight;
+    this.resizeHandler = () => {
+      this.width = this.canvas.width = globalThis.innerWidth;
+      this.height = this.canvas.height = globalThis.innerHeight;
     };
-    window.addEventListener('resize', resize);
-    resize();
+    globalThis.addEventListener('resize', this.resizeHandler);
+    this.resizeHandler();
   }
 
   /**
@@ -301,8 +306,12 @@ export class AgentSystem extends Component {
    * Animation loop
    */
   animate = () => {
+    if (this.isDestroyed) {
+      return;
+    }
+
     if (!this.isVisible) {
-      requestAnimationFrame(this.animate);
+      this.animationFrameId = requestAnimationFrame(this.animate);
       return;
     }
 
@@ -375,7 +384,7 @@ export class AgentSystem extends Component {
     // Reset shadow and color for next frame
     this.ctx.shadowBlur = 0;
 
-    requestAnimationFrame(this.animate);
+    this.animationFrameId = requestAnimationFrame(this.animate);
   }
 
   /**
@@ -460,5 +469,29 @@ export class AgentSystem extends Component {
     
     this.setAgentCount(this.defaultAgentCount);
     this.setConnectionDistance(this.defaultConnectDist);
+  }
+
+  /**
+   * Clean up animation and global listeners.
+   */
+  destroy() {
+    this.isDestroyed = true;
+
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+
+    if (this.resizeHandler) {
+      globalThis.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
+
+    if (this.ownsCanvas && this.canvas?.parentNode) {
+      this.canvas.parentNode.removeChild(this.canvas);
+    }
+
+    this.agents = [];
+    AgentSystem.instance = null;
   }
 } 

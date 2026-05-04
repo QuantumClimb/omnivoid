@@ -48,8 +48,8 @@ export class ASCIITunnel extends Component {
 function createASCIITunnelLayer(id = "asciiTunnel") {
   const canvas = document.createElement("canvas");
   canvas.id = id;
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = globalThis.innerWidth;
+  canvas.height = globalThis.innerHeight;
   canvas.style.position = "absolute";
   canvas.style.top = 0;
   canvas.style.left = 0;
@@ -64,8 +64,8 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
   
   // Mobile detection and performance optimization
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                   (window.innerWidth <= 768) ||
-                   ('ontouchstart' in window) ||
+                   (globalThis.innerWidth <= 768) ||
+                   ('ontouchstart' in globalThis) ||
                    (navigator.maxTouchPoints > 0);
   
   const numChars = isMobile ? 5 : 25; // Reduced characters on mobile for better performance
@@ -210,10 +210,11 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
   }
 
   // Handle window resize
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+  const handleResize = () => {
+    canvas.width = globalThis.innerWidth;
+    canvas.height = globalThis.innerHeight;
+  };
+  globalThis.addEventListener('resize', handleResize);
 
   // Start loading SVGs and begin animation
   loadSVGs().then(() => {
@@ -231,6 +232,7 @@ function createASCIITunnelLayer(id = "asciiTunnel") {
     canvas,
     destroy: () => {
       cancelAnimationFrame(animationFrame);
+      globalThis.removeEventListener('resize', handleResize);
       canvas.remove();
     },
     setOpacity: (value) => {

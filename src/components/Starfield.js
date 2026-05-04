@@ -48,8 +48,8 @@ export class Starfield extends Component {
 function createStarfieldLayer(id = "starfield") {
   const canvas = document.createElement("canvas");
   canvas.id = id;
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = globalThis.innerWidth;
+  canvas.height = globalThis.innerHeight;
   canvas.style.position = "absolute";
   canvas.style.top = 0;
   canvas.style.left = 0;
@@ -63,8 +63,8 @@ function createStarfieldLayer(id = "starfield") {
   
   // Mobile detection and performance optimization
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                   (window.innerWidth <= 768) ||
-                   ('ontouchstart' in window) ||
+                   (globalThis.innerWidth <= 768) ||
+                   ('ontouchstart' in globalThis) ||
                    (navigator.maxTouchPoints > 0);
   
   const numStars = isMobile ? 50 : 100; // Reduced stars on mobile for better performance
@@ -96,10 +96,11 @@ function createStarfieldLayer(id = "starfield") {
   }
 
   // Handle window resize
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+  const handleResize = () => {
+    canvas.width = globalThis.innerWidth;
+    canvas.height = globalThis.innerHeight;
+  };
+  globalThis.addEventListener('resize', handleResize);
 
   draw();
 
@@ -107,6 +108,7 @@ function createStarfieldLayer(id = "starfield") {
     canvas,
     destroy: () => {
       cancelAnimationFrame(animationFrame);
+      globalThis.removeEventListener('resize', handleResize);
       canvas.remove();
     },
     setOpacity: (value) => {

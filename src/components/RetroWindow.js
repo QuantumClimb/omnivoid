@@ -14,6 +14,10 @@ export class RetroWindow extends Component {
     this.isVisible = false;
     this.isDragging = false;
     this.dragOffset = { x: 0, y: 0 };
+    this.hideTimeoutId = null;
+    this.handleDrag = this.handleDrag.bind(this);
+    this.handleDragEnd = this.handleDragEnd.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     
     // Define desktop window positions for different windows
     this.desktopPositions = {
@@ -41,7 +45,7 @@ export class RetroWindow extends Component {
     this.element.id = this.id;
     
     // Check if we're on desktop and set appropriate positioning
-    const isDesktop = window.innerWidth >= 768;
+    const isDesktop = globalThis.innerWidth >= 768;
     const position = this.desktopPositions[this.id];
     
     let positionStyle = '';
@@ -240,16 +244,17 @@ export class RetroWindow extends Component {
       e.preventDefault();
     });
 
-    // Bind drag handlers
-    this.handleDrag = this.handleDrag.bind(this);
-    this.handleDragEnd = this.handleDragEnd.bind(this);
-
     // ESC key to close
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.isVisible) {
-        this.hide();
-      }
-    });
+    document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  /**
+   * Handle global key presses
+   */
+  handleKeyDown(e) {
+    if (e.key === 'Escape' && this.isVisible) {
+      this.hide();
+    }
   }
 
   /**
@@ -262,8 +267,8 @@ export class RetroWindow extends Component {
     const y = e.clientY - this.dragOffset.y;
 
     // Constrain to viewport
-    const maxX = window.innerWidth - this.element.offsetWidth;
-    const maxY = window.innerHeight - this.element.offsetHeight;
+    const maxX = globalThis.innerWidth - this.element.offsetWidth;
+    const maxY = globalThis.innerHeight - this.element.offsetHeight;
     
     const constrainedX = Math.max(0, Math.min(x, maxX));
     const constrainedY = Math.max(0, Math.min(y, maxY));
@@ -309,11 +314,11 @@ export class RetroWindow extends Component {
       this.onClose(this.id);
     }
     
-    setTimeout(() => {
+    this.hideTimeoutId = setTimeout(() => {
       if (!this.isVisible) {
         this.element.style.display = 'none';
         // Reset position based on screen size
-        const isDesktop = window.innerWidth >= 768;
+        const isDesktop = globalThis.innerWidth >= 768;
         const position = this.desktopPositions[this.id];
         
         if (isDesktop && position) {
@@ -326,6 +331,7 @@ export class RetroWindow extends Component {
           this.element.style.transform = 'translate(-50%, -50%)';
         }
       }
+      this.hideTimeoutId = null;
     }, 200);
   }
 
@@ -355,7 +361,12 @@ export class RetroWindow extends Component {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
+    if (this.hideTimeoutId) {
+      clearTimeout(this.hideTimeoutId);
+      this.hideTimeoutId = null;
+    }
     document.removeEventListener('mousemove', this.handleDrag);
     document.removeEventListener('mouseup', this.handleDragEnd);
+    document.removeEventListener('keydown', this.handleKeyDown);
   }
 } 

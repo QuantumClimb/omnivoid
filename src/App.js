@@ -6,6 +6,7 @@ import { SplashScreen } from './components/SplashScreen.js';
 import { RetroWindow } from './components/RetroWindow.js';
 import { AsciiWindow } from './components/AsciiWindow.js';
 import { GOOGLE_DRIVE_CONFIG, readPublicFile } from './config/googleDrive.js';
+import { AppState } from './state/AppState.js';
 
 // Import all other components but keep them hidden initially
 import { SolarSystem } from './components/SolarSystem.js';
@@ -13,6 +14,23 @@ import { Starfield } from './components/Starfield.js';
 import { ASCIITunnel } from './components/ASCIITunnel.js';
 import { PolygonEcho } from './components/PolygonEcho.js';
 import { AnimationController } from './controllers/AnimationController.js';
+
+// Import utility functions
+import { closePopup, setupPopupCloseHandlers } from './utils/domHelpers.js';
+import { composeDebugInfo } from './utils/debugHelpers.js';
+import { MIXCLOUD_SHOWS } from './constants/mixcloudPlaylists.js';
+import { 
+  loadMixcloudTrack, 
+  navigateTrack
+} from './utils/mixcloudHelpers.js';
+import { 
+  createPopupOverlay, 
+  createPopupContent, 
+  createModalHeader,
+  createIsolatedModal,
+  forceModalIndependence,
+  removeExistingPopup
+} from './utils/modalHelpers.js';
 import { ControlPanel } from './controllers/ControlPanel.js';
 
 /**
@@ -27,6 +45,14 @@ export class App {
     
     // Make this instance globally accessible for the radio file explorer
     globalThis.omnivoidApp = this;
+
+    // Serializable state only. DOM and media objects remain instance-owned.
+    this.state = new AppState({
+      device: {
+        isMobile: this.detectMobile(),
+      },
+    });
+    this.bindSerializableState();
     
     // Initialize theme manager first
     this.themeManager = new ThemeManager();
@@ -74,6 +100,26 @@ export class App {
    */
   get isMobile() {
     return this.detectMobile();
+  }
+
+  /**
+   * Bind legacy instance fields to centralized serializable state.
+   * Existing imperative code can keep using this.foo while React adapters can
+   * read the same value from AppState.
+   */
+  bindSerializableState() {
+    this.state.bindProperties(this, {
+      currentMusicIndex: 'music.currentIndex',
+      isMusicPlaying: 'music.isPlaying',
+      musicFiles: 'music.files',
+      mixcloudShows: 'mixcloud.shows',
+      currentMixcloudIndex: 'mixcloud.currentIndex',
+      mixcloudEventsReceived: 'mixcloud.eventsReceived',
+      pdfResearchPapers: 'content.researchPapers',
+      conundrumContent: 'content.conundrum',
+      contactContent: 'content.contact',
+      isMenuVisible: 'ui.isMenuVisible',
+    });
   }
 
   /**
@@ -167,7 +213,7 @@ export class App {
       this.initializeMobileMode();
       
       // Add window resize listener for responsive controls
-      window.addEventListener('resize', () => this.handleWindowResize());
+      globalThis.addEventListener('resize', () => this.handleWindowResize());
       
       // Hide splash screen
       setTimeout(() => {
@@ -240,7 +286,7 @@ export class App {
     
     // Add click handler to open Quantum Climb website
     qcLogo.addEventListener('click', () => {
-      window.open('https://www.quantum-climb.com/', '_blank');
+      globalThis.open('https://www.quantum-climb.com/', '_blank');
     });
     
     // Fallback if logo fails to load
@@ -1862,13 +1908,13 @@ export class App {
     };
 
     // Toggle functionality
-    let isMenuVisible = false;
+    this.isMenuVisible = false;
     hamburgerBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      isMenuVisible = !isMenuVisible;
-      console.log(`🍔 Hamburger clicked, menu visible: ${isMenuVisible}`);
+      this.isMenuVisible = !this.isMenuVisible;
+      console.log(`🍔 Hamburger clicked, menu visible: ${this.isMenuVisible}`);
       
-      if (isMenuVisible) {
+      if (this.isMenuVisible) {
         showDropdown();
         hamburgerBtn.innerHTML = '✕'; // X icon
         hamburgerBtn.style.transform = 'rotate(90deg)';
@@ -1880,10 +1926,9 @@ export class App {
     });
     
     // Store the menu state for external access
-    this.isMenuVisible = isMenuVisible;
     this.toggleMenu = () => {
-      isMenuVisible = !isMenuVisible;
-      if (isMenuVisible) {
+      this.isMenuVisible = !this.isMenuVisible;
+      if (this.isMenuVisible) {
         showDropdown();
         hamburgerBtn.innerHTML = '✕';
         hamburgerBtn.style.transform = 'rotate(90deg)';
@@ -1892,14 +1937,13 @@ export class App {
         hamburgerBtn.innerHTML = '☰';
         hamburgerBtn.style.transform = 'rotate(0deg)';
       }
-      this.isMenuVisible = isMenuVisible;
     };
 
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
       if (!hamburgerBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-        if (isMenuVisible) {
-          isMenuVisible = false;
+        if (this.isMenuVisible) {
+          this.isMenuVisible = false;
           hideDropdown();
           hamburgerBtn.innerHTML = '☰';
           hamburgerBtn.style.transform = 'rotate(0deg)';
@@ -2304,7 +2348,7 @@ export class App {
     document.body.appendChild(modal);
     
     // Force recalculation of positioning to ensure it's centered
-    void modal.offsetHeight; // Trigger reflow
+    const _ = modal.offsetHeight; // Trigger reflow
     
     // Verify the modal is properly positioned
     console.log('🎯 Modal positioning verification:', {
@@ -2374,7 +2418,7 @@ export class App {
       this.closeModal(modal);
     };
     
-    console.log('🎬 YouTube modal created successfully. Use close button, click background, press Escape, or call window.closeYouTubeModal() to close.');
+    console.log('🎬 YouTube modal created successfully. Use close button, click background, press Escape, or call globalThis.closeYouTubeModal() to close.');
   }
 
   /**
@@ -2395,7 +2439,7 @@ export class App {
         if (modal?.parentNode) {
           modal.remove();
           console.log('✅ Modal removed from DOM');
-        } else if (modal && modal.remove) {
+        } else if (modal?.remove) {
           modal.remove();
           console.log('✅ Modal removed using remove() method');
         }
@@ -2412,7 +2456,7 @@ export class App {
         }
         
         // Force a reflow to ensure cleanup
-        void document.body.offsetHeight;
+        const _ = document.body.offsetHeight;
         
       } catch (error) {
         console.error('❌ Error closing modal:', error);
@@ -2459,10 +2503,10 @@ export class App {
     
     // Reset any parent transforms that might be affecting positioning
     const retroWindows = document.querySelectorAll('.retro-window');
-    for (const window of retroWindows) {
-      if (window.style.transform && window.style.transform !== 'none') {
-        console.log('🔄 Resetting RetroWindow transform:', window.style.transform);
-        window.style.transform = 'none';
+    for (const retroWindow of retroWindows) {
+      if (retroWindow.style.transform && retroWindow.style.transform !== 'none') {
+        console.log('🔄 Resetting RetroWindow transform:', retroWindow.style.transform);
+        retroWindow.style.transform = 'none';
       }
     }
     
@@ -2472,70 +2516,13 @@ export class App {
   /**
    * Create a completely isolated modal that ignores parent positioning
    */
+  // Use utility functions from modalHelpers.js
   createIsolatedModal() {
-    // Create modal with absolute isolation
-    const modal = document.createElement('div');
-    
-    // Force viewport positioning with maximum isolation
-    modal.style.cssText = `
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      background: rgba(0, 0, 0, 0.9) !important;
-      z-index: 10000 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      backdrop-filter: blur(10px) !important;
-      transform: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      box-sizing: border-box !important;
-      transform-origin: 0 0 !important;
-      /* Force isolation from any parent transforms */
-      will-change: transform !important;
-      contain: layout style paint !important;
-    `;
-    
-    // Remove any inherited properties that might cause positioning issues
-    modal.style.removeProperty('right');
-    modal.style.removeProperty('bottom');
-    modal.style.removeProperty('transform');
-    modal.style.removeProperty('transform-origin');
-    
-    return modal;
+    return createIsolatedModal();
   }
 
-  /**
-   * Force modal to be completely independent of RetroWindow positioning
-   */
   forceModalIndependence(modal) {
-    // Ensure modal is in body, not nested in any RetroWindow
-    if (modal.parentElement !== document.body) {
-      console.log('🔄 Moving modal to document body for independence');
-      document.body.appendChild(modal);
-    }
-    
-    // Force absolute positioning that ignores parent context
-    modal.style.position = 'fixed';
-    modal.style.top = '0px';
-    modal.style.left = '0px';
-    modal.style.transform = 'none';
-    modal.style.zIndex = '10000';
-    
-    // Remove any inherited positioning
-    modal.style.removeProperty('right');
-    modal.style.removeProperty('bottom');
-    modal.style.removeProperty('margin');
-    modal.style.removeProperty('padding');
-    
-    // Force viewport-based positioning
-    modal.style.width = '100vw';
-    modal.style.height = '100vh';
-    
-    console.log('🔒 Modal independence enforced');
+    return forceModalIndependence(modal);
   }
 
   /**
@@ -2863,17 +2850,8 @@ export class App {
   initializeMixcloudWidget() {
     console.log('🎵 Initializing Mixcloud player with navigation...');
     
-    // List of all Mixcloud show URLs
-    this.mixcloudShows = [
-      { url: 'https://www.mixcloud.com/omnivoidlabs/rajkanwar-sodhi-full-set-omnivoid-specials-la-nuit-blanche/', name: 'Rajkanwar Sodhi - La Nuit Blanche' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/sinhwave-full-set-omnivoid-specials-la-nuit-blanche/', name: 'Sinhwave - La Nuit Blanche' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-omnivoid-specials-1-la-nuit-blanche/', name: 'The Öbjektz - La Nuit Blanche' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/the-broadway-addicts-full-set-live-at-omnivoid-ed-002/', name: 'The Broadway Addicts - Ed 002' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/dakta-dub-vinyl-only-full-set-live-at-omnivoid-ed-002/', name: 'Dakta Dub - Vinyl Only Ed 002' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/gooth-full-set-live-at-omnivoid-ed-001/', name: 'Gooth - Ed 001' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/the-%C3%B6bjektz-full-set-live-at-omnivoid-ed001/', name: 'The Öbjektz - Ed 001' },
-      { url: 'https://www.mixcloud.com/omnivoidlabs/47k-sp-404-set-live-at-omnivoid-ed001-13072025/', name: '47K - SP-404 Ed 001' }
-    ];
+    // Use imported MIXCLOUD_SHOWS constant
+    this.mixcloudShows = MIXCLOUD_SHOWS;
     
     this.currentMixcloudIndex = 0;
     
@@ -2905,41 +2883,21 @@ export class App {
     }
     
     const show = this.mixcloudShows[index];
-    const feedPath = show.url.replace('https://www.mixcloud.com', '').replace(/\//g, '%2F');
     
-    // Create iframe
-    const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '120';
-    iframe.src = `https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&feed=${feedPath}`;
-    iframe.frameBorder = '0';
-    iframe.allow = 'encrypted-media; fullscreen; autoplay; idle-detection; speaker-selection; web-share;';
-    iframe.style.border = 'none';
-    
-    // Clear container and add new iframe
-    container.innerHTML = '';
-    container.appendChild(iframe);
-    
-    // Update track info
-    if (trackInfo) {
-      trackInfo.textContent = `${index + 1} of ${this.mixcloudShows.length} - ${show.name}`;
-    }
-    
-    console.log(`🎵 Loaded track ${index + 1}: ${show.name}`);
+    // Use utility function to load the track
+    loadMixcloudTrack(container, show, index, this.mixcloudShows.length, trackInfo);
   }
 
   /**
    * Navigate to previous or next track
    */
   navigateMixcloud(direction) {
-    this.currentMixcloudIndex += direction;
-    
-    // Loop around
-    if (this.currentMixcloudIndex < 0) {
-      this.currentMixcloudIndex = this.mixcloudShows.length - 1;
-    } else if (this.currentMixcloudIndex >= this.mixcloudShows.length) {
-      this.currentMixcloudIndex = 0;
-    }
+    // Use utility function for navigation
+    this.currentMixcloudIndex = navigateTrack(
+      this.currentMixcloudIndex, 
+      direction, 
+      this.mixcloudShows.length
+    );
     
     this.loadMixcloudTrack(this.currentMixcloudIndex);
   }
@@ -2952,7 +2910,7 @@ export class App {
     
     try {
       // Listen for messages from the Mixcloud iframe
-      window.addEventListener('message', (event) => {
+      globalThis.addEventListener('message', (event) => {
         // Only accept messages from Mixcloud
         if (event.origin !== 'https://www.mixcloud.com') {
           return;
@@ -2961,7 +2919,7 @@ export class App {
         console.log('📨 Message from Mixcloud widget:', event.data);
         
         // Handle different widget events
-        if (event.data && event.data.type) {
+        if (event.data?.type) {
           switch (event.data.type) {
             case 'play':
               console.log('▶️ Mixcloud track started playing');
@@ -3076,7 +3034,7 @@ export class App {
    */
   onMixcloudProgress(progressData) {
     // Update progress display if needed
-    if (progressData && progressData.currentTime !== undefined) {
+    if (progressData?.currentTime !== undefined) {
       console.log('📊 Mixcloud progress:', progressData.currentTime);
     }
   }
@@ -3262,35 +3220,6 @@ export class App {
   }
 
   /**
-   * Connect iframe audio to our audio context
-   */
-  connectIframeAudio(audioElement) {
-    try {
-      console.log('🔗 Connecting iframe audio to our audio context...');
-      
-      if (this.audioManager?.audioContext) {
-        // Create a media stream source from the audio element
-        const stream = audioElement.captureStream();
-        const source = this.audioManager.audioContext.createMediaStreamSource(stream);
-        
-        // Connect to our analyzer
-        source.connect(this.audioManager.analyser);
-        
-        console.log('✅ Iframe audio connected to audio context');
-        
-        // Update status
-        const reactivityStatus = document.getElementById('reactivity-status');
-        if (reactivityStatus) {
-          reactivityStatus.textContent = 'Mixcloud audio captured - Visual effects active!';
-        }
-      }
-    } catch (error) {
-      console.log('⚠️ Error connecting iframe audio:', error);
-      this.fallbackAudioCapture();
-    }
-  }
-
-    /**
    * Fallback method for audio capture
    */
   fallbackAudioCapture() {
@@ -3335,69 +3264,13 @@ export class App {
     const debugInfo = document.getElementById('debug-info');
     if (!debugInfo) return;
     
-    let debugText = '';
-    
-    // Audio Manager Status
-    if (this.audioManager) {
-      debugText += `✅ Audio Manager: Available<br>`;
-      debugText += `🎵 Audio Context: ${this.audioManager.audioContext ? 'Active' : 'Inactive'}<br>`;
-      debugText += `📊 Analyzer: ${this.audioManager.analyser ? 'Ready' : 'Missing'}<br>`;
-      debugText += `🔊 Is Playing: ${this.audioManager.isPlaying ? 'Yes' : 'No'}<br>`;
-    } else {
-      debugText += `❌ Audio Manager: Not Available<br>`;
-    }
-    
-    // Audio Stream Status
-    if (this.currentAudioStream) {
-      debugText += `🎵 Audio Stream: Active<br>`;
-      debugText += `🔗 Stream ID: ${this.currentAudioStream.id || 'Unknown'}<br>`;
-    } else {
-      debugText += `❌ Audio Stream: Not Active<br>`;
-    }
-    
-    // Frequency Data Test
-    if (this.audioManager?.analyser) {
-      try {
-        const dataArray = new Float32Array(this.audioManager.analyser.frequencyBinCount);
-        this.audioManager.analyser.getFloatFrequencyData(dataArray);
-        
-        const averageFreq = dataArray.reduce((a, b) => a + b) / dataArray.length;
-        const hasData = dataArray.some(value => value > -Infinity);
-        
-        debugText += `📊 Frequency Data: ${hasData ? 'Yes' : 'No'}<br>`;
-        debugText += `📈 Avg Frequency: ${averageFreq.toFixed(2)}<br>`;
-        debugText += `🔢 Data Points: ${dataArray.length}<br>`;
-      } catch (error) {
-        debugText += `❌ Frequency Test: Failed (${error.message})<br>`;
-      }
-    }
-    
-    // Mixcloud Widget Status
-    const mixcloudPlayer = document.getElementById('mixcloud-player');
-    if (mixcloudPlayer) {
-      debugText += `🎵 Mixcloud Widget: Found<br>`;
-      debugText += `🔗 Widget Src: ${mixcloudPlayer.src.substring(0, 50)}...<br>`;
-    } else {
-      debugText += `❌ Mixcloud Widget: Not Found<br>`;
-    }
-    
-    // Audio Proxy Status
-    debugText += `🎵 Audio Proxy: ${this.audioProxy.isActive ? 'Active' : 'Not Active'}<br>`;
-    debugText += `🎵 Proxy Context: ${this.audioProxy.audioContext ? 'Active' : 'Not Available'}<br>`;
-    debugText += `🎵 Proxy Analyser: ${this.audioProxy.analyser ? 'Active' : 'Not Available'}<br>`;
-    debugText += `🎵 Proxy Audio: ${this.audioProxy.audioElement ? 'Loaded' : 'Not Loaded'}<br>`;
-    debugText += `🎵 Audio Source: ${this.audioProxy.source ? 'Connected' : 'Not Connected'}<br>`;
-    debugText += `🎵 Iframe Source: ${this.audioProxy.iframeSource ? 'Connected' : 'Not Connected'}<br>`;
-    debugText += `🎵 Test Oscillator: ${this.audioProxy.testOscillator ? 'Active' : 'Not Active'}<br>`;
-    debugText += `🎵 Main Analyser: ${this.audioManager?.analyser ? 'Available' : 'Not Available'}<br>`;
-    
-    // Mixcloud Widget Status
-    debugText += `🎵 Mixcloud Events: ${this.mixcloudEventsReceived ? 'Received' : 'Not Received'}<br>`;
-    debugText += `🎵 Widget Status: ${this.mixcloudEventsReceived ? 'Working' : 'May have issues'}<br>`;
-    
-    // Browser Capabilities
-    debugText += `🎵 Web Audio API: ${globalThis.AudioContext ? 'Supported' : 'Not Supported'}<br>`;
-    debugText += `🎵 Mixcloud Only: No microphone access<br>`;
+    // Use utility function to compose debug info
+    const debugText = composeDebugInfo({
+      audioManager: this.audioManager,
+      currentAudioStream: this.currentAudioStream,
+      audioProxy: this.audioProxy,
+      mixcloudEventsReceived: this.mixcloudEventsReceived
+    });
     
     debugInfo.innerHTML = debugText;
     
@@ -3480,7 +3353,7 @@ export class App {
              "
              onmouseover="this.style.border='2px solid #99ccff'; this.style.padding='1px';"
              onmouseout="this.style.border='1px solid #333333'; this.style.padding='2px';"
-             onclick="globalThis.omnivoidApp.expandGalleryImage('${filename}', '${getImageDescription(filename).replaceAll("'", '\\\'')}')"
+             onclick="globalThis.omnivoidApp.expandGalleryImage('${filename}', '${getImageDescription(filename).replaceAll("'", String.raw`\'`)}')"
              title="Click to view full image">
           <img src="public/gallery/${filename}" 
                alt="${filename}"
@@ -3796,7 +3669,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/omnivoid.labs/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logo.svg?v=${Date.now()}" 
@@ -3828,7 +3701,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/the_juncando/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/the_juncando/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
@@ -3855,7 +3728,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/designst3in/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/designst3in/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
@@ -3882,7 +3755,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/television_dust/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/television_dust/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
@@ -3908,7 +3781,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/krishnamurthy/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/krishnamurthy/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
@@ -3934,7 +3807,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/roydvanwinkle/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/ascii/WORM.svg" 
@@ -3966,7 +3839,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/royvillemedia.film/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/royville.png" 
@@ -3993,7 +3866,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/quantum.climb/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/quantum.climb/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/QuantumClimb.png" 
@@ -4020,7 +3893,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/theinventory.in/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/theinventory.in/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/Inventory_logo.png" 
@@ -4047,7 +3920,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/promusicals/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/promusicals/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/ProMusicals1.jpg" 
@@ -4074,7 +3947,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/stories/thechennaiscene/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/Chennai_Scene_Trans.png" 
@@ -4100,7 +3973,7 @@ export class App {
             border-radius: 4px;
             transition: all 0.2s;
             cursor: pointer;
-          " onclick="window.open('https://www.instagram.com/auraimmerse/', '_blank')" 
+          " onclick="globalThis.open('https://www.instagram.com/auraimmerse/', '_blank')" 
              onmouseover="this.style.borderColor='#99ccff'; this.style.background='#2a2a2a'" 
              onmouseout="this.style.borderColor='#333'; this.style.background='#1a1a1a'">
             <img src="public/logos/aura logo.png" 
@@ -4156,126 +4029,18 @@ export class App {
    */
   expandGalleryImage(filename, description) {
     // Close any existing popup first
-    const existingPopup = document.querySelector('.gallery-popup-overlay');
-    if (existingPopup) {
-      existingPopup.remove();
-    }
+    removeExistingPopup('gallery-popup-overlay');
 
-    // Create popup overlay
-    const popup = document.createElement('div');
-    popup.className = 'gallery-popup-overlay';
-    popup.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.3s ease;
-    `;
+    // Create popup using utility functions
+    const popup = createPopupOverlay('gallery-popup-overlay');
+    const popupContent = createPopupContent('gallery-popup-content');
+    const { header, closeButton } = createModalHeader(filename);
 
-    // Create popup content container
-    const popupContent = document.createElement('div');
-    popupContent.className = 'gallery-popup-content';
-    popupContent.style.cssText = `
-      background: #111111;
-      border: 2px solid #99ccff;
-      border-radius: 8px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow: auto;
-      box-shadow: 
-        0 0 30px rgba(153, 204, 255, 0.3),
-        0 0 60px rgba(153, 204, 255, 0.1);
-      animation: popupSlideIn 0.3s ease;
-      z-index: 10000;
-    `;
-
-    // Create header with title and close button
-    const header = document.createElement('div');
-    header.style.cssText = `
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid #333333;
-      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    `;
-
-    const title = document.createElement('h3');
-    title.textContent = filename;
-    title.style.cssText = `
-      margin: 0;
-      color: #99ccff;
-      font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      font-weight: bold;
-    `;
-
-    const closeButton = document.createElement('button');
-    closeButton.innerHTML = '✕';
-    closeButton.style.cssText = `
-      background: transparent;
-      border: 1px solid #99ccff;
-      color: #99ccff;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      font-family: 'Space Mono', monospace;
-    `;
-
-    // Close button hover effects
-    closeButton.addEventListener('mouseenter', () => {
-      closeButton.style.backgroundColor = "#99ccff";
-      closeButton.style.color = '#000000';
-    });
-
-    closeButton.addEventListener('mouseleave', () => {
-      closeButton.style.backgroundColor = 'transparent';
-      closeButton.style.color = "#99ccff";
-    });
-
-    // Close functionality
-    const closePopup = () => {
-      popup.style.animation = 'fadeOut 0.3s ease';
-      setTimeout(() => {
-        if (document.body.contains(popup)) {
-          popup.remove();
-        }
-      }, 300);
-    };
-
-    closeButton.addEventListener('click', closePopup);
-
-    // Close on overlay click
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) {
-        closePopup();
-      }
-    });
-
-    // Close on Escape key
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        closePopup();
-        document.removeEventListener('keydown', handleEscape);
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-
-    header.appendChild(title);
-    header.appendChild(closeButton);
+    // Close functionality using utility
+    const handleClose = () => closePopup(popup);
+    
+    // Setup close handlers using utility
+    setupPopupCloseHandlers(popup, closeButton, handleClose);
 
     // Create image container
     const imageContainer = document.createElement('div');
@@ -4460,7 +4225,7 @@ export class App {
              "
              onmouseover="this.style.borderStyle='inset'; this.style.transform='scale(1.05)'; this.style.borderColor='#99ccff';"
              onmouseout="this.style.borderStyle='outset'; this.style.transform='scale(1)'; this.style.borderColor='#555555';"
-             onclick="globalThis.omnivoidApp.openDocument('${article.filename}', '${article.title.replaceAll("'", '\\\'')}')"
+             onclick="globalThis.omnivoidApp.openDocument('${article.filename}', '${article.title.replaceAll("'", String.raw`\'`)}')"
              title="Click to read: ${article.title}">
           
           <!-- Notepad header lines -->
@@ -4553,10 +4318,7 @@ export class App {
    */
   async openDocument(filename, title) {
     // Close any existing document popup first
-    const existingPopup = document.querySelector('.document-popup-overlay');
-    if (existingPopup) {
-      existingPopup.remove();
-    }
+    removeExistingPopup('document-popup-overlay');
 
     // Fetch document content
     let documentContent = '';
@@ -4571,125 +4333,25 @@ export class App {
       documentContent = `Error loading document: ${error.message}`;
     }
 
-    // Create popup overlay
-    const popup = document.createElement('div');
-    popup.className = 'document-popup-overlay';
-    popup.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.3s ease;
-    `;
+    // Create popup using utility functions
+    const popup = createPopupOverlay('document-popup-overlay');
+    const popupContent = createPopupContent('document-popup-content');
+    
+    // Override some specific styles for document popup
+    popupContent.style.width = '90vw';
+    popupContent.style.maxWidth = '800px';
+    popupContent.style.height = '90vh';
+    popupContent.style.display = 'flex';
+    popupContent.style.flexDirection = 'column';
+    
+    const { header, closeButton } = createModalHeader(title);
+    header.style.flexShrink = '0';
 
-    // Create popup content container
-    const popupContent = document.createElement('div');
-    popupContent.className = 'document-popup-content';
-    popupContent.style.cssText = `
-      background: #111111;
-      border: 2px solid #99ccff;
-      border-radius: 8px;
-      width: 90vw;
-      max-width: 800px;
-      height: 90vh;
-      overflow: hidden;
-      box-shadow: 
-        0 0 30px rgba(153, 204, 255, 0.3),
-        0 0 60px rgba(153, 204, 255, 0.1);
-      animation: popupSlideIn 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      z-index: 10000;
-    `;
-
-    // Create header with title and close button
-    const header = document.createElement('div');
-    header.style.cssText = `
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid #333333;
-      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-      flex-shrink: 0;
-    `;
-
-    const titleElement = document.createElement('h3');
-    titleElement.textContent = title;
-    titleElement.style.cssText = `
-      margin: 0;
-      color: #99ccff;
-      font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      font-weight: bold;
-    `;
-
-    const closeButton = document.createElement('button');
-    closeButton.innerHTML = '✕';
-    closeButton.style.cssText = `
-      background: transparent;
-      border: 1px solid #99ccff;
-      color: #99ccff;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      font-family: 'Space Mono', monospace;
-    `;
-
-    // Close button hover effects
-    closeButton.addEventListener('mouseenter', () => {
-      closeButton.style.backgroundColor = "#99ccff";
-      closeButton.style.color = '#000000';
-    });
-
-    closeButton.addEventListener('mouseleave', () => {
-      closeButton.style.backgroundColor = 'transparent';
-      closeButton.style.color = "#99ccff";
-    });
-
-    // Close functionality
-    const closePopup = () => {
-      popup.style.animation = 'fadeOut 0.3s ease';
-      setTimeout(() => {
-        if (document.body.contains(popup)) {
-          popup.remove();
-        }
-      }, 300);
-    };
-
-    closeButton.addEventListener('click', closePopup);
-
-    // Close on overlay click
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) {
-        closePopup();
-      }
-    });
-
-    // Close on Escape key
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        closePopup();
-        document.removeEventListener('keydown', handleEscape);
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-
-    header.appendChild(titleElement);
-    header.appendChild(closeButton);
+    // Close functionality using utility
+    const handleClose = () => closePopup(popup);
+    
+    // Setup close handlers using utility
+    setupPopupCloseHandlers(popup, closeButton, handleClose);
 
     // Create document content area
     const contentArea = document.createElement('div');
@@ -4908,7 +4570,7 @@ export class App {
    * Handle window resize for responsive controls
    */
   handleWindowResize() {
-    console.log(`📱 Mobile window resize: ${window.innerWidth}px`);
+    console.log(`📱 Mobile window resize: ${globalThis.innerWidth}px`);
     
     // Reset modal state on resize to prevent positioning issues
     this.resetModalState();
@@ -5226,7 +4888,7 @@ Let's create something extraordinary together.`
     thumbnailsContainer.innerHTML = '';
     
     // Add PDF thumbnails
-    for (const [index, paper] of this.pdfResearchPapers.entries()) {
+    for (const paper of this.pdfResearchPapers) {
       const thumbnail = document.createElement('div');
       thumbnail.className = 'pdf-thumbnail';
       thumbnail.style.cssText = `
@@ -5545,7 +5207,7 @@ Let's create something extraordinary together.`
         console.log('✅ Audio proxy using main audio manager context');
       } else {
         // Fallback: create new context only if main one doesn't exist
-        this.audioProxy.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.audioProxy.audioContext = new (globalThis.AudioContext || globalThis.webkitAudioContext)();
         this.audioProxy.analyser = this.audioProxy.audioContext.createAnalyser();
         
         // Configure analyser
@@ -5587,7 +5249,7 @@ Let's create something extraordinary together.`
       this.audioProxy.source = this.audioProxy.audioContext.createMediaElementSource(this.audioProxy.audioElement);
       
       // Connect to the main audio manager's analyser for visual effects
-      if (this.audioManager && this.audioManager.analyser) {
+      if (this.audioManager?.analyser) {
         this.audioProxy.source.connect(this.audioManager.analyser);
         console.log('✅ Audio proxy connected to main audio manager analyser');
       } else {
@@ -5677,7 +5339,7 @@ Let's create something extraordinary together.`
       
       // Also try to pause via postMessage as backup
       try {
-        mixcloudPlayer.contentWindow.postMessage('{"method":"pause"}', '*');
+        mixcloudPlayer.contentWindow.postMessage('{"method":"pause"}', 'https://www.mixcloud.com');
       } catch (error) {
         console.log('🎵 Could not pause Mixcloud player via postMessage:', error);
       }
@@ -5796,7 +5458,7 @@ Let's create something extraordinary together.`
    */
   setupConsoleCommands() {
     // Make color system accessible from console
-    window.omnivoidColors = {
+    globalThis.omnivoidColors = {
       // Get current theme info
       getTheme: () => this.themeManager.getCurrentTheme(),
       
@@ -5913,7 +5575,7 @@ Type 'omnivoidColors.help()' to see available commands.
       this.isMusicPlaying = true;
       
       // Force start audio analysis for reactivity
-      if (this.audioManager && this.audioManager.forceStartAnalysis) {
+      if (this.audioManager?.forceStartAnalysis) {
         this.audioManager.forceStartAnalysis();
       }
       

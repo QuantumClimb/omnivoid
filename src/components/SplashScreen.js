@@ -6,6 +6,7 @@ import { Component } from './Base.js';
 export class SplashScreen extends Component {
   constructor() {
     super();
+    this.hideTimeoutId = null;
     this.createSplashScreen();
     this.logs = [];
   }
@@ -95,8 +96,23 @@ export class SplashScreen extends Component {
    */
   hide() {
     this.element.classList.add('fade-out');
-    setTimeout(() => {
+    this.hideTimeoutId = setTimeout(() => {
       this.element.remove();
+      this.hideTimeoutId = null;
     }, 1000);
+  }
+
+  /**
+   * Clean up the splash screen and pending hide timer.
+   */
+  destroy() {
+    if (this.hideTimeoutId) {
+      clearTimeout(this.hideTimeoutId);
+      this.hideTimeoutId = null;
+    }
+
+    if (this.element?.parentNode) {
+      this.element.parentNode.removeChild(this.element);
+    }
   }
 } 
