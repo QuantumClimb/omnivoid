@@ -3,13 +3,12 @@ const nextConfig = {
   // Enable React Strict Mode for better development experience
   reactStrictMode: true,
   
-  // Output standalone for easier deployment
-  output: 'standalone',
+  // Removed output: 'standalone' for better Vercel compatibility
   
   // Enable experimental features
   experimental: {
     // Optimize package imports
-    optimizePackageImports: ['framer-motion', '@prisma/client'],
+    optimizePackageImports: ['framer-motion'],
   },
   
   // Configure images
