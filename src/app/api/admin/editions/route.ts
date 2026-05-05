@@ -13,8 +13,9 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: editions });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to fetch editions' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error fetching editions:', error);
+    return NextResponse.json({ success: false, error: 'Failed to fetch editions', details: error?.message || String(error) }, { status: 500 });
   }
 }
 
