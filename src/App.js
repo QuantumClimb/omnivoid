@@ -7,12 +7,6 @@ import { RetroWindow } from './components/RetroWindow.js';
 import { AsciiWindow } from './components/AsciiWindow.js';
 import { GOOGLE_DRIVE_CONFIG, readPublicFile } from './config/googleDrive.js';
 import { AppState } from './state/AppState.js';
-
-// Import all other components but keep them hidden initially
-import { SolarSystem } from './components/SolarSystem.js';
-import { Starfield } from './components/Starfield.js';
-import { ASCIITunnel } from './components/ASCIITunnel.js';
-import { PolygonEcho } from './components/PolygonEcho.js';
 import { AnimationController } from './controllers/AnimationController.js';
 
 // Import utility functions

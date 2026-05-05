@@ -103,3 +103,22 @@ export function requireAuth(
     return handler(tokenData.userId, request);
   };
 }
+
+/**
+ * Verify admin token from request and return success/error response
+ * Compatible with Next.js NextRequest
+ */
+export async function verifyAdminToken(request: Request): Promise<{ success: boolean; userId?: string; error?: string }> {
+  const authHeader = request.headers.get('Authorization');
+  const tokenData = getTokenFromHeader(authHeader);
+  
+  if (!tokenData) {
+    return { success: false, error: 'Invalid or missing authentication token' };
+  }
+  
+  if (tokenData.type !== 'admin') {
+    return { success: false, error: 'Admin access required' };
+  }
+  
+  return { success: true, userId: tokenData.userId };
+}

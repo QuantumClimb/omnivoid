@@ -1,0 +1,228 @@
+/* Legacy styles compatibility layer */
+/* This file maintains compatibility with existing CSS patterns */
+
+/* Note: Original legacy CSS imports have been removed as those files no longer exist.
+   The legacy styles are now defined directly below. */
+
+/* Override and unify legacy styles with new design system */
+
+/* Legacy control panel styles */
+.control-panel {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+}
+
+/* Legacy button styles */
+.legacy-btn {
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legacy-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.legacy-btn:active {
+  transform: scale(0.98);
+}
+
+/* Legacy modal styles */
+.legacy-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.legacy-modal-content {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Legacy canvas container */
+.canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.canvas-container > canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Legacy popup styles */
+.legacy-popup {
+  position: fixed;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow-dark), var(--shadow-glow);
+  z-index: 1001;
+}
+
+/* Legacy footer */
+.legacy-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  z-index: 1001;
+}
+
+/* Legacy minimal controls */
+.minimal-controls {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 9px;
+  z-index: 1001;
+  background: var(--color-bg);
+  backdrop-filter: blur(10px);
+  padding: 9px 14px;
+  border-radius: 23px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-glow), var(--shadow-dark);
+  max-width: 95vw;
+}
+
+.minimal-control-btn {
+  width: 41px;
+  height: 41px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.minimal-control-btn.active {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.minimal-control-btn:not(.active) {
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Legacy agent controls */
+.agent-controls-container {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1001;
+  background: var(--color-bg);
+  backdrop-filter: blur(10px);
+  padding: 12px 8px;
+  border-radius: 15px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-glow), var(--shadow-dark);
+}
+
+/* Legacy splash screen */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Legacy retro window */
+.retro-window {
+  position: fixed;
+  background: var(--color-bg);
+  border: 2px solid var(--color-primary);
+  border-radius: 4px;
+  box-shadow: var(--shadow-glow-strong), var(--shadow-dark);
+  z-index: 1002;
+  min-width: 300px;
+  min-height: 200px;
+}
+
+.retro-window-header {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  padding: 8px 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.retro-window-close {
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.retro-window-content {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+}
+
+/* Responsive adjustments for legacy styles */
+@media (max-width: 768px) {
+  .minimal-controls {
+    bottom: 80px;
+  }
+  
+  .agent-controls-container {
+    display: none;
+  }
+  
+  .retro-window {
+    min-width: 90vw;
+    min-height: 50vh;
+  }
+}

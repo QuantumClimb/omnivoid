@@ -42,3 +42,9 @@ coverage/
 *.tmp
 *~ 
 /src/generated/prisma
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Next.js
+.next/

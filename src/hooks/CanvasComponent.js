@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import { AgentSystem } from '../components/AgentSystem.js';
 
 /**
  * React wrapper component for vanilla JS canvas-based visual components
@@ -143,62 +144,16 @@ export function CanvasComponent({
  * Pre-configured canvas components for common visual elements
  */
 
-// Starfield component
-export function StarfieldCanvas(props) {
-  return (
-    <CanvasComponent
-      createComponent={() => {
-        const { Starfield } = require('../components/Starfield.js');
-        return new Starfield();
-      }}
-      componentProps={props}
-      canvasId="starfield-canvas"
-      canvasStyle={{ zIndex: 0, pointerEvents: 'none' }}
-    />
-  );
-}
-
-// ASCIITunnel component
-export function ASCIITunnelCanvas(props) {
-  return (
-    <CanvasComponent
-      createComponent={() => {
-        const { ASCIITunnel } = require('../components/ASCIITunnel.js');
-        return new ASCIITunnel();
-      }}
-      componentProps={props}
-      canvasId="ascii-tunnel-canvas"
-      canvasStyle={{ zIndex: 0, pointerEvents: 'none' }}
-    />
-  );
-}
-
 // AgentSystem component
 export function AgentSystemCanvas(props) {
   return (
     <CanvasComponent
       createComponent={() => {
-        const { AgentSystem } = require('../components/AgentSystem.js');
         return AgentSystem.getInstance();
       }}
       componentProps={props}
       canvasId="agents"
       canvasStyle={{ zIndex: 1, pointerEvents: 'none' }}
-    />
-  );
-}
-
-// PolygonEcho component
-export function PolygonEchoCanvas(props) {
-  return (
-    <CanvasComponent
-      createComponent={() => {
-        const { PolygonEcho } = require('../components/PolygonEcho.js');
-        return new PolygonEcho();
-      }}
-      componentProps={props}
-      canvasId="polygon-echo-canvas"
-      canvasStyle={{ zIndex: 100, pointerEvents: 'none' }}
     />
   );
 }

@@ -2,7 +2,7 @@
 // OMNIVOID LABS - Prisma Schema
 // ============================================
 // Database: Neon PostgreSQL
-// ORM: Prisma
+// ORM: Prisma 5.x
 // ============================================
 
 generator client {
@@ -11,6 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ============================================
@@ -31,6 +32,9 @@ model Edition {
   updatedAt   DateTime @updatedAt
   
   resources   Resource[]
+  gigs        Gig[]
+  links       Link[]
+  documents   Document[]
   
   @@index([slug])
   @@index([isActive])
@@ -80,6 +84,138 @@ enum ResourceType {
   GALLERY      // Images
   LOGO         // Edition logos
   TEXT_CONTENT // Text content (replaces .txt files)
+}
+
+// ============================================
+// GIGS - Concert/event entries (Latest Rituals)
+// ============================================
+model Gig {
+  id          String   @id @default(cuid())
+  editionId   String?
+  edition     Edition? @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  
+  title       String   // Gig title
+  subtitle    String?  // Optional subtitle
+  description String?  // Full description
+  
+  // Event details
+  date        DateTime // Event date/time
+  venue       String?  // Venue name
+  location    String?  // City/address
+  address     String?  // Full address
+  
+  // Workshop tab content
+  hasWorkshop Boolean  @default(false)
+  workshopTitle    String?
+  workshopDescription String?
+  workshopMaterials   String? // JSON array of materials needed
+  workshopTime    DateTime?
+  
+  // Media
+  images      String[] // Array of image URLs
+  videoUrl    String?  // YouTube or other video
+  mixcloudUrl String?  // Mixcloud show URL
+  
+  // Status
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  isPast      Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([editionId])
+  @@index([date])
+  @@index([isActive])
+  @@index([isFeatured])
+}
+
+// ============================================
+// LINKS - External links (Mixcloud, YouTube)
+// ============================================
+model Link {
+  id          String   @id @default(cuid())
+  editionId   String?
+  edition     Edition? @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?
+  
+  // Link type
+  type        LinkType // MIXCLOUD, YOUTUBE, WEBSITE, SOCIAL
+  url         String   // The actual URL
+  
+  // Metadata based on type
+  metadata    Json?    // { showId, duration, thumbnail, platform }
+  
+  // Categorization
+  category    String?  // "live_transmissions", "conundrum", "contact", "labs"
+  
+  // Display
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([editionId])
+  @@index([type])
+  @@index([category])
+  @@index([isActive])
+}
+
+enum LinkType {
+  MIXCLOUD   // Mixcloud shows
+  YOUTUBE    // YouTube videos/channels
+  WEBSITE    // External websites
+  SOCIAL     // Social media links
+  PODCAST    // Podcast links
+  OTHER      // Other links
+}
+
+// ============================================
+// DOCUMENTS - Text content (replaces .txt files)
+// ============================================
+model Document {
+  id          String   @id @default(cuid())
+  editionId   String?
+  edition     Edition? @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  
+  title       String
+  slug        String?  @unique // URL-friendly identifier
+  
+  // Content type
+  type        DocumentType // RESEARCH, CONUNDRUM, CONTACT, LABS, TRANSMISSIONS
+  
+  // Content
+  content     String   // Rich text content (HTML or Markdown)
+  excerpt     String?  // Short description
+  
+  // File attachment (for PDFs, etc.)
+  fileUrl     String?  // URL to attached file
+  fileName    String?
+  
+  // Display
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([editionId])
+  @@index([type])
+  @@index([isActive])
+}
+
+enum DocumentType {
+  RESEARCH       // Research papers
+  CONUNDRUM      // Conundrum text
+  CONTACT        // Contact information
+  LABS           // Labs information
+  TRANSMISSIONS  // Live transmissions text
+  CUSTOM         // Custom content type
 }
 
 // ============================================

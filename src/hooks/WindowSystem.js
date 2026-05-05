@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { RetroWindow as RetroWindowComponent } from '../components/RetroWindow.js';
+import { AsciiWindow as AsciiWindowComponent } from '../components/AsciiWindow.js';
 
 /**
  * React wrapper component for vanilla JS window components (RetroWindow, AsciiWindow)
@@ -138,8 +140,7 @@ export function RetroWindow({ id, title, content, isVisible, onClose, ...props }
   return (
     <WindowSystem
       createWindow={({ id, title, content, onClose }) => {
-        const { RetroWindow } = require('../components/RetroWindow.js');
-        return new RetroWindow(id, title, content, onClose);
+        return new RetroWindowComponent(id, title, content, onClose);
       }}
       windowProps={{ id, title, content }}
       isVisible={isVisible}
@@ -161,8 +162,7 @@ export function AsciiWindow({
   return (
     <WindowSystem
       createWindow={({ id, title, url, onClose }) => {
-        const { AsciiWindow } = require('../components/AsciiWindow.js');
-        return new AsciiWindow(id, title, url, onClose);
+        return new AsciiWindowComponent(id, title, url, onClose);
       }}
       windowProps={{ id, title, url }}
       isVisible={isVisible}
