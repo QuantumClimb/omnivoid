@@ -11,6 +11,7 @@ interface Resource {
   type: string;
   isActive: boolean;
   editionId: string;
+  sortOrder?: number;
 }
 
 export default function ResourcesPage() {
