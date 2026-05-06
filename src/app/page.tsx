@@ -43,23 +43,23 @@ interface MenuSection {
 }
 
 const windowGridPositions: Record<string, { top: string; left: string }> = {
-  'research': { top: '15%', left: '15%' },
-  'rituals': { top: '15%', left: '40%' },
-  'transmissions': { top: '15%', left: '65%' },
-  'radio': { top: '50%', left: '15%' },
-  'labs': { top: '50%', left: '40%' },
-  'gallery': { top: '50%', left: '65%' },
-  'conundrum': { top: '70%', left: '20%' },
-  'contact': { top: '70%', left: '45%' },
+  'research': { top: '50vh', left: '50vw' },
+  'rituals': { top: '50vh', left: '50vw' },
+  'transmissions': { top: '50vh', left: '50vw' },
+  'radio': { top: '50vh', left: '50vw' },
+  'labs': { top: '50vh', left: '50vw' },
+  'gallery': { top: '50vh', left: '50vw' },
+  'conundrum': { top: '50vh', left: '50vw' },
+  'contact': { top: '50vh', left: '50vw' },
 };
 
 const menuSections: MenuSection[] = [
   { id: 'research', label: 'RESEARCH', icon: '📚', type: 'documents', docType: 'RESEARCH', windowPosition: windowGridPositions['research'] },
   { id: 'rituals', label: 'RITUALS', icon: '🎸', type: 'gigs', windowPosition: windowGridPositions['rituals'] },
   { id: 'transmissions', label: 'TRANSMISSIONS', icon: '📡', type: 'links', categoryId: 'live_transmissions', windowPosition: windowGridPositions['transmissions'] },
-  { id: 'radio', label: 'RADIO', icon: '🎵', type: 'resources', resourceType: 'AUDIO', windowPosition: windowGridPositions['radio'] },
+  { id: 'radio', label: 'RADIO', icon: '📻', type: 'links', categoryId: 'radio', windowPosition: windowGridPositions['radio'] },
   { id: 'gallery', label: 'GALLERY', icon: '🖼️', type: 'resources', resourceType: 'GALLERY', windowPosition: windowGridPositions['gallery'] },
-  { id: 'labs', label: 'LABS', icon: 'ℹ️', type: 'links', categoryId: 'labs', windowPosition: windowGridPositions['labs'] },
+  { id: 'labs', label: 'LABS', icon: '🧪', type: 'links', categoryId: 'labs', windowPosition: windowGridPositions['labs'] },
   { id: 'conundrum', label: 'CONUNDRUM', icon: '🧩', type: 'documents', docType: 'CONUNDRUM', windowPosition: windowGridPositions['conundrum'] },
   { id: 'contact', label: 'CONTACT', icon: '📧', type: 'documents', docType: 'CONTACT', windowPosition: windowGridPositions['contact'] },
 ];
@@ -75,6 +75,7 @@ export default function Home() {
   const [selectedEditionId, setSelectedEditionId] = useState<string | null>(null);
   const [showLatestRituals, setShowLatestRituals] = useState(false);
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  const [activeAudioUrl, setActiveAudioUrl] = useState<string | null>(null);
   
   const agentSystemRef = useRef<AgentSystem | null>(null);
 
@@ -104,10 +105,13 @@ export default function Home() {
     }
   }, [isSplashComplete]);
 
-  // Expose global function for YouTube links
+  // Expose global functions for media links
   useEffect(() => {
     (window as any).openYouTube = (url: string) => {
       setActiveVideoUrl(url);
+    };
+    (window as any).openMixcloud = (url: string) => {
+      setActiveAudioUrl(url);
     };
   }, []);
 
@@ -190,22 +194,35 @@ export default function Home() {
         return { content: html, tabs: [] };
 
       case 'links':
-        items = content.links.filter(l => l.category === section.categoryId);
+        items = content.links.filter(l => 
+          l.category === section.categoryId && 
+          (l.editionId === selectedEditionId || !l.editionId)
+        );
         html = `
           <div class="space-y-3">
-            ${items.length === 0 ? '<p class="text-white/40">No transmission links active.</p>' : ''}
-            ${items.map(link => `
-              <div 
-                onclick="window.openYouTube('${link.path}')"
-                class="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded hover:bg-[#99ccff]/10 hover:border-[#99ccff]/40 transition-all cursor-pointer group"
-              >
-                <div class="flex items-center gap-3">
-                  <span class="text-lg opacity-40 group-hover:opacity-100">${link.linkType === 'YOUTUBE' ? '📺' : '📡'}</span>
-                  <span class="text-xs font-mono tracking-tight">${link.title}</span>
+            ${items.length === 0 ? `<p class="text-white/40">No ${section.label.toLowerCase()} links active for this edition.</p>` : ''}
+            ${items.map(link => {
+              const isYouTube = link.linkType === 'YOUTUBE';
+              const isMixcloud = link.linkType === 'MIXCLOUD';
+              const clickHandler = isYouTube ? `window.openYouTube('${link.path}')` : isMixcloud ? `window.openMixcloud('${link.path}')` : `window.open('${link.path}', '_blank')`;
+              
+              return `
+                <div 
+                  onclick="${clickHandler}"
+                  class="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded hover:bg-[#99ccff]/10 hover:border-[#99ccff]/40 transition-all cursor-pointer group"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg opacity-40 group-hover:opacity-100">
+                      ${isYouTube ? '📺' : isMixcloud ? '📻' : '🔗'}
+                    </span>
+                    <span class="text-xs font-mono tracking-tight">${link.title}</span>
+                  </div>
+                  <span class="text-[10px] text-[#99ccff] opacity-0 group-hover:opacity-100 transition-opacity">
+                    ${isYouTube || isMixcloud ? 'PLAY ▶' : 'OPEN ↗'}
+                  </span>
                 </div>
-                <span class="text-[10px] text-[#99ccff] opacity-0 group-hover:opacity-100 transition-opacity">PLAY ▶</span>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         `;
         return { content: html, tabs: [] };
@@ -295,7 +312,7 @@ export default function Home() {
           <RetroWindow
             key={section.id}
             id={section.id}
-            title={`${section.label} - ${content?.editions.find(e => e.id === selectedEditionId)?.name || '...'}`}
+            title={`${section.label} [V4] - ${content?.editions.find(e => e.id === selectedEditionId)?.name || '...'}`}
             content={windowContents[section.id] || ''}
             isOpen={openWindows[section.id] || false}
             onClose={() => setOpenWindows(prev => ({ ...prev, [section.id]: false }))}
@@ -386,6 +403,47 @@ export default function Home() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mixcloud Modal Overlay */}
+      <AnimatePresence>
+        {activeAudioUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-10"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-2xl bg-[#0a0a0a] border border-[#99ccff]/30 shadow-2xl rounded-xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-black">
+                <span className="text-xs font-mono text-[#99ccff]">RADIO TRANSMISSION</span>
+                <button 
+                  onClick={() => setActiveAudioUrl(null)}
+                  className="w-8 h-8 flex items-center justify-center text-white/40 hover:text-white transition-all"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="p-0">
+                <iframe 
+                  width="100%" 
+                  height="120" 
+                  src={`https://www.mixcloud.com/widget/iframe/?hide_cover=1&light=0&autoplay=1&feed=${encodeURIComponent(activeAudioUrl)}`} 
+                  frameBorder="0"
+                  allow="autoplay"
+                />
+              </div>
+              <div className="p-6 text-center">
+                <p className="text-[10px] text-white/40 font-mono">Connecting to Mixcloud secure stream...</p>
+              </div>
             </motion.div>
           </motion.div>
         )}

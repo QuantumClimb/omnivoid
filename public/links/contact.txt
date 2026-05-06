@@ -2,9 +2,9 @@ CONTACT OMNIVOID
 Connect with the OMNIVOID collective. We're always interested in collaborations, performances, and creative exchanges that push the boundaries of digital art and sound.
 
 For bookings, collaborations, or general inquiries:
-- Email: contact@omnivoid.com
+- Email: omnivoid.labs@gmail.com
 - Social: @omnivoid_collective
-- Website: www.omnivoid.com
+- Website: www.omnivoid.vercel.app
 
 We specialize in:
 - Live electronic performances

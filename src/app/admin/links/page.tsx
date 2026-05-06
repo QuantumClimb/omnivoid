@@ -16,6 +16,7 @@ interface Link {
 
 export default function LinksPage() {
   const [links, setLinks] = useState<Link[]>([]);
+  const [editions, setEditions] = useState<{label: string, value: string}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<Link | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -28,9 +29,17 @@ export default function LinksPage() {
   const fetchLinks = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/admin/links');
-      const data = await res.json();
-      if (data.success) setLinks(data.data);
+      const [lRes, eRes] = await Promise.all([
+        fetch('/api/admin/links'),
+        fetch('/api/admin/editions')
+      ]);
+      
+      const [lData, eData] = await Promise.all([lRes.json(), eRes.json()]);
+      
+      if (lData.success) setLinks(lData.data);
+      if (eData.success) {
+        setEditions(eData.data.map((e: any) => ({ label: e.name, value: e.id })));
+      }
     } catch (err) {
       console.error('Failed to fetch links:', err);
     } finally {
@@ -106,12 +115,14 @@ export default function LinksPage() {
       type: 'select', 
       options: [
         { label: 'Live Transmissions', value: 'live_transmissions' },
+        { label: 'Radio (Mixcloud)', value: 'radio' },
+        { label: 'Labs (Workshops)', value: 'labs' },
         { label: 'Conundrum', value: 'conundrum' },
         { label: 'Contact', value: 'contact' },
-        { label: 'Labs Info', value: 'labs' },
       ],
       gridCols: 1 
     },
+    { name: 'editionId', label: 'Associated Edition', type: 'select', options: editions, gridCols: 1 },
     { name: 'sortOrder', label: 'Sort Order', type: 'number', gridCols: 1 },
     { name: 'isActive', label: 'Active', type: 'switch', gridCols: 1 },
     { name: 'isFeatured', label: 'Featured', type: 'switch', gridCols: 1 },

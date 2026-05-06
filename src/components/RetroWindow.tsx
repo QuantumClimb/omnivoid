@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 
 export interface Tab {
   id: string;
@@ -28,15 +28,10 @@ export function RetroWindow({
   position = { top: '50%', left: '50%' },
   tabs = []
 }: RetroWindowProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [windowPosition, setWindowPosition] = useState({ 
-    top: position.top, 
-    left: position.left 
-  });
-  const [isDesktop, setIsDesktop] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const windowRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
+  const [isDesktop, setIsDesktop] = useState(false);
 
   // Detect desktop on mount and resize
   useEffect(() => {
@@ -47,15 +42,6 @@ export function RetroWindow({
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
-
-  // Set initial position based on desktop/mobile
-  useEffect(() => {
-    if (isDesktop) {
-      setWindowPosition(position);
-    } else {
-      setWindowPosition({ top: '50%', left: '50%' });
-    }
-  }, [isDesktop, position]);
 
   // Reset active tab when window opens
   useEffect(() => {
@@ -75,47 +61,9 @@ export function RetroWindow({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Handle mouse move for dragging
-  const handleDrag = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-
-    const x = e.clientX - dragOffset.x;
-    const y = e.clientY - dragOffset.y;
-
-    // Constrain to viewport
-    const maxX = window.innerWidth - (windowRef.current?.offsetWidth || 0);
-    const maxY = window.innerHeight - (windowRef.current?.offsetHeight || 0);
-    
-    const constrainedX = Math.max(0, Math.min(x, maxX));
-    const constrainedY = Math.max(0, Math.min(y, maxY));
-
-    setWindowPosition({ 
-      top: `${constrainedY}px`, 
-      left: `${constrainedX}px` 
-    });
-  }, [isDragging, dragOffset]);
-
-  // Handle drag end
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-    document.removeEventListener('mousemove', handleDrag);
-    document.removeEventListener('mouseup', handleDragEnd);
-  }, [handleDrag]);
-
-  // Start dragging
-  const handleDragStart = (e: React.MouseEvent) => {
-    if (!windowRef.current) return;
-    
-    setIsDragging(true);
-    const rect = windowRef.current.getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-    
-    document.addEventListener('mousemove', handleDrag);
-    document.addEventListener('mouseup', handleDragEnd);
-    e.preventDefault();
+  // Function to handle title bar drag start
+  const handleDragStart = (e: React.PointerEvent) => {
+    dragControls.start(e);
   };
 
   // Close button hover states
@@ -160,19 +108,22 @@ export function RetroWindow({
           {/* Window */}
           <motion.div
             ref={windowRef}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            drag
+            dragControls={dragControls}
+            dragListener={false}
+            dragMomentum={false}
+            animate={{ 
+              scale: 1, 
+              opacity: 1,
+              x: 0,
+              y: 0,
+            }}
             transition={{ type: 'spring', damping: 25 }}
+            exit={{ scale: 0.8, opacity: 0 }}
             className="fixed z-[9999] flex flex-col"
             style={{
-              top: isDragging ? windowPosition.top : position.top,
-              left: isDragging ? windowPosition.left : position.left,
-              transform: isDragging 
-                ? 'none' 
-                : isDesktop 
-                  ? 'translate(-50%, -50%)' 
-                  : 'translate(-50%, -50%)',
+              top: isDesktop ? `calc(${position.top} - 200px)` : `calc(${position.top} - 35vh)`,
+              left: isDesktop ? `calc(${position.left} - 260px)` : `calc(${position.left} - 47.5vw)`,
               width: isDesktop ? '520px' : '95vw',
               maxWidth: '90vw',
               height: isDesktop ? '400px' : '70vh',
@@ -188,8 +139,8 @@ export function RetroWindow({
           >
             {/* Title Bar */}
             <div
-              onMouseDown={handleDragStart}
-              className="flex items-center justify-between px-2 py-1 cursor-move select-none"
+              onPointerDown={handleDragStart}
+              className="flex items-center justify-between px-2 py-1 cursor-grab active:cursor-grabbing select-none"
               style={{
                 height: '32px',
                 background: 'linear-gradient(90deg, #000000 0%, #333333 100%)',
