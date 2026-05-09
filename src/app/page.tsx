@@ -268,12 +268,12 @@ export default function Home() {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  if (!isSplashComplete) {
-    return <SplashScreen onComplete={() => setIsSplashComplete(true)} />;
-  }
-
   if (!isStartComplete) {
     return <StartScreen onEnter={() => setIsStartComplete(true)} />;
+  }
+
+  if (!isSplashComplete) {
+    return <SplashScreen onComplete={() => setIsSplashComplete(true)} />;
   }
 
   return (
