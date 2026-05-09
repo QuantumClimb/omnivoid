@@ -7,7 +7,7 @@ interface StartScreenProps {
 }
 
 export function StartScreen({ onEnter }: StartScreenProps) {
-  const LEGACY_URL = 'https://legacy.omnivoid.info'; // Placeholder - user will provide the real one
+  const LEGACY_URL = 'https://omnivoid-legacy.vercel.app/';
 
   return (
     <motion.div
@@ -63,15 +63,13 @@ export function StartScreen({ onEnter }: StartScreenProps) {
         >
           {/* Main Entry Button */}
           <button
-            onClick={onEnter}
-            className="group relative w-full md:w-auto min-w-[280px] p-[1px] rounded-xl overflow-hidden bg-gradient-to-br from-white/20 to-transparent hover:from-[#99ccff]/50 hover:to-transparent transition-all duration-500"
+            disabled
+            className="group relative w-full md:w-auto min-w-[280px] p-[1px] rounded-xl overflow-hidden bg-gradient-to-br from-white/10 to-transparent cursor-not-allowed opacity-40"
           >
-            <div className="relative bg-black/60 backdrop-blur-xl px-10 py-6 rounded-xl flex flex-col items-center gap-2 group-hover:bg-[#99ccff]/10 transition-all duration-500">
-              <span className="text-sm font-bold tracking-[0.3em] text-white group-hover:text-[#99ccff]">ENTER V4 PORTAL</span>
-              <span className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Modern Experience</span>
+            <div className="relative bg-black/60 backdrop-blur-xl px-10 py-6 rounded-xl flex flex-col items-center gap-2">
+              <span className="text-sm font-bold tracking-[0.3em] text-white/60">V4 PORTAL COMING SOON</span>
+              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Modern Experience</span>
             </div>
-            {/* Glow effect on hover */}
-            <div className="absolute inset-0 -z-10 bg-[#99ccff]/0 group-hover:bg-[#99ccff]/10 blur-xl transition-all duration-500" />
           </button>
 
           {/* Legacy Site Button */}
