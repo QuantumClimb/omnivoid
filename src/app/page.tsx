@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RetroWindow, Tab } from '@/components/RetroWindow';
 import { SplashScreen } from '@/components/SplashScreen';
+import { StartScreen } from '@/components/StartScreen';
 import { AgentSystem } from '@/components/AgentSystem';
 
 interface ContentItem {
@@ -66,6 +67,7 @@ const menuSections: MenuSection[] = [
 
 export default function Home() {
   const [isSplashComplete, setIsSplashComplete] = useState(false);
+  const [isStartComplete, setIsStartComplete] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [content, setContent] = useState<ContentStructure | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -268,6 +270,10 @@ export default function Home() {
 
   if (!isSplashComplete) {
     return <SplashScreen onComplete={() => setIsSplashComplete(true)} />;
+  }
+
+  if (!isStartComplete) {
+    return <StartScreen onEnter={() => setIsStartComplete(true)} />;
   }
 
   return (
