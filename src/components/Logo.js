@@ -10,7 +10,7 @@ export class Logo extends Component {
   constructor() {
     super();
     this.baseScale = this.isMobile ? 0.8 : 1.0; // Smaller on mobile
-    
+
     this.createElement();
   }
 
@@ -20,12 +20,12 @@ export class Logo extends Component {
   createElement() {
     this.element = document.createElement('div');
     this.element.className = 'logo-container';
-    
+
     console.log('🎨 Creating logo element...');
-    
+
     // Try to load the SVG file directly
     this.loadSVG();
-    
+
     console.log('🎨 Logo element created and added to DOM');
   }
 
@@ -36,25 +36,25 @@ export class Logo extends Component {
     this.logoElement = document.createElement('img');
     this.logoElement.className = 'logo-svg';
     this.logoElement.alt = 'Omnivoid';
-    
+
     // Load SVG from root path (public folder is served from root)
     this.logoElement.src = '/logo.svg?v=' + Date.now();
-    
+
     console.log('🔄 Loading logo from:', this.logoElement.src);
-    
+
     this.logoElement.onload = () => {
       console.log('✅ Logo loaded successfully!');
       this.element.appendChild(this.logoElement);
       document.body.appendChild(this.element);
     };
-    
+
     this.logoElement.onerror = (error) => {
       console.error('❌ Failed to load SVG:', error);
       console.log('🔍 Trying stacked version...');
-      
+
       // Try stacked version
       this.logoElement.src = '/stacked — labs.svg?v=' + Date.now();
-      
+
       this.logoElement.onerror = () => {
         console.error('❌ All SVG loading attempts failed');
         // Fallback: embed a simple version
@@ -68,12 +68,12 @@ export class Logo extends Component {
    */
   createFallbackLogo() {
     console.log('📄 Creating fallback logo...');
-    
+
     // Remove any existing logo element
     if (this.logoElement) {
       this.logoElement.remove();
     }
-    
+
     // Create a simple text logo as fallback
     this.logoElement = document.createElement('div');
     this.logoElement.className = 'logo-svg';
@@ -89,10 +89,10 @@ export class Logo extends Component {
       background: rgba(0,0,0,0.3);
     `;
     this.logoElement.textContent = 'OMNIVOID';
-    
+
     this.element.appendChild(this.logoElement);
     document.body.appendChild(this.element);
-    
+
     console.log('✅ Fallback logo created');
   }
 

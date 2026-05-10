@@ -64,7 +64,7 @@ export function StartScreen({ onEnter }: StartScreenProps) {
           {/* Main Entry Button */}
           <button
             disabled
-            className="group relative w-full md:w-auto min-w-[280px] p-[1px] rounded-xl overflow-hidden bg-gradient-to-br from-white/10 to-transparent cursor-not-allowed opacity-40"
+            className="hidden group relative w-full md:w-auto min-w-[280px] p-[1px] rounded-xl overflow-hidden bg-gradient-to-br from-white/10 to-transparent cursor-not-allowed opacity-40"
           >
             <div className="relative bg-black/60 backdrop-blur-xl px-10 py-6 rounded-xl flex flex-col items-center gap-2">
               <span className="text-sm font-bold tracking-[0.3em] text-white/60">V4 PORTAL COMING SOON</span>
@@ -80,7 +80,7 @@ export function StartScreen({ onEnter }: StartScreenProps) {
             className="group relative w-full md:w-auto min-w-[280px] p-[1px] rounded-xl overflow-hidden bg-gradient-to-br from-white/5 to-transparent hover:from-white/20 hover:to-transparent transition-all duration-500"
           >
             <div className="relative bg-black/40 backdrop-blur-md px-10 py-6 rounded-xl flex flex-col items-center gap-2 group-hover:bg-white/5 transition-all duration-500">
-              <span className="text-sm font-bold tracking-[0.3em] text-white/60 group-hover:text-white">ACCESS LEGACY</span>
+              <span className="text-sm font-bold tracking-[0.3em] text-white/60 group-hover:text-white">LOAD EXPERIENCE</span>
               <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Original Repository</span>
             </div>
           </a>
