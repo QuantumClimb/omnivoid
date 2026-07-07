@@ -28,8 +28,7 @@
       "@constants/*": ["./src/constants/*"],
       "@types/*": ["./src/types/*"]
     },
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0"
+    "baseUrl": "."
   },
   "include": [
     "next-env.d.ts",

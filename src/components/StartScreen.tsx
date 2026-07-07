@@ -110,6 +110,15 @@ export function StartScreen({ onEnter }: StartScreenProps) {
       <div className="fixed bottom-8 right-8 w-16 h-[1px] bg-white/10" />
       <div className="fixed bottom-8 right-8 w-[1px] h-16 bg-white/10" />
       
+      <a 
+        href="https://royvillemedia.in/" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="fixed bottom-8 left-8 z-50 text-[10px] font-mono tracking-widest uppercase text-white/40 hover:text-white transition-colors duration-300"
+      >
+        Royville Media
+      </a>
+      
       <style jsx>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.1; transform: scale(1); }
