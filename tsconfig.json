@@ -27,8 +27,7 @@
       "@utils/*": ["./src/utils/*"],
       "@constants/*": ["./src/constants/*"],
       "@types/*": ["./src/types/*"]
-    },
-    "baseUrl": "."
+    }
   },
   "include": [
     "next-env.d.ts",
